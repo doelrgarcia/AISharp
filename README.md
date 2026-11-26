@@ -13,6 +13,8 @@ and normal/optimized generated output. Full language qualification is incomplete
 
 ## Official token identity
 
+The AISharp token is intended to help fund ongoing AISharp development.
+
 Network: Solana mainnet.
 
 Mint address:
