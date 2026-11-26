@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/25",
+  "milestone": "unmanaged-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "unmanaged-both",
+    "unmanaged-call",
+    "unmanaged-bool"
+  ],
+  "excluded": [
+    "unmanaged-constraint"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 3,
+      "excluded": [
+        "unmanaged-constraint"
+      ],
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 3,
+      "excluded": [
+        "unmanaged-constraint"
+      ],
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 3,
+      "excluded": [
+        "unmanaged-constraint"
+      ],
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 3,
+      "excluded": [
+        "unmanaged-constraint"
+      ],
+      "ok": true
+    }
+  ],
+  "ok": true
+}

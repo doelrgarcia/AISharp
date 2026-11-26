@@ -1,0 +1,106 @@
+{
+ "cases": [
+  {
+   "name": "params-count",
+   "body": "return count(1,2,3)",
+   "value": 3,
+   "type": "int",
+   "pre": "fn count(params xs:owned buffer)->int\nensures true\n{return bufferLength(xs)}\n",
+   "cs": "int Count(params int[] xs){return xs.Length;} return Count(1,2,3);"
+  },
+  {
+   "name": "params-empty",
+   "body": "return count()",
+   "value": 0,
+   "type": "int",
+   "pre": "fn count(params xs:owned buffer)->int\nensures true\n{return bufferLength(xs)}\n",
+   "cs": "int Count(params int[] xs){return xs.Length;} return Count();"
+  },
+  {
+   "name": "params-one",
+   "body": "return count(7)",
+   "value": 1,
+   "type": "int",
+   "pre": "fn count(params xs:owned buffer)->int\nensures true\n{return bufferLength(xs)}\n",
+   "cs": "int Count(params int[] xs){return xs.Length;} return Count(7);"
+  },
+  {
+   "name": "params-fixed-and-params",
+   "body": "return sum(10,1,2)",
+   "value": 12,
+   "type": "int",
+   "pre": "fn sum(base:int, params xs:owned buffer)->int\nensures true\n{return base+bufferLength(xs)}\n",
+   "cs": "int Sum(int b, params int[] xs){return b+xs.Length;} return Sum(10,1,2);"
+  },
+  {
+   "name": "params-fixed-only",
+   "body": "return sum(5)",
+   "value": 5,
+   "type": "int",
+   "pre": "fn sum(base:int, params xs:owned buffer)->int\nensures true\n{return base+bufferLength(xs)}\n",
+   "cs": "int Sum(int b, params int[] xs){return b+xs.Length;} return Sum(5);"
+  },
+  {
+   "name": "params-first-element",
+   "body": "return first(4,5,6)",
+   "value": 4,
+   "type": "int",
+   "pre": "fn first(params xs:owned buffer)->int\nensures true\n{return bufferPeek(&xs,0)}\n",
+   "cs": "int First(params int[] xs){return xs[0];} return First(4,5,6);"
+  },
+  {
+   "name": "params-second-element",
+   "body": "return second(4,5,6)",
+   "value": 5,
+   "type": "int",
+   "pre": "fn second(params xs:owned buffer)->int\nensures true\n{return bufferPeek(&xs,1)}\n",
+   "cs": "int Second(params int[] xs){return xs[1];} return Second(4,5,6);"
+  },
+  {
+   "name": "params-size",
+   "body": "return tally(1,2,3,4)",
+   "value": 4,
+   "type": "int",
+   "pre": "fn tally(params xs:owned buffer)->int\nensures true\n{return bufferSize(&xs)}\n",
+   "cs": "int Tally(params int[] xs){return xs.Length;} return Tally(1,2,3,4);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "params-not-last",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn bad(params @@xs:owned buffer,n:int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "params-wrong-type",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn bad(params @@xs:int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "params-two",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn bad(params @@a:owned buffer, params b:owned buffer)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "params-missing-fixed",
+   "body": "return @@sum()",
+   "code": "AI3107",
+   "pre": "fn sum(base:int, params xs:owned buffer)->int\nensures true\n{return base+bufferLength(xs)}\n"
+  },
+  {
+   "name": "params-non-int-arg",
+   "body": "return count(1,@@true)",
+   "code": "AI3107",
+   "pre": "fn count(params xs:owned buffer)->int\nensures true\n{return bufferLength(xs)}\n"
+  },
+  {
+   "name": "params-buffer-direct",
+   "body": "return count(@@buffer(2))",
+   "code": "AI3107",
+   "pre": "fn count(params xs:owned buffer)->int\nensures true\n{return bufferLength(xs)}\n"
+  }
+ ]
+}

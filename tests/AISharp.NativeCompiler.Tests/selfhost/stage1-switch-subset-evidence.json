@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "switch-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "switch-basic",
+    "switch-default",
+    "switch-no-match-no-default",
+    "switch-multi-label",
+    "switch-enum",
+    "switch-char",
+    "switch-bool",
+    "switch-break",
+    "switch-default-before-case",
+    "switch-nested-loop-break",
+    "switch-long-control",
+    "switch-byte-control"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 12,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 12,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 12,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 12,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

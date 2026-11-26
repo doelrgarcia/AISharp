@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "allows-ref-type",
+   "body": "let r=R(3)\nlet m=Marker<R>(1)\nreturn r.value+m.flag",
+   "value": 4,
+   "type": "int",
+   "pre": "ref struct R={value:int}\ntype Marker<T> where T: allows ref struct={flag:int}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "allows-value-type",
+   "body": "let m=Marker<int>(2)\nreturn m.flag",
+   "value": 2,
+   "type": "int",
+   "pre": "ref struct R={value:int}\ntype Marker<T> where T: allows ref struct={flag:int}\n",
+   "cs": "return 2;"
+  },
+  {
+   "name": "allows-string-type",
+   "body": "let m=Marker<string>(2)\nreturn m.flag",
+   "value": 2,
+   "type": "int",
+   "pre": "ref struct R={value:int}\ntype Marker<T> where T: allows ref struct={flag:int}\n",
+   "cs": "return 2;"
+  },
+  {
+   "name": "allows-ref-local",
+   "body": "let r=R(5)\nlet s=R(7)\nreturn r.value+s.value",
+   "value": 12,
+   "type": "int",
+   "pre": "ref struct R={value:int}\ntype Marker<T> where T: allows ref struct={flag:int}\n",
+   "cs": "return 12;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "allows-field-escape",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "ref struct R={value:int}\ntype Holder={@@r:R}\n"
+  },
+  {
+   "name": "allows-return-escape",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "ref struct R={value:int}\nfn f()->R\nensures true\n{let r=R(1)\n@@return r}\n"
+  },
+  {
+   "name": "allows-malformed",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Bad<T> where T: allows @@int={x:int}\n"
+  },
+  {
+   "name": "allows-missing-ref",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Bad<T> where T: allows @@struct={x:int}\n"
+  }
+ ]
+}

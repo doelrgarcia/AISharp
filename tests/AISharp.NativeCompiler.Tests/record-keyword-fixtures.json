@@ -1,0 +1,102 @@
+{
+ "cases": [
+  {
+   "name": "record-basic",
+   "body": "let p=P(1,2)\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "pre": "record P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); return p.a*10+p.b;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-copy",
+   "body": "var p=P(1,2)\nlet q=p\np.a=5\nreturn q.a*10+p.a",
+   "value": 15,
+   "type": "int",
+   "pre": "record P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); P q=p; p.a=5; return q.a*10+p.a;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-field",
+   "body": "let q=Q(P(3,4))\nreturn q.p.a+q.p.b",
+   "value": 7,
+   "type": "int",
+   "pre": "record P={a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(3,4)); return q.p.a+q.p.b;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-generic",
+   "body": "let b=Box<int>(5)\nreturn b.value",
+   "value": 5,
+   "type": "int",
+   "pre": "record Box<T>={value:T}\n",
+   "cs": "var b=new Box<int>(5); return b.value;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-function",
+   "body": "return sum(P(2,3))",
+   "value": 5,
+   "type": "int",
+   "pre": "record P={a:int, b:int}\nfn sum(p:P)->int\nensures true\n{return p.a+p.b}\n",
+   "cs": "int Sum(P p)=>p.a+p.b; return Sum(new P(2,3));",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-with",
+   "body": "let p=P(1,2)\nlet q=p with {a=6}\nreturn q.a*10+q.b",
+   "value": 62,
+   "type": "int",
+   "pre": "record P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=new P(6,2); return q.a*10+q.b;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-required",
+   "body": "let p=P { a=4 }\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "pre": "record P={required a:int, b:int}\n",
+   "cs": "var p=new P(4,0); return p.a;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "record-readonly",
+   "body": "let p=P(2,3)\nreturn p.a*10+p.b",
+   "value": 23,
+   "type": "int",
+   "pre": "record P={readonly a:int, b:int}\n",
+   "cs": "var p=new P(2,3); return p.a*10+p.b;",
+   "extra": "public record struct P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public record struct Box<T>{public T value; public Box(T v){this.value=v;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "record-union",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "record @@P=A|B\n"
+  },
+  {
+   "name": "record-sealed-combo",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@sealed record P={a:int}\n"
+  },
+  {
+   "name": "record-file-combo",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@file record P={a:int}\n"
+  },
+  {
+   "name": "record-enum-name",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "record enum @@P={a:int}\n"
+  }
+ ]
+}

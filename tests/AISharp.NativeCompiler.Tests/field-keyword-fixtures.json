@@ -1,0 +1,55 @@
+{
+ "cases": [
+  {
+   "name": "field-default",
+   "body": "let c=Counter(1)\nreturn c.total",
+   "value": 0,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return field}\nset total(this: Counter, value: int)\nensures true\n{field=value\nreturn this}\n",
+   "cs": "return 0;"
+  },
+  {
+   "name": "field-set-get",
+   "body": "var c=Counter(1)\nc.total=7\nreturn c.total",
+   "value": 7,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return field}\nset total(this: Counter, value: int)\nensures true\n{field=value\nreturn this}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "field-update-twice",
+   "body": "var c=Counter(1)\nc.total=3\nc.total=9\nreturn c.total",
+   "value": 9,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return field}\nset total(this: Counter, value: int)\nensures true\n{field=value\nreturn this}\n",
+   "cs": "return 9;"
+  },
+  {
+   "name": "field-escaped-identifier",
+   "body": "let c=Counter(1)\nreturn c.total",
+   "value": 5,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{let @field=5\nreturn @field}\n",
+   "cs": "return 5;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "field-outside",
+   "body": "return @@field",
+   "code": "AI3103",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return field}\nset total(this: Counter, value: int)\nensures true\n{field=value\nreturn this}\n"
+  },
+  {
+   "name": "field-wrong-type",
+   "body": "var c=Counter(1)\nc.total=@@true\nreturn c.total",
+   "code": "AI3107",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return field}\nset total(this: Counter, value: int)\nensures true\n{field=value\nreturn this}\n"
+  },
+  {
+   "name": "field-getter-outside",
+   "body": "return @@field",
+   "code": "AI3103"
+  }
+ ]
+}

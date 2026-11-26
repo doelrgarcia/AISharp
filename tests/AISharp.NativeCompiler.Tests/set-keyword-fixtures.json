@@ -1,0 +1,48 @@
+{
+ "cases": [
+  {
+   "name": "set-roundtrip",
+   "body": "var c=Counter(1)\nc.total=7\nreturn c.total",
+   "value": 7,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter, value: int)\nensures true\n{return Counter(value)}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "set-incoming-type",
+   "body": "var c=Counter(1)\nc.total=9\nreturn c.total+1",
+   "value": 10,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter, value: int)\nensures true\n{return Counter(value)}\n",
+   "cs": "return 10;"
+  },
+  {
+   "name": "set-receiver-order",
+   "body": "var c=Counter(2)\nc.total=c.total+5\nreturn c.total",
+   "value": 7,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter, value: int)\nensures true\n{return Counter(value)}\n",
+   "cs": "return 7;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "set-wrong-value",
+   "body": "var c=Counter(1)\nc.total=@@true\nreturn c.total",
+   "code": "AI3107",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter, value: int)\nensures true\n{return Counter(value)}\n"
+  },
+  {
+   "name": "set-immutable",
+   "body": "let c=Counter(1)\n@@c.total=2\nreturn c.total",
+   "code": "AI3105",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter, value: int)\nensures true\n{return Counter(value)}\n"
+  },
+  {
+   "name": "set-return-mismatch",
+   "body": "var c=Counter(1)\nc.total=2\nreturn c.total",
+   "code": "AI3020",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter, value: int)\nensures true\n{@@return true}\n"
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PackageId>AISharp.Cli</PackageId>
+    <Description>AI# command-line tool: validate, format, lower, build, run-sample, audit, release, and acceptance commands.</Description>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>aisharp</ToolCommandName>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AISharp.Compiler\AISharp.Compiler.csproj" />
+    <ProjectReference Include="..\AISharp.Lowering\AISharp.Lowering.csproj" />
+    <ProjectReference Include="..\AISharp.Runtime\AISharp.Runtime.csproj" />
+    <ProjectReference Include="..\AISharp.Package\AISharp.Package.csproj" />
+  </ItemGroup>
+</Project>

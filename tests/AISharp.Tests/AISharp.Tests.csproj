@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AISharp.Compiler\AISharp.Compiler.csproj" />
+    <ProjectReference Include="..\..\src\AISharp.Lowering\AISharp.Lowering.csproj" />
+    <ProjectReference Include="..\..\src\AISharp.Runtime\AISharp.Runtime.csproj" />
+    <ProjectReference Include="..\..\src\AISharp.LanguageServer\AISharp.LanguageServer.csproj" />
+    <ProjectReference Include="..\..\src\AISharp.Package\AISharp.Package.csproj" />
+  </ItemGroup>
+</Project>

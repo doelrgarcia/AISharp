@@ -1,0 +1,173 @@
+module Stage1Expr
+intent "stage1-expression-parser"
+fn tok_kind(tokens:&owned buffer, index:int)->int
+ensures true
+{
+return bufferPeek(tokens,index*16)
+}
+fn tok_value(tokens:&owned buffer, index:int)->int
+ensures true
+{
+let base=index*16
+return bufferPeek(tokens,base+4)+bufferPeek(tokens,base+5)*256+bufferPeek(tokens,base+6)*65536+bufferPeek(tokens,base+7)*16777216
+}
+fn factor(tokens:&owned buffer, tp:&mut int, limit:int, error:&mut int)->int
+ensures true
+{
+if(*error!=0)
+{
+return 0
+}
+if(*tp>=limit)
+{
+*error=1
+return 0
+}
+let kind=tok_kind(tokens,*tp)
+let value=tok_value(tokens,*tp)
+if(kind==2)
+{
+*tp=*tp+1
+return value
+}
+if(kind==4 && value==40)
+{
+*tp=*tp+1
+let inner=expr(tokens,&mut *tp,limit,&mut *error)
+if(*error!=0)
+{
+return 0
+}
+if(*tp>=limit || tok_kind(tokens,*tp)!=4 || tok_value(tokens,*tp)!=41)
+{
+*error=1
+return 0
+}
+*tp=*tp+1
+return inner
+}
+if(kind==4 && value==45)
+{
+*tp=*tp+1
+return 0-factor(tokens,&mut *tp,limit,&mut *error)
+}
+*error=1
+return 0
+}
+fn term(tokens:&owned buffer, tp:&mut int, limit:int, error:&mut int)->int
+ensures true
+{
+var value=factor(tokens,&mut *tp,limit,&mut *error)
+while(*error==0 && *tp<limit && tok_kind(tokens,*tp)==4 && (tok_value(tokens,*tp)==42 || tok_value(tokens,*tp)==47 || tok_value(tokens,*tp)==37))
+{
+let op=tok_value(tokens,*tp)
+*tp=*tp+1
+let right=factor(tokens,&mut *tp,limit,&mut *error)
+if(*error!=0)
+{
+return 0
+}
+if(op==42)
+{
+value=value*right
+}
+else
+{
+if(op==47)
+{
+if(right==0)
+{
+*error=1
+return 0
+}
+value=value/right
+}
+else
+{
+if(right==0)
+{
+*error=1
+return 0
+}
+value=value%right
+}
+}
+}
+return value
+}
+fn expr(tokens:&owned buffer, tp:&mut int, limit:int, error:&mut int)->int
+ensures true
+{
+var value=term(tokens,&mut *tp,limit,&mut *error)
+while(*error==0 && *tp<limit && tok_kind(tokens,*tp)==4 && (tok_value(tokens,*tp)==43 || tok_value(tokens,*tp)==45))
+{
+let op=tok_value(tokens,*tp)
+*tp=*tp+1
+let right=term(tokens,&mut *tp,limit,&mut *error)
+if(*error!=0)
+{
+return 0
+}
+if(op==43)
+{
+value=value+right
+}
+else
+{
+value=value-right
+}
+}
+return value
+}
+fn main()->int
+ensures true
+{
+let tokens=fileRead(args[0])
+let limit=bufferSize(&tokens)/16-1
+var tp=0
+var error=0
+let value=expr(&tokens,&mut tp,limit,&mut error)
+if(error!=0)
+{
+return 1
+}
+if(tp!=limit)
+{
+return 1
+}
+let prefix=stringBytes("int main(void){return ")
+let digits=intText(value)
+let suffix=stringBytes(";}")
+var out=buffer(bufferSize(&prefix)+bufferSize(&digits)+bufferSize(&suffix))
+var pos=0
+var j=0
+while(j<bufferSize(&prefix))
+{
+bufferWrite(&mut out,pos,bufferPeek(&prefix,j))
+pos=pos+1
+j=j+1
+}
+j=0
+while(j<bufferSize(&digits))
+{
+bufferWrite(&mut out,pos,bufferPeek(&digits,j))
+pos=pos+1
+j=j+1
+}
+j=0
+while(j<bufferSize(&suffix))
+{
+bufferWrite(&mut out,pos,bufferPeek(&suffix,j))
+pos=pos+1
+j=j+1
+}
+var exact=buffer(pos)
+j=0
+while(j<pos)
+{
+bufferWrite(&mut exact,j,bufferPeek(&out,j))
+j=j+1
+}
+fileWrite(args[1],exact)
+return 0
+}

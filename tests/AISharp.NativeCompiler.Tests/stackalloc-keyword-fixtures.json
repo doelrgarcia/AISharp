@@ -1,0 +1,66 @@
+{
+ "cases": [
+  {
+   "name": "stackalloc-basic",
+   "body": "var b=stackalloc int[4]\nbufferWrite(&mut b,0,10)\nbufferWrite(&mut b,1,20)\nreturn bufferPeek(&b,0)+bufferPeek(&b,1)",
+   "value": 30,
+   "type": "int",
+   "cs": "return 30;"
+  },
+  {
+   "name": "stackalloc-length",
+   "body": "var b=stackalloc int[8]\nreturn bufferLength(b)",
+   "value": 32,
+   "type": "int",
+   "cs": "return 32;"
+  },
+  {
+   "name": "stackalloc-checksum",
+   "body": "var b=stackalloc int[4]\nvar i=0\nvar sum=0\nwhile(i<4)\n{\nbufferWrite(&mut b,i,i*3)\nsum=sum+bufferPeek(&b,i)\ni=i+1\n}\nreturn sum",
+   "value": 18,
+   "type": "int",
+   "cs": "return 18;"
+  },
+  {
+   "name": "stackalloc-two",
+   "body": "var a=stackalloc int[2]\nvar b=stackalloc int[2]\nbufferWrite(&mut a,0,5)\nbufferWrite(&mut b,0,7)\nreturn bufferPeek(&a,0)+bufferPeek(&b,0)",
+   "value": 12,
+   "type": "int",
+   "cs": "return 12;"
+  },
+  {
+   "name": "stackalloc-block",
+   "body": "var total=0\n{\nvar b=stackalloc int[2]\nbufferWrite(&mut b,0,4)\ntotal=bufferPeek(&b,0)\n}\nreturn total",
+   "value": 4,
+   "type": "int",
+   "cs": "return 4;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "stackalloc-escape",
+   "body": "var b=stackalloc int[4]\nreturn @@b",
+   "code": "AI3107"
+  },
+  {
+   "name": "stackalloc-managed",
+   "body": "var b=@@stackalloc string[4]\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "stackalloc-nonconstant",
+   "body": "var n=4\nvar b=stackalloc int[@@n]\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "stackalloc-direct",
+   "body": "return bufferLength(@@stackalloc int[4])",
+   "code": "AI3107"
+  },
+  {
+   "name": "stackalloc-element",
+   "body": "var b=@@stackalloc long[4]\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

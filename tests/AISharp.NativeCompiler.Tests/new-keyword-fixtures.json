@@ -1,0 +1,112 @@
+{
+ "cases": [
+  {
+   "name": "new-product",
+   "body": "let p=new P(1,2)\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "cs": "var p=new P(1,2); return p.a*10+p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type P={a:int, b:int}\n"
+  },
+  {
+   "name": "new-product-nested",
+   "body": "let q=new Q(new P(3,4))\nreturn q.p.a*10+q.p.b",
+   "value": 34,
+   "type": "int",
+   "cs": "var q=new Q(new P(3,4)); return q.p.a*10+q.p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type P={a:int, b:int}\ntype Q={p:P}\n"
+  },
+  {
+   "name": "new-product-generic",
+   "body": "let b=new Box<int>(5)\nreturn b.value",
+   "value": 5,
+   "type": "int",
+   "cs": "var b=new Box<int>(5); return b.value;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type Box<T>={value:T}\n"
+  },
+  {
+   "name": "new-product-generic-bool",
+   "body": "let b=new Box<bool>(true)\nif(b.value){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "var b=new Box<bool>(true); if(b.value){return 1;} return 0;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type Box<T>={value:T}\n"
+  },
+  {
+   "name": "new-buffer",
+   "body": "var b=new buffer(2)\nbufferWrite(&mut b,0,7)\nreturn bufferPeek(&b,0)",
+   "value": 7,
+   "type": "int",
+   "cs": "int x=7; return x;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "new-with",
+   "body": "let p=(new P(1,2)) with {a=5}\nreturn p.a*10+p.b",
+   "value": 52,
+   "type": "int",
+   "cs": "var p=(new P(1,2)) with {a=5}; return p.a*10+p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type P={a:int, b:int}\n"
+  },
+  {
+   "name": "new-function-arg",
+   "body": "return sum(new P(2,3))",
+   "value": 5,
+   "type": "int",
+   "cs": "int Sum(P p)=>p.a+p.b; return Sum(new P(2,3));",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type P={a:int, b:int}\nfn sum(p:P)->int\nensures true\n{return p.a+p.b}\n"
+  },
+  {
+   "name": "new-partial",
+   "body": "let p=new P(2,3)\nreturn p.a*10+p.b",
+   "value": 23,
+   "type": "int",
+   "cs": "var p=new P(2,3); return p.a*10+p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\n"
+  },
+  {
+   "name": "new-loop",
+   "body": "var total=0\nvar i=0\nwhile(i<3)\n{\nlet p=new P(i,1)\ntotal+=p.a\ni++\n}\nreturn total",
+   "value": 3,
+   "type": "int",
+   "cs": "int total=0; for(var i=0;i<3;i++){var p=new P(i,1);total+=p.a;} return total;",
+   "extra": "public record P(int a,int b); public record Q(P p); public class Box<T>{public T value; public Box(T v){this.value=v;}}",
+   "pre": "type P={a:int, b:int}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "new-literal",
+   "body": "let x=@@new 1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "new-user-function",
+   "body": "let x=@@new make()\nreturn 0",
+   "code": "AI3107",
+   "pre": "fn make()->int\nensures true\n{return 1}\n"
+  },
+  {
+   "name": "new-int-type",
+   "body": "let x=new @@int\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "new-array",
+   "body": "let x=new int@@[3]\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "new-intrinsic-noncreate",
+   "body": "var b=buffer(2)\nlet x=@@new bufferPeek(&b,0)\nreturn x",
+   "code": "AI3107"
+  }
+ ]
+}

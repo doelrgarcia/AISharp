@@ -1,0 +1,58 @@
+{
+ "cases": [
+  {
+   "name": "order-ascending",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby x ascending select x\nreturn bufferPeek(&q,0)",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "order-descending",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby x descending select x\nreturn bufferPeek(&q,0)",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "return 3;"
+  },
+  {
+   "name": "order-default",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby x select x\nreturn bufferPeek(&q,2)",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "return 3;"
+  },
+  {
+   "name": "order-projection",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby x ascending select x*2\nreturn bufferPeek(&q,0)",
+   "value": 2,
+   "type": "int",
+   "pre": "",
+   "cs": "return 2;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "order-unknown-key",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby @@y select x\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "order-missing-key",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby @@select x\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "order-missing-select",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby x @@;\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "order-unknown-direction",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b orderby x @@sideways select x\nreturn 0",
+   "code": "AI3100"
+  }
+ ]
+}

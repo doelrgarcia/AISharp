@@ -1,0 +1,434 @@
+{
+ "cases": [
+  {
+   "name": "spec-minimum",
+   "body": "let v:uint=0u\nreturn (int)v",
+   "type": "int",
+   "value": 0,
+   "cs": "uint v=0u; return (int)v;"
+  },
+  {
+   "name": "spec-maximum",
+   "body": "let v:uint=4294967295u\nif(v==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=4294967295u; return v==4294967295u?1:0;"
+  },
+  {
+   "name": "literal-decimal",
+   "body": "return (int)7u",
+   "type": "int",
+   "value": 7,
+   "cs": "return (int)7u;"
+  },
+  {
+   "name": "literal-uppercase-suffix",
+   "body": "return (int)1U",
+   "type": "int",
+   "value": 1,
+   "cs": "return (int)1U;"
+  },
+  {
+   "name": "literal-hex",
+   "body": "return (int)0xffu",
+   "type": "int",
+   "value": 255,
+   "cs": "return (int)0xffu;"
+  },
+  {
+   "name": "literal-u-suffix-falls-ulong",
+   "body": "if(4294967296u==4294967296ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "return 4294967296u==4294967296ul?1:0;"
+  },
+  {
+   "name": "escaped-nominal",
+   "body": "let v:@uint=@uint(4)\nreturn v.value",
+   "type": "int",
+   "pre": "type @uint={value:int}\n",
+   "value": 4
+  },
+  {
+   "name": "widen-to-long",
+   "body": "var v:uint=4294967295u\nlet l:long=v\nif(l==4294967295L){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=4294967295u; long l=v; return l==4294967295L?1:0;"
+  },
+  {
+   "name": "promote-int-constant",
+   "body": "var v:uint=1u\nreturn (int)(v+2)",
+   "type": "int",
+   "value": 3,
+   "cs": "uint v=1u; return (int)(v+2);"
+  },
+  {
+   "name": "promote-int-variable-long",
+   "body": "var v:uint=1u\nvar i:int=2\nlet r:long=v+i\nreturn (int)r",
+   "type": "int",
+   "value": 3,
+   "cs": "uint v=1u; int i=2; long r=v+i; return (int)r;"
+  },
+  {
+   "name": "promote-byte",
+   "body": "var v:uint=1u\nvar b:byte=255\nif(v+b==256u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=1u; byte b=255; return v+b==256u?1:0;"
+  },
+  {
+   "name": "promote-char",
+   "body": "var v:uint=1u\nvar c:char='A'\nif(v+c==66u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=1u; char c='A'; return v+c==66u?1:0;"
+  },
+  {
+   "name": "unary-minus-long",
+   "body": "var v:uint=1u\nreturn (int)(-v)",
+   "type": "int",
+   "value": -1,
+   "cs": "uint v=1u; return (int)(-v);"
+  },
+  {
+   "name": "complement",
+   "body": "var v:uint=0u\nif(~v==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=0u; return ~v==4294967295u?1:0;"
+  },
+  {
+   "name": "comparison-unsigned",
+   "body": "var v:uint=4294967295u\nvar i:int=-1\nif(v>i){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=4294967295u; int i=-1; return v>i?1:0;"
+  },
+  {
+   "name": "shift-logical",
+   "body": "var v:uint=4294967295u\nif((v>>1)==2147483647u && (v<<1)==4294967294u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=4294967295u; return ((v>>1)==2147483647u&&(v<<1)==4294967294u)?1:0;"
+  },
+  {
+   "name": "cast-fits",
+   "body": "var l:long=5L\nlet v:uint=(uint)l\nreturn (int)v",
+   "type": "int",
+   "value": 5,
+   "cs": "long l=5L; uint v=(uint)l; return (int)v;"
+  },
+  {
+   "name": "cast-checked-fault",
+   "body": "var i:int=-1\nreturn (int)(uint)i",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "int i=-1; return (int)(uint)i;"
+  },
+  {
+   "name": "cast-long-fault",
+   "body": "var l:long=4294967296L\nreturn (int)(uint)l",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "long l=4294967296L; return (int)(uint)l;"
+  },
+  {
+   "name": "cast-uint-int-fault",
+   "body": "var v:uint=4294967295u\nreturn (int)v",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "uint v=4294967295u; return (int)v;"
+  },
+  {
+   "name": "cast-unchecked-int-wrap",
+   "body": "var i:int=-1\nif(unchecked((uint)i)==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "int i=-1; return unchecked((uint)i)==4294967295u?1:0;"
+  },
+  {
+   "name": "cast-unchecked-long-wrap",
+   "body": "var l:long=4294967296L\nif(unchecked((uint)l)==0u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "long l=4294967296L; return unchecked((uint)l)==0u?1:0;"
+  },
+  {
+   "name": "cast-unchecked-byte-wrap",
+   "body": "var v:uint=300u\nreturn (int)unchecked((byte)v)",
+   "type": "int",
+   "value": 44,
+   "cs": "uint v=300u; return unchecked((byte)v);"
+  },
+  {
+   "name": "arithmetic-add-fault",
+   "body": "var v:uint=4294967295u\nreturn (int)(v+1u)",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "uint v=4294967295u; return (int)(v+1u);"
+  },
+  {
+   "name": "arithmetic-add-wrap",
+   "body": "var v:uint=4294967295u\nreturn (int)unchecked(v+1u)",
+   "type": "int",
+   "value": 0,
+   "cs": "uint v=4294967295u; return (int)unchecked(v+1u);"
+  },
+  {
+   "name": "arithmetic-sub-fault",
+   "body": "var v:uint=1u\nreturn (int)(v-2u)",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "uint v=1u; return (int)(v-2u);"
+  },
+  {
+   "name": "arithmetic-sub-wrap",
+   "body": "var v:uint=1u\nif(unchecked(v-2u)==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=1u; return unchecked(v-2u)==4294967295u?1:0;"
+  },
+  {
+   "name": "arithmetic-mul-fault",
+   "body": "var v:uint=65536u\nreturn (int)(v*v)",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "uint v=65536u; return (int)(v*v);"
+  },
+  {
+   "name": "arithmetic-mul-wrap",
+   "body": "var v:uint=65536u\nreturn (int)unchecked(v*v)",
+   "type": "int",
+   "value": 0,
+   "cs": "uint v=65536u; return (int)unchecked(v*v);"
+  },
+  {
+   "name": "divide-remainder",
+   "body": "var v:uint=4294967295u\nif(v/3u==1431655765u && v%3u==0u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=4294967295u; return (v/3u==1431655765u&&v%3u==0u)?1:0;"
+  },
+  {
+   "name": "divide-zero",
+   "body": "var z:uint=0u\nreturn (int)(1u/z)",
+   "type": "int",
+   "error": "System.DivideByZeroException",
+   "cs": "uint z=0u; return (int)(1u/z);"
+  },
+  {
+   "name": "update",
+   "body": "var v:uint=1u\nv++\nreturn (int)v",
+   "type": "int",
+   "value": 2,
+   "cs": "uint v=1u; v++; return (int)v;"
+  },
+  {
+   "name": "update-fault",
+   "body": "var v:uint=4294967295u\nv++\nreturn 0",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "uint v=4294967295u; v++; return 0;"
+  },
+  {
+   "name": "update-wrap",
+   "body": "var v:uint=4294967295u\nunchecked{v++}\nreturn (int)v",
+   "type": "int",
+   "value": 0,
+   "cs": "uint v=4294967295u; unchecked{v++;} return (int)v;"
+  },
+  {
+   "name": "compound",
+   "body": "var v:uint=1u\nv+=2u\nreturn (int)v",
+   "type": "int",
+   "value": 3,
+   "cs": "uint v=1u; v+=2u; return (int)v;"
+  },
+  {
+   "name": "compound-constant",
+   "body": "var v:uint=1u\nv+=2\nreturn (int)v",
+   "type": "int",
+   "value": 3,
+   "cs": "uint v=1u; v+=2; return (int)v;"
+  },
+  {
+   "name": "compound-fault",
+   "body": "var v:uint=4294967295u\nv+=1u\nreturn 0",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "uint v=4294967295u; v+=1u; return 0;"
+  },
+  {
+   "name": "compound-wrap",
+   "body": "var v:uint=4294967295u\nunchecked{v+=1u}\nreturn (int)v",
+   "type": "int",
+   "value": 0,
+   "cs": "uint v=4294967295u; unchecked{v+=1u;} return (int)v;"
+  },
+  {
+   "name": "field-storage",
+   "body": "let h=Holder(4294967295u)\nif(h.value==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "type Holder={value:uint}\n",
+   "value": 1,
+   "cs": "return new Holder{value=4294967295u}.value==4294967295u?1:0;",
+   "extra": "class Holder{public uint value;}"
+  },
+  {
+   "name": "generic-storage",
+   "body": "let b=Box<uint>(7u)\nreturn (int)b.value",
+   "type": "int",
+   "pre": "type Box<T>={value:T}\n",
+   "value": 7,
+   "cs": "return (int)new Box<uint>{value=7u}.value;",
+   "extra": "class Box<T>{public T value;}"
+  },
+  {
+   "name": "reference-store",
+   "body": "var v:uint=1u\nlet p=&mut v\n*p=4294967295u\nif(*p==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint v=1u; ref uint p=ref v; p=4294967295u; return p==4294967295u?1:0;"
+  },
+  {
+   "name": "function-abi",
+   "body": "return (int)idv(4294967295u)",
+   "type": "int",
+   "pre": "fn idv(v:uint)->uint ensures true {return v-4294967295u}\n",
+   "value": 0,
+   "cs": "return (int)Idv(4294967295u); uint Idv(uint v)=>v-4294967295u;"
+  },
+  {
+   "name": "constant-fold",
+   "body": "const a:uint=1u\nconst b:uint=2u\nreturn (int)(a+b)",
+   "type": "int",
+   "value": 3,
+   "cs": "const uint a=1u; const uint b=2u; return (int)(a+b);"
+  },
+  {
+   "name": "constant-wrap",
+   "body": "const c:uint=unchecked(4294967295u+1u)\nreturn (int)c",
+   "type": "int",
+   "value": 0,
+   "cs": "const uint c=unchecked(4294967295u+1u); return (int)c;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "literal-overflow",
+   "body": "let v:uint=@@18446744073709551616u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-negative",
+   "body": "let v:uint=@@-1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-unsuffixed-large",
+   "body": "let v:uint=@@4294967296\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-int-variable",
+   "body": "var i:int=1\nlet v:uint=@@i\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-long",
+   "body": "var l:long=1L\nlet v:uint=@@l\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-sbyte",
+   "body": "var s:sbyte=1\nlet v:uint=@@s\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-int-target",
+   "body": "var u:uint=1u\nlet i:int=@@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-byte-target",
+   "body": "var u:uint=1u\nlet b:byte=@@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-short-target",
+   "body": "var u:uint=1u\nlet s:short=@@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let v:uint=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-string",
+   "body": "let v:uint=@@\"bad\"\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "unassigned",
+   "body": "var v:uint\nreturn (int)@@v",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let v:uint=1u\n@@v=2u\nreturn 0",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let v:uint=1u\nlet @@v:uint=2u\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let v:uint=1u}\nreturn (int)@@v",
+   "code": "AI3103"
+  },
+  {
+   "name": "condition",
+   "body": "if(@@1u){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "logical-operand",
+   "body": "return 1u@@&&true",
+   "code": "AI3107"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (int)(@@uint)true",
+   "code": "AI3107"
+  },
+  {
+   "name": "compound-int-variable",
+   "body": "var i:int=1\nvar v:uint=1u\nv@@+=i\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "shift-count-uint",
+   "body": "var v:uint=1u\nvar c:uint=1u\nreturn (int)(v@@<<c)",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-arithmetic-overflow",
+   "body": "const c:uint=4294967295u@@+1u\nreturn 0",
+   "code": "AI3111"
+  },
+  {
+   "name": "constant-conversion-overflow",
+   "body": "let v:uint=(@@uint)-1\nreturn 0",
+   "code": "AI3111"
+  }
+ ]
+}

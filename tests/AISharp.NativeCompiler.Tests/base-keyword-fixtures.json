@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "base-method-field",
+   "body": "let d=new Derived(4,5)\nreturn d.sum()+d.b",
+   "value": 9,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n",
+   "cs": "return 9;"
+  },
+  {
+   "name": "base-constructor",
+   "body": "let d=new Derived(6,2)\nreturn d.sum()",
+   "value": 6,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n",
+   "cs": "return 6;"
+  },
+  {
+   "name": "base-object",
+   "body": "let b=new Base(7)\nreturn b.sum()",
+   "value": 7,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "base-derived-own",
+   "body": "let d=new Derived(1,8)\nreturn d.b",
+   "value": 8,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n",
+   "cs": "return 8;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "base-outside",
+   "body": "let d=base.@@new(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n"
+  },
+  {
+   "name": "base-no-base-class",
+   "body": "let d=new Base(1)\nreturn d.@@base.sum()",
+   "code": "AI3103",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n"
+  },
+  {
+   "name": "base-unknown-member",
+   "body": "let d=new Derived(1,2)\nreturn d.@@base.nope()",
+   "code": "AI3103",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.new(v)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n"
+  },
+  {
+   "name": "base-new-arity",
+   "body": "let d=new Derived(1,2)\nreturn d.sum()",
+   "code": "AI3107",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\nconstructor Base(v: int)\n{this.a=v}\nconstructor Derived(v: int, w: int)\n{base.@@new(v,2)\nthis.b=w}\nfn sum(this: Base)->int\nensures true\n{return this.a}\n"
+  }
+ ]
+}

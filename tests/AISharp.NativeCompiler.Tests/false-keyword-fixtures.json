@@ -1,0 +1,113 @@
+{
+ "cases": [
+  {
+   "name": "literal",
+   "body": "return false",
+   "type": "bool",
+   "value": false,
+   "cs": "return false;"
+  },
+  {
+   "name": "function-result",
+   "body": "return flag()",
+   "type": "bool",
+   "pre": "fn flag()->bool ensures true {return false}\n",
+   "value": false,
+   "cs": "return Flag(); bool Flag()=>false;"
+  },
+  {
+   "name": "condition",
+   "body": "if(false){return false}\nreturn true",
+   "type": "bool",
+   "value": true,
+   "cs": "if(false)return false; return true;"
+  },
+  {
+   "name": "logical-combination",
+   "body": "return false && true",
+   "type": "bool",
+   "value": false,
+   "cs": "return false && true;"
+  },
+  {
+   "name": "equality",
+   "body": "return (false==false) && (false!=true)",
+   "type": "bool",
+   "value": true,
+   "cs": "return (false==false)&&(false!=true);"
+  },
+  {
+   "name": "field",
+   "body": "let h=Holder(false)\nreturn h.value",
+   "type": "bool",
+   "pre": "type Holder={value:bool}\n",
+   "value": false,
+   "cs": "return new Holder{value=false}.value;",
+   "extra": "class Holder{public bool value;}"
+  },
+  {
+   "name": "generic",
+   "body": "let b=Box<bool>(false)\nreturn b.value",
+   "type": "bool",
+   "pre": "type Box<T>={value:T}\n",
+   "value": false,
+   "cs": "return new Box<bool>{value=false}.value;",
+   "extra": "class Box<T>{public T value;}"
+  },
+  {
+   "name": "reference",
+   "body": "var b:bool=false\nlet p=&b\nreturn *p",
+   "type": "bool",
+   "value": false,
+   "cs": "bool b=false; ref bool p=ref b; return p;"
+  },
+  {
+   "name": "parameter",
+   "body": "return idb(false)",
+   "type": "bool",
+   "pre": "fn idb(v:bool)->bool ensures true {return v}\n",
+   "value": false,
+   "cs": "return Idb(false); bool Idb(bool v)=>v;"
+  },
+  {
+   "name": "annotation",
+   "body": "let b:bool=false\nreturn b",
+   "type": "bool",
+   "value": false,
+   "cs": "bool b=false; return b;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "assign-int",
+   "body": "let x:int=@@false\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "argument-int",
+   "body": "return take(@@false)",
+   "code": "AI3107",
+   "pre": "fn take(v:int)->int ensures true {return v}\n"
+  },
+  {
+   "name": "arithmetic",
+   "body": "return false@@+1",
+   "code": "AI3107"
+  },
+  {
+   "name": "declaration-name",
+   "body": "let @@false=1\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "cast-int",
+   "body": "return (@@int)false",
+   "code": "AI3107"
+  },
+  {
+   "name": "bool-return-type",
+   "body": "@@return false",
+   "code": "AI3020"
+  }
+ ]
+}

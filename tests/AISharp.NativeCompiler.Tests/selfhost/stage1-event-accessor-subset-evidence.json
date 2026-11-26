@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/30",
+  "milestone": "add-remove-accessor-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    {
+      "keyword": "add",
+      "name": "add-calls"
+    },
+    {
+      "keyword": "add",
+      "name": "add-value"
+    },
+    {
+      "keyword": "add",
+      "name": "add-two-objects"
+    },
+    {
+      "keyword": "add",
+      "name": "add-after-remove"
+    },
+    {
+      "keyword": "remove",
+      "name": "remove-calls"
+    },
+    {
+      "keyword": "remove",
+      "name": "remove-value"
+    },
+    {
+      "keyword": "remove",
+      "name": "remove-two-objects"
+    },
+    {
+      "keyword": "remove",
+      "name": "remove-after-add"
+    }
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "addCases": 4,
+      "removeCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "addCases": 4,
+      "removeCases": 4,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "addCases": 4,
+      "removeCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "addCases": 4,
+      "removeCases": 4,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,319 @@
+{
+ "cases": [
+  {
+   "name": "literal-ascii",
+   "body": "return (int)'A'",
+   "cs": "return (int)'A';",
+   "value": 65
+  },
+  {
+   "name": "literal-unicode",
+   "body": "return (int)'\\uD800'",
+   "cs": "return (int)'\\uD800';",
+   "value": 55296
+  },
+  {
+   "name": "literal-newline",
+   "body": "return (int)'\\n'",
+   "cs": "return (int)'\\n';",
+   "value": 10
+  },
+  {
+   "name": "literal-single-quote",
+   "body": "return (int)'\\''",
+   "cs": "return (int)'\\'';",
+   "value": 39
+  },
+  {
+   "name": "literal-double-quote",
+   "body": "return (int)'\"'",
+   "cs": "return (int)'\"';",
+   "value": 34
+  },
+  {
+   "name": "literal-backslash",
+   "body": "return (int)'\\\\'",
+   "cs": "return (int)'\\\\';",
+   "value": 92
+  },
+  {
+   "name": "literal-hex",
+   "body": "return (int)'\\x41'",
+   "cs": "return (int)'\\x41';",
+   "value": 65
+  },
+  {
+   "name": "literal-null",
+   "body": "return (int)'\\0'",
+   "cs": "return (int)'\\0';",
+   "value": 0
+  },
+  {
+   "name": "promotion-int",
+   "body": "var c:char='A'\nlet n:int=c\nreturn n",
+   "cs": "char c='A'; int n=c; return n;",
+   "value": 65
+  },
+  {
+   "name": "promotion-arithmetic",
+   "body": "var c:char='A'\nreturn c+1",
+   "cs": "char c='A'; return c+1;",
+   "value": 66
+  },
+  {
+   "name": "promotion-long",
+   "body": "var c:char='A'\nlet l:long=c\nreturn (int)l",
+   "cs": "char c='A'; long l=c; return (int)l;",
+   "value": 65
+  },
+  {
+   "name": "promotion-ushort",
+   "body": "var c:char='A'\nlet u:ushort=c\nreturn (int)u",
+   "cs": "char c='A'; ushort u=c; return u;",
+   "value": 65
+  },
+  {
+   "name": "comparison",
+   "body": "var c:char='A'\nif(c=='A' && c<('B') && (int)c==65){return 1}\nreturn 0",
+   "cs": "char c='A'; return c=='A'&&c<'B'&&(int)c==65?1:0;",
+   "value": 1
+  },
+  {
+   "name": "cast-int-to-char",
+   "body": "var n:int=65\nlet c:char=(char)n\nreturn (int)c",
+   "cs": "int n=65; char c=(char)n; return c;",
+   "value": 65
+  },
+  {
+   "name": "cast-checked-fault",
+   "body": "var n:int=65536\nreturn (int)(char)n",
+   "cs": "int n=65536; return (char)n;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "cast-unchecked-wrap",
+   "body": "var n:int=-1\nlet c:char=unchecked((char)n)\nreturn (int)c",
+   "cs": "int n=-1; return unchecked((char)n);",
+   "value": 65535
+  },
+  {
+   "name": "constant-cast",
+   "body": "const c:char=(char)65\nreturn (int)c",
+   "cs": "const char c=(char)65; return c;",
+   "value": 65
+  },
+  {
+   "name": "constant-unchecked-wrap",
+   "body": "const c:char=unchecked((char)65536)\nreturn (int)c",
+   "cs": "const char c=unchecked((char)65536); return c;",
+   "value": 0
+  },
+  {
+   "name": "update",
+   "body": "var c:char='A'\nc++\nreturn (int)c",
+   "cs": "char c='A'; c++; return c;",
+   "value": 66
+  },
+  {
+   "name": "update-fault",
+   "body": "var c:char='\\uFFFF'\nc++\nreturn (int)c",
+   "cs": "char c='\\uFFFF'; c++; return c;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "compound",
+   "body": "var c:char='A'\nc+='A'\nreturn (int)c",
+   "cs": "char c='A'; c+='A'; return c;",
+   "value": 130
+  },
+  {
+   "name": "compound-fault",
+   "body": "var c:char='\\uFFFF'\nc+=(char)1\nreturn (int)c",
+   "cs": "char c='\\uFFFF'; c+=(char)1; return c;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "field-storage",
+   "pre": "type Holder={value:char}\n",
+   "body": "let h=Holder('A')\nreturn (int)h.value",
+   "cs": "return new Holder{value='A'}.value;",
+   "extra": "class Holder{public char value;}",
+   "value": 65
+  },
+  {
+   "name": "generic-storage",
+   "pre": "type Box<T>={value:T}\n",
+   "body": "let b=Box<char>('A')\nreturn (int)b.value",
+   "cs": "return new Box<char>{value='A'}.value;",
+   "extra": "class Box<T>{public T value;}",
+   "value": 65
+  },
+  {
+   "name": "reference-read",
+   "body": "var c:char='A'\nlet p=&c\nreturn (int)*p",
+   "cs": "char c='A'; ref char p=ref c; return p;",
+   "value": 65
+  },
+  {
+   "name": "reference-store",
+   "body": "var c:char=(char)0\nlet p=&mut c\n*p='B'\nreturn (int)c",
+   "cs": "char c=(char)0; ref char p=ref c; p='B'; return c;",
+   "value": 66
+  },
+  {
+   "name": "char-to-ushort",
+   "body": "var c:char='\\uFFFF'\nvar u:ushort=c\nreturn (int)u",
+   "cs": "char c='\\uFFFF'; ushort u=c; return u;",
+   "value": 65535
+  },
+  {
+   "name": "mixed-arithmetic",
+   "body": "var c:char='A'\nreturn c+'B'",
+   "cs": "char c='A'; return c+'B';",
+   "value": 131
+  },
+  {
+   "name": "bitwise",
+   "body": "var c:char='B'\nreturn c|1",
+   "cs": "char c='B'; return c|1;",
+   "value": 67
+  },
+  {
+   "name": "function-argument",
+   "pre": "fn take(v:char)->int ensures true {return (int)v}\n",
+   "body": "return take('A')",
+   "cs": "return Take('A'); int Take(char v)=>v;",
+   "value": 65
+  },
+  {
+   "name": "function-result-abi",
+   "pre": "fn idc(v:char)->char ensures true {return v}\n",
+   "body": "return (int)idc('\\uD800')",
+   "cs": "return Idc('\\uD800'); char Idc(char v)=>v;",
+   "value": 55296
+  },
+  {
+   "name": "escaped-nominal-type",
+   "pre": "type @char={value:int}\n",
+   "body": "let v:@char=@char(42)\nreturn v.value",
+   "value": 42
+  }
+ ],
+ "negative": [
+  {
+   "name": "multi-code-unit",
+   "body": "let c:char=@@'ab'\nreturn 0",
+   "code": "AI3136",
+   "length": 4
+  },
+  {
+   "name": "empty-literal",
+   "body": "let c:char=@@''\nreturn 0",
+   "code": "AI3136",
+   "length": 2
+  },
+  {
+   "name": "unterminated-literal",
+   "body": "let c:char=@@'A\nreturn 0",
+   "code": "AI3138",
+   "length": 2
+  },
+  {
+   "name": "invalid-escape",
+   "body": "let c:char=@@'\\q'\nreturn 0",
+   "code": "AI3137",
+   "length": 4
+  },
+  {
+   "name": "invalid-unicode-escape",
+   "body": "let c:char=@@'\\u12'\nreturn 0",
+   "code": "AI3137",
+   "length": 6
+  },
+  {
+   "name": "implicit-int",
+   "body": "var n:int=65\nlet c:char=@@n\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-ushort",
+   "body": "var u:ushort=65\nlet c:char=@@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-overflow",
+   "body": "let c:char=@@65536\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-negative",
+   "body": "let c:char=@@-1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let c:char=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "char-to-byte",
+   "body": "var c:char='A'\nlet b:byte=@@c\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "condition",
+   "body": "var c:char='A'\nif(@@c){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "unassigned",
+   "body": "var c:char\nreturn (int)@@c",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let c:char='A'\n@@c='B'\nreturn 0",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let c:char='A'\nlet @@c:char='B'\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let c:char='A'}\nreturn (int)@@c",
+   "code": "AI3103"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "operator-bool",
+   "body": "var c:char='A'\nreturn (int)(c@@+true)",
+   "code": "AI3107"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (int)(@@char)true",
+   "code": "AI3107"
+  },
+  {
+   "name": "bool-from-char",
+   "body": "let b:bool=@@'A'\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-constant-int",
+   "body": "let c:char=@@65\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "compound-int",
+   "body": "var c:char='A'\nc@@+=2\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

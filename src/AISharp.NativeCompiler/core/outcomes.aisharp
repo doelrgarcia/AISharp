@@ -1,0 +1,4 @@
+module std.core
+intent "Closed native outcome carriers"
+type Option<T> = Some(T) | None
+type Result<T, E> = Ok(T) | Err(E)

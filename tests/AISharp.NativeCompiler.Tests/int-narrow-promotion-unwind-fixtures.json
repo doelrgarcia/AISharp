@@ -1,0 +1,14 @@
+{
+  "cases": [
+    {"name":"checked-narrow-cast-fault-cleans-owner","pre":"","body":"let owner=buffer(2)\nvar wide:int=256\nreturn ([[origin]]byte)wide","outcome":"faulted","fault":"System.OverflowException","origin":"origin","owners":1,"allocationCount":1,"bom":true,"crlf":true,"outputFault":true},
+    {"name":"checked-narrow-cast-fault-crosses-call","pre":"fn convert(x:long)->short ensures true {let inner=buffer(1)\nreturn ([[origin]]i16)x}\n","body":"let outer=buffer(2)\nreturn [[site]]convert(32768L)","outcome":"faulted","fault":"System.OverflowException","origin":"origin","sites":["site"],"owners":2,"allocationCount":2,"dropOrder":[2,1]},
+    {"name":"unchecked-narrow-returns-and-cleans","pre":"","body":"let owner=buffer(3)\nvar n:long=-1L\nreturn unchecked((u16)n)","outcome":"returned","value":65535,"owners":1,"allocationCount":1},
+    {"name":"narrow-operands-use-int32-overflow-and-cleanup","pre":"","body":"let owner=buffer(3)\nvar a:ushort=65535\nvar b:ushort=65535\nlet x:long=a[[origin]]*b\nreturn (int)x","outcome":"faulted","fault":"System.OverflowException","origin":"origin","owners":1,"allocationCount":1},
+    {"name":"declared-int-error-promotes-narrow-source","pre":"","body":"let owner=buffer(2)\nvar value:u8=255\n[[origin]]fail value","fails":"int","outcome":"failed","errorType":"int32","origin":"origin","owners":1,"allocationCount":1}
+  ],
+  "negative": [
+    {"name":"constant-checked-narrow-range","pre":"","body":"return checked((@@i8)128)","length":2,"code":"AI3111"},
+    {"name":"propagation-does-not-widen-narrow-error","pre":"fn produce()->int fails byte ensures true {fail 42}\nfn use()->int fails int ensures true {return produce()@@?}\n","body":"return 0","length":1,"code":"AI3131","expectedRelated":[{"kind":"failure-declaration","needle":"fails int","shift":0,"length":5}]},
+    {"name":"no-implicit-variable-narrowing","pre":"","body":"var n:int=42\nvar a:u16=@@n\nreturn a","length":1,"code":"AI3107"}
+  ]
+}

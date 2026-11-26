@@ -1,0 +1,276 @@
+{
+ "cases": [
+  {
+   "name": "spec-zero",
+   "body": "let v:ushort=0\nreturn (int)v",
+   "cs": "ushort v=0; return v;",
+   "value": 0
+  },
+  {
+   "name": "spec-maximum",
+   "body": "let v:ushort=65535\nreturn (int)v",
+   "cs": "ushort v=65535; return v;",
+   "value": 65535
+  },
+  {
+   "name": "alias-u16",
+   "body": "let a:u16=1\nlet b:ushort=a\nreturn (int)b",
+   "value": 1
+  },
+  {
+   "name": "alias-annotation",
+   "body": "let a:ushort=1\nlet b:u16=a\nreturn (int)b",
+   "value": 1
+  },
+  {
+   "name": "alias-signature",
+   "pre": "fn echo(value:u16)->ushort ensures true {return value}\n",
+   "body": "return (int)echo(65535)",
+   "value": 65535
+  },
+  {
+   "name": "alias-type-argument",
+   "pre": "type Box<T>={value:T}\nfn read(v:Box<u16>)->int ensures true {return (int)v.value}\n",
+   "body": "return read(Box<ushort>(65535))",
+   "value": 65535
+  },
+  {
+   "name": "parameter-result",
+   "pre": "fn identity(value:ushort)->ushort ensures true {return value}\n",
+   "body": "return (int)identity(65535)",
+   "cs": "ushort Identity(ushort v)=>v; return Identity(65535);",
+   "value": 65535
+  },
+  {
+   "name": "widening-int",
+   "body": "let s:ushort=65535\nlet v:int=s\nreturn v",
+   "cs": "ushort s=65535; int v=s; return v;",
+   "value": 65535
+  },
+  {
+   "name": "widening-long",
+   "body": "let s:ushort=65535\nlet v:long=s\nreturn (int)v",
+   "cs": "ushort s=65535; long v=s; return (int)v;",
+   "value": 65535
+  },
+  {
+   "name": "arithmetic-promotion",
+   "body": "var a:ushort=65535\nvar b:ushort=1\nreturn a+b",
+   "cs": "ushort a=65535,b=1; return a+b;",
+   "value": 65536
+  },
+  {
+   "name": "arithmetic-promoted-overflow",
+   "body": "var a:ushort=65535\nvar b:ushort=65535\nreturn a*b",
+   "cs": "ushort a=65535; return checked(a*a);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "unchecked-multiply-wrap",
+   "body": "var a:ushort=65535\nreturn unchecked(a*a)",
+   "cs": "ushort a=65535; return unchecked(a*a);",
+   "value": -131071
+  },
+  {
+   "name": "bitwise-promotion",
+   "body": "var a:ushort=65535\nvar b:ushort=1\nreturn (a&b)|(a^b)",
+   "cs": "ushort a=65535,b=1; return (a&b)|(a^b);",
+   "value": 65535
+  },
+  {
+   "name": "shift-promotion",
+   "body": "var n:ushort=1\nreturn n<<16",
+   "cs": "ushort n=1; return n<<16;",
+   "value": 65536
+  },
+  {
+   "name": "comparison-promotion",
+   "body": "var a:ushort=65535\nvar b:int=-1\nif(a>b){return 1}\nreturn 0",
+   "cs": "ushort a=65535; int b=-1; return a>b?1:0;",
+   "value": 1
+  },
+  {
+   "name": "explicit-cast-fits",
+   "body": "var w:int=65535\nlet v:ushort=(ushort)w\nreturn (int)v",
+   "cs": "int w=65535; ushort v=(ushort)w; return v;",
+   "value": 65535
+  },
+  {
+   "name": "explicit-unchecked-wrap",
+   "body": "var i:int=-1\nreturn (int)unchecked((ushort)i)",
+   "cs": "int i=-1; return unchecked((ushort)i);",
+   "value": 65535
+  },
+  {
+   "name": "explicit-checked-fault",
+   "body": "var i:int=65536\nreturn (int)(ushort)i",
+   "cs": "int i=65536; return (ushort)i;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "constant-unchecked-wrap",
+   "body": "const v:ushort=unchecked((u16)65536)\nreturn (int)v",
+   "cs": "const ushort v=unchecked((ushort)65536); return v;",
+   "value": 0
+  },
+  {
+   "name": "constant-boundaries",
+   "body": "const lo:ushort=0\nconst hi:u16=65535\nreturn hi+lo",
+   "cs": "const ushort lo=0; const ushort hi=65535; return hi+lo;",
+   "value": 65535
+  },
+  {
+   "name": "field-storage",
+   "pre": "type Holder={value:ushort}\n",
+   "body": "let h=Holder(65535)\nreturn (int)h.value",
+   "cs": "return new Holder{value=65535}.value;",
+   "value": 65535,
+   "extra": "struct Holder{public ushort value;}"
+  },
+  {
+   "name": "generic-storage",
+   "pre": "type Box<T>={value:T}\n",
+   "body": "let b=Box<ushort>(65535)\nreturn (int)b.value",
+   "value": 65535
+  },
+  {
+   "name": "reference-read",
+   "body": "var u:ushort=65535\nlet p=&u\nreturn (int)*p",
+   "value": 65535
+  },
+  {
+   "name": "reference-store",
+   "body": "var u:ushort=0\nlet p=&mut u\nvar b:byte=255\n*p=b\nreturn (int)*p",
+   "value": 255
+  },
+  {
+   "name": "update-checked-fault",
+   "body": "var u:ushort=65535\nu+=1\nreturn (int)u",
+   "cs": "ushort u=65535; u+=1; return u;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "update-unchecked-wrap",
+   "body": "var u:ushort=65535\nunchecked{u++}\nreturn (int)u",
+   "cs": "ushort u=65535; unchecked{u++;} return u;",
+   "value": 0
+  },
+  {
+   "name": "update-pre-post",
+   "body": "var u:ushort=1\nlet a=u++\nlet b=++u\nreturn a*100+b*10+u",
+   "cs": "ushort u=1; int a=u++; int b=++u; return a*100+b*10+u;",
+   "value": 133
+  },
+  {
+   "name": "byte-widening",
+   "body": "var b:byte=255\nlet u:ushort=b\nreturn (int)u",
+   "cs": "byte b=255; ushort u=b; return u;",
+   "value": 255
+  },
+  {
+   "name": "distinct-from-short",
+   "body": "var u:ushort=65535\nvar s:short=-1\nreturn (int)u+(int)s",
+   "cs": "ushort u=65535; short s=-1; return u+(int)s;",
+   "value": 65534
+  },
+  {
+   "name": "escaped-nominal-type",
+   "pre": "type @ushort={value:int}\n",
+   "body": "let v:@ushort=@ushort(42)\nreturn v.value",
+   "value": 42
+  },
+  {
+   "name": "condition-valid",
+   "body": "var u:ushort=65535\nif(u>0){return (int)u}\nreturn 0",
+   "cs": "ushort u=65535; return u>0?(int)u:0;",
+   "value": 65535
+  }
+ ],
+ "negative": [
+  {
+   "name": "constant-overflow",
+   "body": "let v:ushort = @@65536\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-negative",
+   "body": "let v:ushort = @@-1\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-int",
+   "body": "var i:int=1\nlet v:ushort = @@i\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-long",
+   "body": "var l:long=1L\nlet v:ushort = @@l\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-sbyte",
+   "body": "var s:sbyte=1\nlet v:ushort = @@s\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-to-sbyte",
+   "body": "var u:ushort=1\nlet s:sbyte = @@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-to-short",
+   "body": "var u:ushort=1\nlet s:short = @@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-to-byte",
+   "body": "var u:ushort=1\nlet b:byte = @@u\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let v:ushort = @@true\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-string",
+   "body": "let v:ushort = @@\"bad\"\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "unassigned",
+   "body": "var v:ushort\nreturn (int)@@v",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let v:ushort=1\n@@v=2\nreturn (int)v",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let v:ushort=1\nlet @@v:ushort=2\nreturn (int)v",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let v:ushort=1}\nreturn (int)@@v",
+   "code": "AI3103"
+  },
+  {
+   "name": "condition-narrow",
+   "body": "var v:ushort=1\nif(@@v){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "operator-bool",
+   "body": "var v:ushort=1\nreturn v@@+true",
+   "code": "AI3107"
+  }
+ ]
+}

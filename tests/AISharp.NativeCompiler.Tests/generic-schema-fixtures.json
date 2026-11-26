@@ -1,0 +1,804 @@
+{
+  "cases": [
+    {
+      "name": "box",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "return Box<int>(42).value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "nested",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let x:Box<Box<int>>=Box<Box<int>>(Box<int>(42))\nlet shift=8>>1\nreturn x.value.value+shift-4",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "owned",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let x=Box<owned buffer>(buffer(42))\nreturn bufferLength(x.value)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 1,
+        "ownersCreated": 1,
+        "drops": 1,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1
+        ]
+      },
+      "failAt": 0
+    },
+    {
+      "name": "reference",
+      "pre": "type Box<T>={value:T}\nfn relay(x:Box<&mut int>)->Box<&mut int>\nensures true\n{return x}\n",
+      "body": "var n=0\nlet x=relay(Box<&mut int>(&mut n))\n*x.value=42\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "recursive",
+      "pre": "type Node<T>={next:&Node<T>,value:T}\nfn read(n:&Node<int>)->int\nensures true\n{return (*n).value}\n",
+      "body": "return 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "phantom",
+      "pre": "type Mark<T>=Yes|No\nfn choose(s:Mark<int>)->int\nensures true\n{return match s {Yes=>42,No=>0}}\n",
+      "body": "return choose(Mark<int>.Yes)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "empty",
+      "pre": "type Empty<T>={}\n",
+      "body": "let e=Empty<unit>()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "forward",
+      "pre": "type P={box:Box<int>}\ntype Box<T>={value:T}\n",
+      "body": "return P(Box<int>(42)).box.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "context",
+      "pre": "type Box<T>={value:T}\nfn make()->Box<int>\nensures true\n{return Box(42)}\n",
+      "body": "return make().value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "comparison",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let Box=1\nlet v=3\nif(Box<v){return 42}\nreturn 0",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "two-parameters",
+      "pre": "type Pair<A,B>={a:A,b:B}\n",
+      "body": "let p=Pair<int,bool>(42,true)\nif(p.b){return p.a}\nreturn 0",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "borrowed-product-argument",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "var n=Box<int>(0)\nlet b=Box<&mut Box<int>>(&mut n)\n(*b.value).value=42\nreturn n.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "reference-composition",
+      "pre": "type Ref<T>={p:&T}\n",
+      "body": "var n=42\nlet r=&mut n\nlet b=Ref<&mut int>(&r)\nreturn **b.p",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "partial-move",
+      "pre": "type Pair<T>={a:T,b:T}\n",
+      "body": "var p=Pair<owned buffer>(buffer(1),buffer(2))\nlet a=p.a\np.a=buffer(40)\nreturn bufferLength(a)+bufferLength(p.a)+bufferLength(p.b)-1",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": {
+        "attempts": 3,
+        "allocations": 3,
+        "releases": 3,
+        "ownersCreated": 3,
+        "drops": 3,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          3,
+          2
+        ]
+      },
+      "failAt": 0
+    },
+    {
+      "name": "conditional-reference",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "var a=0\nvar b=0\nlet flag=true\nlet r=match flag {true=>Box<&mut int>(&mut a),false=>Box<&mut int>(&mut b)}\n*r.value=42\nreturn a+b",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "generic-match-result",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let b=true\nreturn (match b {true=>Box<int>(42),false=>Box<int>(7)}).value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "nested-template",
+      "pre": "type Outer<T>={inner:Box<T>}\ntype Box<T>={value:T}\n",
+      "body": "return Outer<int>(Box<int>(42)).inner.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "nested-owned-template",
+      "pre": "type Outer<T>={inner:Box<T>}\ntype Box<T>={value:T}\n",
+      "body": "return bufferLength(Outer<owned buffer>(Box<owned buffer>(buffer(42))).inner.value)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 1,
+        "ownersCreated": 1,
+        "drops": 1,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1
+        ]
+      },
+      "failAt": 0
+    },
+    {
+      "name": "unused-templates",
+      "pre": "type Box<T>={value:T}\ntype Tag<T>=A|B\n",
+      "body": "return 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "alias-interning",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let a:Box<int>=Box<int>(42)\nlet b:Box<i32>=a\nreturn b.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "nominal-phatom-context",
+      "pre": "type Tag<T>=A|B\nfn pick(t:Tag<int>)->int\nensures true\n{return match t {A=>42,B=>0}}\n",
+      "body": "let other:Tag<bool>=B\nreturn pick(A)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "escaped-template",
+      "pre": "type @struct<@class>={@int:@class}\n",
+      "body": "return @struct<int>(42).@int",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "function-name-precedence",
+      "pre": "type Box<T>={value:T}\nfn Box()->int\nensures true\n{return 42}\n",
+      "body": "let b=Box<bool>(false)\nreturn Box()",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "explicit-type-disambiguation",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let Box=1\nreturn Box<int>(41).value+Box",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "constant-type-case",
+      "pre": "type Mark<T>=A|B\n",
+      "body": "const a:Mark<int>=A\nreturn match a {A=>42,B=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "type-field-initialization",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "var b:Box<int>\nb.value=42\nreturn b.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "normal-loop",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "var b=Box<int>(0)\nwhile(b.value<42){b.value++}\nreturn b.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "owned-call-result",
+      "pre": "type Box<T>={value:T}\nfn relay(x:Box<owned buffer>)->Box<owned buffer>\nensures true\n{return x}\n",
+      "body": "return bufferLength(relay(Box<owned buffer>(buffer(42))).value)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 1,
+        "ownersCreated": 1,
+        "drops": 1,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1
+        ]
+      },
+      "failAt": 0
+    },
+    {
+      "name": "selected-fault",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let b=Box<owned buffer>(buffer(1))\nreturn bufferGet(b.value,1)",
+      "value": null,
+      "error": "System.IndexOutOfRangeException",
+      "type": "int",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 0,
+        "liveBytes": 1,
+        "dropOrder": []
+      },
+      "failAt": 0
+    },
+    {
+      "name": "unselected-fault",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let yes=true\nreturn (match yes {true=>Box<int>(42),false=>Box<int>(1/bufferLength(buffer(0)))}).value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": {
+        "attempts": 0,
+        "allocations": 0,
+        "releases": 0,
+        "ownersCreated": 0,
+        "drops": 0,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": []
+      },
+      "failAt": 0
+    },
+    {
+      "name": "maximum-parameters",
+      "pre": "type Wide<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16,T17,T18,T19,T20,T21,T22,T23,T24,T25,T26,T27,T28,T29,T30,T31,T32,T33,T34,T35,T36,T37,T38,T39,T40,T41,T42,T43,T44,T45,T46,T47,T48,T49,T50,T51,T52,T53,T54,T55,T56,T57,T58,T59,T60,T61,T62,T63,T64,T65,T66,T67,T68,T69,T70,T71,T72,T73,T74,T75,T76,T77,T78,T79,T80,T81,T82,T83,T84,T85,T86,T87,T88,T89,T90,T91,T92,T93,T94,T95,T96,T97,T98,T99,T100,T101,T102,T103,T104,T105,T106,T107,T108,T109,T110,T111,T112,T113,T114,T115,T116,T117,T118,T119,T120,T121,T122,T123,T124,T125,T126,T127>={}\n",
+      "body": "let x=Wide<int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int>()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "maximum-templates",
+      "pre": "type G0<T>={}\ntype G1<T>={}\ntype G2<T>={}\ntype G3<T>={}\ntype G4<T>={}\ntype G5<T>={}\ntype G6<T>={}\ntype G7<T>={}\ntype G8<T>={}\ntype G9<T>={}\ntype G10<T>={}\ntype G11<T>={}\ntype G12<T>={}\ntype G13<T>={}\ntype G14<T>={}\ntype G15<T>={}\ntype G16<T>={}\ntype G17<T>={}\ntype G18<T>={}\ntype G19<T>={}\ntype G20<T>={}\ntype G21<T>={}\ntype G22<T>={}\ntype G23<T>={}\ntype G24<T>={}\ntype G25<T>={}\ntype G26<T>={}\ntype G27<T>={}\ntype G28<T>={}\ntype G29<T>={}\ntype G30<T>={}\ntype G31<T>={}\ntype G32<T>={}\ntype G33<T>={}\ntype G34<T>={}\ntype G35<T>={}\ntype G36<T>={}\ntype G37<T>={}\ntype G38<T>={}\ntype G39<T>={}\ntype G40<T>={}\ntype G41<T>={}\ntype G42<T>={}\ntype G43<T>={}\ntype G44<T>={}\ntype G45<T>={}\ntype G46<T>={}\ntype G47<T>={}\ntype G48<T>={}\ntype G49<T>={}\ntype G50<T>={}\ntype G51<T>={}\ntype G52<T>={}\ntype G53<T>={}\ntype G54<T>={}\ntype G55<T>={}\ntype G56<T>={}\ntype G57<T>={}\ntype G58<T>={}\ntype G59<T>={}\ntype G60<T>={}\ntype G61<T>={}\ntype G62<T>={}\ntype G63<T>={}\ntype G64<T>={}\ntype G65<T>={}\ntype G66<T>={}\ntype G67<T>={}\ntype G68<T>={}\ntype G69<T>={}\ntype G70<T>={}\ntype G71<T>={}\ntype G72<T>={}\ntype G73<T>={}\ntype G74<T>={}\ntype G75<T>={}\ntype G76<T>={}\ntype G77<T>={}\ntype G78<T>={}\ntype G79<T>={}\ntype G80<T>={}\ntype G81<T>={}\ntype G82<T>={}\ntype G83<T>={}\ntype G84<T>={}\ntype G85<T>={}\ntype G86<T>={}\ntype G87<T>={}\ntype G88<T>={}\ntype G89<T>={}\ntype G90<T>={}\ntype G91<T>={}\ntype G92<T>={}\ntype G93<T>={}\ntype G94<T>={}\ntype G95<T>={}\ntype G96<T>={}\ntype G97<T>={}\ntype G98<T>={}\ntype G99<T>={}\ntype G100<T>={}\ntype G101<T>={}\ntype G102<T>={}\ntype G103<T>={}\ntype G104<T>={}\ntype G105<T>={}\ntype G106<T>={}\ntype G107<T>={}\ntype G108<T>={}\ntype G109<T>={}\ntype G110<T>={}\ntype G111<T>={}\ntype G112<T>={}\ntype G113<T>={}\ntype G114<T>={}\ntype G115<T>={}\ntype G116<T>={}\ntype G117<T>={}\ntype G118<T>={}\ntype G119<T>={}\ntype G120<T>={}\ntype G121<T>={}\ntype G122<T>={}\ntype G123<T>={}\ntype G124<T>={}\ntype G125<T>={}\ntype G126<T>={}\ntype G127<T>={}\n",
+      "body": "let x=G127<int>()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "maximum-instances",
+      "pre": "type G<T>={}\n",
+      "body": "let g0=G<unit>()\nlet g1=G<int>()\nlet g2=G<bool>()\nlet g3=G<owned buffer>()\nlet g4=G<&int>()\nlet g5=G<&bool>()\nlet g6=G<&owned buffer>()\nlet g7=G<&&int>()\nlet g8=G<&&bool>()\nlet g9=G<&&owned buffer>()\nlet g10=G<&&&int>()\nlet g11=G<&&&bool>()\nlet g12=G<&&&owned buffer>()\nlet g13=G<&&&&int>()\nlet g14=G<&&&&bool>()\nlet g15=G<&&&&owned buffer>()\nlet g16=G<&&&&&int>()\nlet g17=G<&&&&&bool>()\nlet g18=G<&&&&&owned buffer>()\nlet g19=G<&&&&&&int>()\nlet g20=G<&&&&&&bool>()\nlet g21=G<&&&&&&owned buffer>()\nlet g22=G<&&&&&&&int>()\nlet g23=G<&&&&&&&bool>()\nlet g24=G<&&&&&&&owned buffer>()\nlet g25=G<&&&&&&&&int>()\nlet g26=G<&&&&&&&&bool>()\nlet g27=G<&&&&&&&&owned buffer>()\nlet g28=G<&&&&&&&&&int>()\nlet g29=G<&&&&&&&&&bool>()\nlet g30=G<&&&&&&&&&owned buffer>()\nlet g31=G<&&&&&&&&&&int>()\nlet g32=G<&&&&&&&&&&bool>()\nlet g33=G<&&&&&&&&&&owned buffer>()\nlet g34=G<&&&&&&&&&&&int>()\nlet g35=G<&&&&&&&&&&&bool>()\nlet g36=G<&&&&&&&&&&&owned buffer>()\nlet g37=G<&&&&&&&&&&&&int>()\nlet g38=G<&&&&&&&&&&&&bool>()\nlet g39=G<&&&&&&&&&&&&owned buffer>()\nlet g40=G<&&&&&&&&&&&&&int>()\nlet g41=G<&&&&&&&&&&&&&bool>()\nlet g42=G<&&&&&&&&&&&&&owned buffer>()\nlet g43=G<&&&&&&&&&&&&&&int>()\nlet g44=G<&&&&&&&&&&&&&&bool>()\nlet g45=G<&&&&&&&&&&&&&&owned buffer>()\nlet g46=G<&&&&&&&&&&&&&&&int>()\nlet g47=G<&&&&&&&&&&&&&&&bool>()\nlet g48=G<&&&&&&&&&&&&&&&owned buffer>()\nlet g49=G<&&&&&&&&&&&&&&&&int>()\nlet g50=G<&&&&&&&&&&&&&&&&bool>()\nlet g51=G<&&&&&&&&&&&&&&&&owned buffer>()\nlet g52=G<&&&&&&&&&&&&&&&&&int>()\nlet g53=G<&&&&&&&&&&&&&&&&&bool>()\nlet g54=G<&&&&&&&&&&&&&&&&&owned buffer>()\nlet g55=G<&&&&&&&&&&&&&&&&&&int>()\nlet g56=G<&&&&&&&&&&&&&&&&&&bool>()\nlet g57=G<&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g58=G<&&&&&&&&&&&&&&&&&&&int>()\nlet g59=G<&&&&&&&&&&&&&&&&&&&bool>()\nlet g60=G<&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g61=G<&&&&&&&&&&&&&&&&&&&&int>()\nlet g62=G<&&&&&&&&&&&&&&&&&&&&bool>()\nlet g63=G<&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g64=G<&&&&&&&&&&&&&&&&&&&&&int>()\nlet g65=G<&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g66=G<&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g67=G<&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g68=G<&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g69=G<&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g70=G<&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g71=G<&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g72=G<&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g73=G<&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g74=G<&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g75=G<&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g76=G<&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g77=G<&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g78=G<&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g79=G<&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g80=G<&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g81=G<&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g82=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g83=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g84=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g85=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g86=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g87=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g88=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g89=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g90=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g91=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g92=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g93=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g94=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g95=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g96=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g97=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g98=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g99=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g100=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g101=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g102=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g103=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g104=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g105=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g106=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g107=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g108=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g109=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g110=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g111=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g112=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g113=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g114=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g115=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g116=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g117=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g118=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g119=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g120=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g121=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g122=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g123=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g124=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g125=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g126=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g127=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    },
+    {
+      "name": "nominal-primitive-display-distinction",
+      "pre": "type int32=A|B\ntype Box<T>={value:T}\n",
+      "body": "let a=Box<int>(42)\nlet b=Box<int32>(int32.A)\nif(b.value==int32.A){return a.value}\nreturn 0",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "memory": null,
+      "failAt": 0
+    }
+  ],
+  "negative": [
+    {
+      "name": "duplicate-parameter",
+      "pre": "type G<T,@@T>={}\n",
+      "body": "return 0",
+      "code": "AI3106",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "previous-declaration",
+          "needle": "type G<T",
+          "shift": 7,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "unknown-parameter",
+      "pre": "type G<T>={value:@@U}\n",
+      "body": "return 0",
+      "code": "AI3100",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": []
+    },
+    {
+      "name": "unused-invalid-field",
+      "pre": "type G<T>={@@value:unit}\n",
+      "body": "return 0",
+      "code": "AI3110",
+      "length": 5,
+      "type": "int",
+      "expectedRelated": []
+    },
+    {
+      "name": "arity-missing",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let x:@@Box=Box<int>(0)\nreturn 0",
+      "code": "AI3107",
+      "length": 3,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Box<T>",
+          "shift": 5,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "arity-wrong",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let x:@@Box<int,bool>=Box<int>(0)\nreturn 0",
+      "code": "AI3107",
+      "length": 3,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Box<T>",
+          "shift": 5,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "non-generic-application",
+      "pre": "type P={value:int}\n",
+      "body": "let x:@@P<int>=P(0)\nreturn 0",
+      "code": "AI3107",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": []
+    },
+    {
+      "name": "unit-substitution",
+      "pre": "type Box<T>={@@value:T}\nfn notice()->unit\nensures true\n{}\n",
+      "body": "let x=Box<unit>(notice())\nreturn 0",
+      "code": "AI3110",
+      "length": 5,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "generic-instantiation",
+          "needle": "let x=Box<unit>",
+          "shift": 6,
+          "length": 3
+        },
+        {
+          "kind": "type-declaration",
+          "needle": "type Box<T>",
+          "shift": 5,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "reference-unit-substitution",
+      "pre": "type R<T>={value:@@&T}\n",
+      "body": "var r:R<unit>\nreturn 0",
+      "code": "AI3100",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "generic-instantiation",
+          "needle": "var r:R<unit>",
+          "shift": 6,
+          "length": 1
+        },
+        {
+          "kind": "type-declaration",
+          "needle": "type R<T>",
+          "shift": 5,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "duplicate-field",
+      "pre": "type G<T>={value:T,@@value:T}\n",
+      "body": "return 0",
+      "code": "AI3106",
+      "length": 5,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "previous-declaration",
+          "needle": "type G<T>={value:T",
+          "shift": 11,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "duplicate-template",
+      "pre": "type Box<T>={value:T}\ntype @@Box<U>={}\n",
+      "body": "return 0",
+      "code": "AI3106",
+      "length": 3,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "previous-declaration",
+          "needle": "type Box<T>",
+          "shift": 5,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "type-parameter-not-constructor",
+      "pre": "type G<T>={value:@@T<int>}\n",
+      "body": "return 0",
+      "code": "AI3107",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": []
+    },
+    {
+      "name": "nominal-argument-mismatch",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let a=Box<int>(0)\nlet b:Box<bool>=@@a\nreturn 0",
+      "code": "AI3107",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "destination-declaration",
+          "needle": "let b:Box<bool>",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "constructor-argument-type",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let b=Box<int>(@@true)\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "field-declaration",
+          "needle": "value:T",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "constructor-argument-count",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let b=@@Box<int>()\nreturn 0",
+      "code": "AI3107",
+      "length": 3,
+      "type": "int",
+      "expectedRelated": []
+    },
+    {
+      "name": "no-inference-context",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let b=@@Box(42)\nreturn 0",
+      "code": "AI3107",
+      "length": 3,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Box<T>",
+          "shift": 5,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "owner-use-after-move",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "let a=Box<owned buffer>(buffer(1))\nlet b=a\nreturn bufferLength(a.@@value)",
+      "code": "AI3102",
+      "length": 5,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "let a=Box",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "field-declaration",
+          "needle": "value:T",
+          "shift": 0,
+          "length": 5
+        },
+        {
+          "kind": "possible-move",
+          "needle": "let b=a",
+          "shift": 6,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "local-reference-escape",
+      "pre": "type Box<T>={value:T}\nfn bad()->Box<&int>\nensures true\n{let a=1\n@@return Box<&int>(&a)}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "type": "int",
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let a=1",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Box<&int>(&a)",
+          "shift": 10,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "cross-specialization-cases",
+      "pre": "type Tag<T>=A|B\n",
+      "body": "return Tag<int>.A@@==Tag<bool>.A",
+      "code": "AI3107",
+      "length": 2,
+      "type": "int",
+      "expectedRelated": []
+    },
+    {
+      "name": "bare-case-ambiguous",
+      "pre": "type Tag<T>=A|B\n",
+      "body": "let a:Tag<int>=A\nlet b:Tag<bool>=B\nlet c=@@A\nreturn 0",
+      "code": "AI3103",
+      "length": 1,
+      "type": "int",
+      "expectedRelated": []
+    }
+  ],
+  "memory": [
+    {
+      "name": "generic-partial-allocation-failure",
+      "pre": "type Pair<T>={a:T,b:T}\n",
+      "body": "let p=Pair<owned buffer>(buffer(1),buffer(2))\nreturn 0",
+      "type": "int",
+      "value": null,
+      "error": "System.OutOfMemoryException",
+      "failAt": 2,
+      "memory": {
+        "attempts": 2,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 1,
+        "liveBytes": 1,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "generic-field-replacement",
+      "pre": "type Box<T>={value:T}\n",
+      "body": "var b=Box<owned buffer>(buffer(1))\nb.value=buffer(42)\nreturn bufferLength(b.value)",
+      "type": "int",
+      "value": 42,
+      "error": null,
+      "failAt": 0,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "generic-scope-drop-order",
+      "pre": "type Pair<T>={a:T,b:T}\n",
+      "body": "let p=Pair<owned buffer>(buffer(1),buffer(2))\nreturn 42",
+      "type": "int",
+      "value": 42,
+      "error": null,
+      "failAt": 0,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          2
+        ]
+      }
+    }
+  ],
+  "capacity": [
+    {
+      "name": "parameters-129",
+      "pre": "type Wide<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16,T17,T18,T19,T20,T21,T22,T23,T24,T25,T26,T27,T28,T29,T30,T31,T32,T33,T34,T35,T36,T37,T38,T39,T40,T41,T42,T43,T44,T45,T46,T47,T48,T49,T50,T51,T52,T53,T54,T55,T56,T57,T58,T59,T60,T61,T62,T63,T64,T65,T66,T67,T68,T69,T70,T71,T72,T73,T74,T75,T76,T77,T78,T79,T80,T81,T82,T83,T84,T85,T86,T87,T88,T89,T90,T91,T92,T93,T94,T95,T96,T97,T98,T99,T100,T101,T102,T103,T104,T105,T106,T107,T108,T109,T110,T111,T112,T113,T114,T115,T116,T117,T118,T119,T120,T121,T122,T123,T124,T125,T126,T127,@@T128>={}\n",
+      "body": "return 0",
+      "length": 4,
+      "message": "parameter limit"
+    },
+    {
+      "name": "templates-129",
+      "pre": "type G0<T>={}\ntype G1<T>={}\ntype G2<T>={}\ntype G3<T>={}\ntype G4<T>={}\ntype G5<T>={}\ntype G6<T>={}\ntype G7<T>={}\ntype G8<T>={}\ntype G9<T>={}\ntype G10<T>={}\ntype G11<T>={}\ntype G12<T>={}\ntype G13<T>={}\ntype G14<T>={}\ntype G15<T>={}\ntype G16<T>={}\ntype G17<T>={}\ntype G18<T>={}\ntype G19<T>={}\ntype G20<T>={}\ntype G21<T>={}\ntype G22<T>={}\ntype G23<T>={}\ntype G24<T>={}\ntype G25<T>={}\ntype G26<T>={}\ntype G27<T>={}\ntype G28<T>={}\ntype G29<T>={}\ntype G30<T>={}\ntype G31<T>={}\ntype G32<T>={}\ntype G33<T>={}\ntype G34<T>={}\ntype G35<T>={}\ntype G36<T>={}\ntype G37<T>={}\ntype G38<T>={}\ntype G39<T>={}\ntype G40<T>={}\ntype G41<T>={}\ntype G42<T>={}\ntype G43<T>={}\ntype G44<T>={}\ntype G45<T>={}\ntype G46<T>={}\ntype G47<T>={}\ntype G48<T>={}\ntype G49<T>={}\ntype G50<T>={}\ntype G51<T>={}\ntype G52<T>={}\ntype G53<T>={}\ntype G54<T>={}\ntype G55<T>={}\ntype G56<T>={}\ntype G57<T>={}\ntype G58<T>={}\ntype G59<T>={}\ntype G60<T>={}\ntype G61<T>={}\ntype G62<T>={}\ntype G63<T>={}\ntype G64<T>={}\ntype G65<T>={}\ntype G66<T>={}\ntype G67<T>={}\ntype G68<T>={}\ntype G69<T>={}\ntype G70<T>={}\ntype G71<T>={}\ntype G72<T>={}\ntype G73<T>={}\ntype G74<T>={}\ntype G75<T>={}\ntype G76<T>={}\ntype G77<T>={}\ntype G78<T>={}\ntype G79<T>={}\ntype G80<T>={}\ntype G81<T>={}\ntype G82<T>={}\ntype G83<T>={}\ntype G84<T>={}\ntype G85<T>={}\ntype G86<T>={}\ntype G87<T>={}\ntype G88<T>={}\ntype G89<T>={}\ntype G90<T>={}\ntype G91<T>={}\ntype G92<T>={}\ntype G93<T>={}\ntype G94<T>={}\ntype G95<T>={}\ntype G96<T>={}\ntype G97<T>={}\ntype G98<T>={}\ntype G99<T>={}\ntype G100<T>={}\ntype G101<T>={}\ntype G102<T>={}\ntype G103<T>={}\ntype G104<T>={}\ntype G105<T>={}\ntype G106<T>={}\ntype G107<T>={}\ntype G108<T>={}\ntype G109<T>={}\ntype G110<T>={}\ntype G111<T>={}\ntype G112<T>={}\ntype G113<T>={}\ntype G114<T>={}\ntype G115<T>={}\ntype G116<T>={}\ntype G117<T>={}\ntype G118<T>={}\ntype G119<T>={}\ntype G120<T>={}\ntype G121<T>={}\ntype G122<T>={}\ntype G123<T>={}\ntype G124<T>={}\ntype G125<T>={}\ntype G126<T>={}\ntype G127<T>={}\ntype @@G128<T>={}\n",
+      "body": "return 0",
+      "length": 4,
+      "message": "generic declaration"
+    },
+    {
+      "name": "instances-129",
+      "pre": "type G<T>={}\n",
+      "body": "let g0=G<unit>()\nlet g1=G<int>()\nlet g2=G<bool>()\nlet g3=G<owned buffer>()\nlet g4=G<&int>()\nlet g5=G<&bool>()\nlet g6=G<&owned buffer>()\nlet g7=G<&&int>()\nlet g8=G<&&bool>()\nlet g9=G<&&owned buffer>()\nlet g10=G<&&&int>()\nlet g11=G<&&&bool>()\nlet g12=G<&&&owned buffer>()\nlet g13=G<&&&&int>()\nlet g14=G<&&&&bool>()\nlet g15=G<&&&&owned buffer>()\nlet g16=G<&&&&&int>()\nlet g17=G<&&&&&bool>()\nlet g18=G<&&&&&owned buffer>()\nlet g19=G<&&&&&&int>()\nlet g20=G<&&&&&&bool>()\nlet g21=G<&&&&&&owned buffer>()\nlet g22=G<&&&&&&&int>()\nlet g23=G<&&&&&&&bool>()\nlet g24=G<&&&&&&&owned buffer>()\nlet g25=G<&&&&&&&&int>()\nlet g26=G<&&&&&&&&bool>()\nlet g27=G<&&&&&&&&owned buffer>()\nlet g28=G<&&&&&&&&&int>()\nlet g29=G<&&&&&&&&&bool>()\nlet g30=G<&&&&&&&&&owned buffer>()\nlet g31=G<&&&&&&&&&&int>()\nlet g32=G<&&&&&&&&&&bool>()\nlet g33=G<&&&&&&&&&&owned buffer>()\nlet g34=G<&&&&&&&&&&&int>()\nlet g35=G<&&&&&&&&&&&bool>()\nlet g36=G<&&&&&&&&&&&owned buffer>()\nlet g37=G<&&&&&&&&&&&&int>()\nlet g38=G<&&&&&&&&&&&&bool>()\nlet g39=G<&&&&&&&&&&&&owned buffer>()\nlet g40=G<&&&&&&&&&&&&&int>()\nlet g41=G<&&&&&&&&&&&&&bool>()\nlet g42=G<&&&&&&&&&&&&&owned buffer>()\nlet g43=G<&&&&&&&&&&&&&&int>()\nlet g44=G<&&&&&&&&&&&&&&bool>()\nlet g45=G<&&&&&&&&&&&&&&owned buffer>()\nlet g46=G<&&&&&&&&&&&&&&&int>()\nlet g47=G<&&&&&&&&&&&&&&&bool>()\nlet g48=G<&&&&&&&&&&&&&&&owned buffer>()\nlet g49=G<&&&&&&&&&&&&&&&&int>()\nlet g50=G<&&&&&&&&&&&&&&&&bool>()\nlet g51=G<&&&&&&&&&&&&&&&&owned buffer>()\nlet g52=G<&&&&&&&&&&&&&&&&&int>()\nlet g53=G<&&&&&&&&&&&&&&&&&bool>()\nlet g54=G<&&&&&&&&&&&&&&&&&owned buffer>()\nlet g55=G<&&&&&&&&&&&&&&&&&&int>()\nlet g56=G<&&&&&&&&&&&&&&&&&&bool>()\nlet g57=G<&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g58=G<&&&&&&&&&&&&&&&&&&&int>()\nlet g59=G<&&&&&&&&&&&&&&&&&&&bool>()\nlet g60=G<&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g61=G<&&&&&&&&&&&&&&&&&&&&int>()\nlet g62=G<&&&&&&&&&&&&&&&&&&&&bool>()\nlet g63=G<&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g64=G<&&&&&&&&&&&&&&&&&&&&&int>()\nlet g65=G<&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g66=G<&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g67=G<&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g68=G<&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g69=G<&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g70=G<&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g71=G<&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g72=G<&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g73=G<&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g74=G<&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g75=G<&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g76=G<&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g77=G<&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g78=G<&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g79=G<&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g80=G<&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g81=G<&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g82=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g83=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g84=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g85=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g86=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g87=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g88=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g89=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g90=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g91=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g92=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g93=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g94=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g95=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g96=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g97=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g98=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g99=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g100=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g101=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g102=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g103=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g104=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g105=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g106=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g107=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g108=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g109=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g110=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g111=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g112=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g113=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g114=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g115=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g116=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g117=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g118=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g119=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g120=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g121=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g122=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g123=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g124=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet g125=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nlet g126=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&owned buffer>()\nlet g127=G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&int>()\nlet overflow=@@G<&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&bool>()\nreturn 0",
+      "length": 1,
+      "message": "instantiation limit"
+    },
+    {
+      "name": "expanding-instantiation-queue",
+      "pre": "type Grow<T>={next:@@&Grow<Grow<T>>}\n",
+      "body": "var n:Grow<int>\nreturn 0",
+      "length": 1,
+      "message": "instantiation limit"
+    },
+    {
+      "name": "expanding-display-name",
+      "pre": "type @@Pair<A,B>={}\ntype Grow<T>={next:&Grow<Pair<T,T>>}\n",
+      "body": "var n:Grow<int>\nreturn 0",
+      "length": 4,
+      "message": "display text limit"
+    },
+    {
+      "name": "nested-type-parser-limit",
+      "pre": "type G<T>={}\n",
+      "body": "var x:G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<@@G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<G<int>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nreturn 0",
+      "length": 1,
+      "message": "nesting limit"
+    }
+  ]
+}

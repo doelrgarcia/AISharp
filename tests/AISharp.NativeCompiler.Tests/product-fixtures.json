@@ -1,0 +1,750 @@
+{
+  "cases": [
+    {
+      "name": "copy",
+      "pre": "type Pair = { left:int, right:int }\n",
+      "body": "var p=Pair(20,22)\nvar q=p\nq.left=1\nreturn p.left+p.right",
+      "value": 42
+    },
+    {
+      "name": "nested",
+      "pre": "type Outer={inner:Pair,last:int}\ntype Pair = { left:int, right:int }\n",
+      "body": "var p=Outer(Pair(1,2),3)\np.inner.left=40\nreturn p.inner.left+p.inner.right",
+      "value": 42
+    },
+    {
+      "name": "owned-drop",
+      "pre": "type Pair = { left:owned buffer, right:owned buffer }\n",
+      "body": "let p=Pair(buffer(1),buffer(2))\nreturn 42",
+      "value": 42
+    },
+    {
+      "name": "partial-move",
+      "pre": "type Pair = { left:owned buffer, right:owned buffer }\n",
+      "body": "let p=Pair(buffer(20),buffer(22))\nlet first=p.left\nreturn bufferLength(first)+bufferLength(p.right)",
+      "value": 42
+    },
+    {
+      "name": "partial-init",
+      "pre": "type Pair = { left:owned buffer, right:owned buffer }\n",
+      "body": "var p:Pair\np.left=buffer(20)\np.right=buffer(22)\nreturn bufferLength(p.left)+bufferLength(p.right)",
+      "value": 42
+    },
+    {
+      "name": "reinit",
+      "pre": "type Pair = { left:owned buffer, right:owned buffer }\n",
+      "body": "var p=Pair(buffer(1),buffer(22))\nlet old=p.left\np.left=buffer(20)\nbufferLength(old)\nlet q=p\nreturn bufferLength(q.left)+bufferLength(q.right)",
+      "value": 42
+    },
+    {
+      "name": "temporary-extract",
+      "pre": "type Pair = { left:owned buffer, right:owned buffer }\n",
+      "body": "return bufferLength(Pair(buffer(20),buffer(42)).right)",
+      "value": 42
+    },
+    {
+      "name": "field-borrow",
+      "pre": "type Pair = { left:int, right:int }\n",
+      "body": "var p=Pair(20,22)\nlet a=&mut p.left\nlet b=&mut p.right\n*a+=1\n*b-=1\nreturn p.left+p.right",
+      "value": 42
+    },
+    {
+      "name": "function",
+      "pre": "type Pair = { left:int, right:int }\nfn flip(p:Pair)->Pair\nensures true\n{return Pair(p.right,p.left)}\n",
+      "body": "let p=flip(Pair(20,22))\nreturn p.left+p.right",
+      "value": 42
+    },
+    {
+      "name": "owned-function",
+      "pre": "type Pair = { left:owned buffer, right:owned buffer }\nfn pass(p:Pair)->Pair\nensures true\n{return p}\n",
+      "body": "let p=pass(Pair(buffer(20),buffer(22)))\nreturn bufferLength(p.left)+bufferLength(p.right)",
+      "value": 42
+    },
+    {
+      "name": "contextual-type",
+      "pre": "fn type()->int\nensures true\n{return 20}\ntype Pair = { left:int, right:int }\n",
+      "body": "let type=22\nreturn type+20",
+      "value": 42
+    },
+    {
+      "name": "guarded-schema",
+      "pre": "type Node={value:int,next:&Node}\n",
+      "body": "return 42",
+      "value": 42
+    },
+    {
+      "name": "borrowed-product-read",
+      "pre": "type Pair={left:int,right:int}\nfn read(p:&Pair)->int\nensures true\n{return (*p).left+(*p).right}\n",
+      "body": "let p=Pair(20,22)\nreturn read(&p)",
+      "value": 42
+    },
+    {
+      "name": "borrowed-field-return",
+      "pre": "type Pair={left:int,right:int}\nfn left(p:&Pair)->&int\nensures true\n{return &(*p).left}\n",
+      "body": "let p=Pair(42,2)\nreturn *left(&p)",
+      "value": 42
+    },
+    {
+      "name": "borrowed-product-mutate",
+      "pre": "type Pair={left:int,right:int}\nfn change(p:&mut Pair)->unit\nensures true\n{(*p).left+=2\nreturn}\n",
+      "body": "var p=Pair(40,0)\nchange(&mut p)\nreturn p.left",
+      "value": 42
+    },
+    {
+      "name": "reference-field-view",
+      "pre": "type View={p:&int}\n",
+      "body": "let x=42\nlet v=View(&x)\nreturn *v.p",
+      "value": 42
+    },
+    {
+      "name": "exclusive-field-view",
+      "pre": "type View={p:&mut int}\n",
+      "body": "var x=40\nlet v=View(&mut x)\n*v.p+=2\nreturn x",
+      "value": 42
+    },
+    {
+      "name": "reference-product-function",
+      "pre": "type View={p:&int}\nfn view(p:&int)->View\nensures true\n{return View(p)}\n",
+      "body": "let x=42\nlet v=view(&x)\nreturn *v.p",
+      "value": 42
+    },
+    {
+      "name": "nested-reference-field",
+      "pre": "type View={p:&int}\ntype Outer={view:View,tag:int}\n",
+      "body": "let x=42\nlet o=Outer(View(&x),0)\nreturn *o.view.p",
+      "value": 42
+    },
+    {
+      "name": "copy-temporary-extract",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "return Pair(20,22).left+22",
+      "value": 42
+    },
+    {
+      "name": "nested-copy-temporary-extract",
+      "pre": "type Pair={left:int,right:int}\ntype Outer={inner:Pair,last:int}\n",
+      "body": "return Outer(Pair(20,22),0).inner.left+22",
+      "value": 42
+    },
+    {
+      "name": "borrowed-field-rhs-last-use",
+      "pre": "type Pair={left:int,right:int}\nfn replace(p:&mut Pair)->int\nensures true\n{let q=&(*p).left\n(*p).left=*q+1\nreturn (*p).left}\n",
+      "body": "var p=Pair(41,0)\nreturn replace(&mut p)",
+      "value": 42
+    },
+    {
+      "name": "borrowed-field-compound-snapshot",
+      "pre": "type Pair={left:int,right:int}\nfn change(p:&mut Pair)->int\nensures true\n{(*p).left+=((*p).left=2)\nreturn (*p).left}\n",
+      "body": "var p=Pair(40,0)\nreturn change(&mut p)",
+      "value": 42
+    },
+    {
+      "name": "carrier-argument",
+      "pre": "type View={p:&int}\nfn read(v:View)->int\nensures true\n{return *v.p}\n",
+      "body": "let x=42\nreturn read(View(&x))",
+      "value": 42
+    },
+    {
+      "name": "borrowed-carrier-argument",
+      "pre": "type View={p:&int}\nfn read(v:&View)->int\nensures true\n{return *(*v).p}\n",
+      "body": "let x=42\nlet v=View(&x)\nreturn read(&v)",
+      "value": 42
+    },
+    {
+      "name": "nested-borrowed-carrier",
+      "pre": "type View={p:&int}\nfn read(v:&&View)->int\nensures true\n{return *(**v).p}\n",
+      "body": "let x=42\nlet v=View(&x)\nlet p=&v\nreturn read(&p)",
+      "value": 42
+    },
+    {
+      "name": "exclusive-carrier-argument",
+      "pre": "type View={p:&mut int}\nfn add(v:View)->unit\nensures true\n{*v.p+=2\nreturn}\n",
+      "body": "var x=40\nadd(View(&mut x))\nreturn x",
+      "value": 42
+    },
+    {
+      "name": "carrier-reference-result",
+      "pre": "type View={p:&int}\nfn get(v:View)->&int\nensures true\n{return v.p}\n",
+      "body": "let x=42\nreturn *get(View(&x))",
+      "value": 42
+    },
+    {
+      "name": "borrowed-carrier-result",
+      "pre": "type View={p:&int}\nfn get(v:&View)->&int\nensures true\n{return (*v).p}\n",
+      "body": "let x=42\nlet v=View(&x)\nreturn *get(&v)",
+      "value": 42
+    },
+    {
+      "name": "carrier-slot-effect",
+      "pre": "type View={p:&int}\nfn assign(v:&mut View,p:&int)->unit\nensures true\n{(*v).p=p\nreturn}\n",
+      "body": "let old=1\nlet x=42\nvar v=View(&old)\nassign(&mut v,&x)\nreturn *v.p",
+      "value": 42
+    },
+    {
+      "name": "carrier-result-effect-snapshot",
+      "pre": "type View={p:&int}\nfn redirect(v:&mut View,p:&int)->&int\nensures true\n{let old=(*v).p\n(*v).p=p\nreturn old}\n",
+      "body": "let a=20\nlet b=22\nvar v=View(&a)\nlet old=redirect(&mut v,&b)\nreturn *old+*v.p",
+      "value": 42
+    },
+    {
+      "name": "nested-carrier-argument",
+      "pre": "type View={p:&int}\ntype Outer={v:View,tag:int}\nfn read(o:Outer)->int\nensures true\n{return *o.v.p}\n",
+      "body": "let x=42\nreturn read(Outer(View(&x),0))",
+      "value": 42
+    },
+    {
+      "name": "shared-exclusive-carrier-read",
+      "pre": "type View={p:&mut int}\nfn read(v:&View)->int\nensures true\n{return *(*v).p}\n",
+      "body": "var x=42\nlet v=View(&mut x)\nreturn read(&v)",
+      "value": 42
+    },
+    {
+      "name": "carrier-nested-slot-effect",
+      "pre": "type View={p:&int}\ntype Outer={v:View,tag:int}\nfn assign(o:&mut Outer,p:&int)->unit\nensures true\n{(*o).v.p=p\nreturn}\n",
+      "body": "let a=1\nlet b=42\nvar o=Outer(View(&a),0)\nassign(&mut o,&b)\nreturn *o.v.p",
+      "value": 42
+    },
+    {
+      "name": "constructor-evaluation-order",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "var n=20\nlet p=Pair(n++,n++)\nreturn p.left+p.right+1",
+      "value": 42
+    },
+    {
+      "name": "field-receiver-single-evaluation",
+      "pre": "type Pair={left:int,right:int}\nfn select(p:&mut Pair,count:&mut int)->&mut Pair\nensures true\n{*count+=1\nreturn p}\n",
+      "body": "var p=Pair(40,0)\nvar count=0\n(*select(&mut p,&mut count)).left+=1\nreturn p.left+count",
+      "value": 42
+    },
+    {
+      "name": "nested-field-disjoint",
+      "pre": "type Pair={left:int,right:int}\ntype Outer={a:Pair,b:Pair}\n",
+      "body": "var o=Outer(Pair(20,0),Pair(22,0))\nlet a=&mut o.a.left\nlet b=&mut o.b.left\n*a+=1\n*b-=1\nreturn o.a.left+o.b.left",
+      "value": 42
+    },
+    {
+      "name": "partial-branch-initialization",
+      "pre": "type Pair={left:int,right:int}\nfn choose(flag:bool)->int\nensures true\n{var p:Pair\nif(flag){p.left=20}else{p.left=20}\np.right=22\nreturn p.left+p.right}\n",
+      "body": "return choose(true)",
+      "value": 42
+    },
+    {
+      "name": "loop-field-move-reinitialize",
+      "pre": "type Pair={left:owned buffer,right:owned buffer}\n",
+      "body": "var p=Pair(buffer(20),buffer(22))\nvar n=0\nwhile(n<3){let old=p.left\np.left=buffer(bufferLength(old))\nn++}\nreturn bufferLength(p.left)+bufferLength(p.right)",
+      "value": 42
+    },
+    {
+      "name": "borrowed-buffer-field",
+      "pre": "type Box={b:owned buffer}\nfn touch(p:&mut Box)->int\nensures true\n{bufferWrite(&mut (*p).b,0,42)\nreturn bufferPeek(&(*p).b,0)}\n",
+      "body": "var b=Box(buffer(1))\nreturn touch(&mut b)",
+      "value": 42
+    },
+    {
+      "name": "borrowed-owned-field-replacement",
+      "pre": "type Box={b:owned buffer}\nfn replace(p:&mut Box)->unit\nensures true\n{(*p).b=buffer(42)\nreturn}\n",
+      "body": "var b=Box(buffer(1))\nreplace(&mut b)\nreturn bufferLength(b.b)",
+      "value": 42
+    },
+    {
+      "name": "carrier-whole-replacement",
+      "pre": "type View={p:&int}\nfn replace(p:&mut View,v:View)->unit\nensures true\n{*p=v\nreturn}\n",
+      "body": "let a=1\nlet b=42\nvar v=View(&a)\nreplace(&mut v,View(&b))\nreturn *v.p",
+      "value": 42
+    },
+    {
+      "name": "carrier-reference-slot-result",
+      "pre": "type View={p:&int}\nfn slot(v:&View)->&&int\nensures true\n{return &(*v).p}\n",
+      "body": "let x=42\nlet v=View(&x)\nreturn **slot(&v)",
+      "value": 42
+    },
+    {
+      "name": "byvalue-external-reference-slot",
+      "pre": "type Slot={p:&mut &int}\nfn assign(s:Slot,v:&int)->unit\nensures true\n{*s.p=v\nreturn}\n",
+      "body": "let a=1\nlet b=42\nvar p=&a\nassign(Slot(&mut p),&b)\nreturn *p",
+      "value": 42
+    },
+    {
+      "name": "exclusive-carrier-roundtrip",
+      "pre": "type View={p:&mut int}\nfn pass(v:View)->View\nensures true\n{return v}\n",
+      "body": "var x=40\nlet v=pass(View(&mut x))\n*v.p+=2\nreturn x",
+      "value": 42
+    },
+    {
+      "name": "borrowed-product-disjoint-loans",
+      "pre": "type Pair={left:int,right:int}\nfn add(p:&mut Pair)->int\nensures true\n{let a=&mut (*p).left\nlet b=&mut (*p).right\n*a+=1\n*b-=1\nreturn (*p).left+(*p).right}\n",
+      "body": "var p=Pair(20,22)\nreturn add(&mut p)",
+      "value": 42
+    },
+    {
+      "name": "returned-disjoint-components",
+      "pre": "type Pair={left:int,right:int}\ntype Views={a:&mut int,b:&mut int}\nfn split(p:&mut Pair)->Views\nensures true\n{return Views(&mut (*p).left,&mut (*p).right)}\n",
+      "body": "var p=Pair(20,22)\nlet v=split(&mut p)\n*v.a+=1\n*v.b-=1\nreturn p.left+p.right",
+      "value": 42
+    },
+    {
+      "name": "escaped-product-names",
+      "pre": "type @int={@class:int,right:int}\n",
+      "body": "let p=@int(20,22)\nreturn p.@class+p.right",
+      "value": 42
+    },
+    {
+      "name": "field-reference-overwrite-last-use",
+      "pre": "type View={p:&int}\n",
+      "body": "let x=42\nvar v:View\n{let a=1\nv=View(&a)\nlet old=*v.p\nv.p=&x}\nreturn *v.p",
+      "value": 42
+    },
+    {
+      "name": "shared-container-return-live-shared-child",
+      "pre": "type View={p:&mut int}\nfn share(slot:&mut &int,v:&mut View)->&View\nensures true\n{*slot=&*(*v).p\nreturn &*v}\n",
+      "body": "var x=20\nlet filler=0\nvar slot=&filler\nvar v=View(&mut x)\nlet p=share(&mut slot,&mut v)\nreturn *slot+*(*p).p+2",
+      "value": 42
+    }
+  ],
+  "negative": [
+    {
+      "name": "partial-whole-use",
+      "pre": "type Pair={left:owned buffer,right:owned buffer}\nfn take(p:Pair)->int\nensures true\n{return 0}\n",
+      "body": "let p=Pair(buffer(1),buffer(2))\nlet b=p.left\nreturn take(@@p)",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "let p",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "possible-move",
+          "needle": "p.left",
+          "shift": 2,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "moved-field",
+      "pre": "type Pair={left:owned buffer,right:owned buffer}\n",
+      "body": "let p=Pair(buffer(1),buffer(2))\nlet b=p.left\nreturn bufferLength(p.@@left)",
+      "code": "AI3102",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "let p",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "field-declaration",
+          "needle": "left:owned",
+          "shift": 0,
+          "length": 4
+        },
+        {
+          "kind": "possible-move",
+          "needle": "p.left",
+          "shift": 2,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "uninitialized-field",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "var p:Pair\np.left=1\nreturn p.@@right",
+      "code": "AI3102",
+      "length": 5,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "var p",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "field-declaration",
+          "needle": "right:int",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "borrowed-local-field-return",
+      "pre": "type Pair={left:int,right:int}\nfn bad(p:Pair)->&int\nensures true\n{@@return &p.left}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&p.left",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "whole-write-field-loan",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "var p=Pair(1,2)\nlet a=&p.left\np@@=Pair(3,4)\nreturn *a",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var p",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&p.left",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "immutable-field",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "let p=Pair(1,2)\n@@p.left=3\nreturn 0",
+      "code": "AI3105",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let p",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "storage-use",
+          "needle": "p.left=3",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "field-reference-escape",
+      "pre": "type View={p:&int}\n",
+      "body": "var v:View\n{let x=1\nv=View(&x)@@}\nreturn *v.p",
+      "code": "AI3116",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&x",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "product-reference-result-local",
+      "pre": "type View={p:&int}\nfn bad()->View\nensures true\n{let x=1\n@@return View(&x)}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&x",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "duplicate-field",
+      "pre": "type Pair={left:int,@@left:int}\n",
+      "body": "return 0",
+      "code": "AI3106",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "previous-declaration",
+          "needle": "left:int",
+          "shift": 0,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "duplicate-type",
+      "pre": "type Pair={left:int}\ntype @@Pair={right:int}\n",
+      "body": "return 0",
+      "code": "AI3106",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "previous-declaration",
+          "needle": "type Pair",
+          "shift": 5,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "unknown-field",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "let p=Pair(1,2)\nreturn p.@@missing",
+      "code": "AI3103",
+      "length": 7,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Pair",
+          "shift": 5,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "unknown-field-type",
+      "pre": "type Pair={left:@@Missing}\n",
+      "body": "return 0",
+      "code": "AI3100",
+      "length": 7,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "unit-field",
+      "pre": "type Pair={@@left:unit}\n",
+      "body": "return 0",
+      "code": "AI3110",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "byvalue-cycle",
+      "pre": "type @@Pair={left:Pair}\n",
+      "body": "return 0",
+      "code": "AI3118",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "constructor-arity",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "let p=@@Pair(1)\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "constructor-type",
+      "pre": "type Pair={left:int,right:int}\n",
+      "body": "let p=Pair(@@true,2)\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "field-declaration",
+          "needle": "left:int",
+          "shift": 0,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "nominal-type-mismatch",
+      "pre": "type Pair={left:int,right:int}\ntype Other={left:int,right:int}\n",
+      "body": "let p:Pair=@@Other(1,2)\nreturn 0",
+      "code": "AI3107",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "destination-declaration",
+          "needle": "let p:Pair",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "owned-borrowed-field-move",
+      "pre": "type Pair={left:owned buffer,right:owned buffer}\nfn bad(p:&Pair)->int\nensures true\n{return bufferLength((*p).@@left)}\n",
+      "body": "return 0",
+      "code": "AI3115",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p)",
+          "shift": 2,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "shared-exclusive-carrier-write",
+      "pre": "type View={p:&mut int}\nfn bad(v:&View)->unit\nensures true\n{*(@@*v).p=2\nreturn}\n",
+      "body": "return 0",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "bad(v:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*v)",
+          "shift": 2,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "carrier-slot-local-escape",
+      "pre": "type View={p:&int}\nfn bad(v:&mut View)->unit\nensures true\n{let x=1\n(*v).p=&x\n@@return}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&x",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "carrier-call-lifetime-escape",
+      "pre": "type View={p:&int}\nfn get(v:View)->&int\nensures true\n{return v.p}\n",
+      "body": "var p:&int\n{let x=1\np=get(View(&x))@@}\nreturn *p",
+      "code": "AI3116",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "get(View(&x))",
+          "shift": 0,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "borrowed-product-overlapping-loans",
+      "pre": "type Pair={left:int,right:int}\nfn bad(p:&mut Pair)->int\nensures true\n{let a=&mut (*p).left\nlet b=@@&mut (*p).left\n*a+=1\nreturn *b}\n",
+      "body": "return 0",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&mut (*p).left",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "returned-overlapping-components",
+      "pre": "type Views={a:&mut int,b:&mut int}\nfn bad(p:&mut int)->Views\nensures true\n{return Views(&mut *p,@@&mut *p)}\n",
+      "body": "return 0",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&mut *p",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "exclusive-container-return-live-child",
+      "pre": "type View={p:&mut int}\nfn bad(slot:&mut &int,v:&mut View)->&mut View\nensures true\n{*slot=&*(*v).p\n@@return v}\n",
+      "body": "return 0",
+      "code": "AI3114",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "v:&mut View",
+          "shift": 0,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&*(*v).p",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,348 @@
+{
+ "cases": [
+  {
+   "name": "literal-integer-form",
+   "body": "return (int)1f",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return (int)1f;"
+  },
+  {
+   "name": "literal-fraction",
+   "body": "return (int)1.5f",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return (int)1.5f;"
+  },
+  {
+   "name": "literal-exponent",
+   "body": "return (int)1e3f",
+   "type": "int",
+   "pre": "",
+   "value": 1000,
+   "cs": "return (int)1e3f;"
+  },
+  {
+   "name": "literal-leading-dot",
+   "body": "return (int).5f",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "return (int).5f;"
+  },
+  {
+   "name": "literal-separator",
+   "body": "return (int)1_000.5f",
+   "type": "int",
+   "pre": "",
+   "value": 1000,
+   "cs": "return (int)1_000.5f;"
+  },
+  {
+   "name": "literal-uppercase-suffix",
+   "body": "return (int)1.5F",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return (int)1.5F;"
+  },
+  {
+   "name": "add",
+   "body": "return (int)(1.5f+2.5f)",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "return (int)(1.5f+2.5f);"
+  },
+  {
+   "name": "subtract",
+   "body": "return (int)(5.5f-2.5f)",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "return (int)(5.5f-2.5f);"
+  },
+  {
+   "name": "multiply",
+   "body": "return (int)(3.5f*2f)",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "cs": "return (int)(3.5f*2f);"
+  },
+  {
+   "name": "divide",
+   "body": "return (int)(7f/2f)",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "return (int)(7f/2f);"
+  },
+  {
+   "name": "exact-single-arithmetic",
+   "body": "if(0.1f+0.2f==0.3f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return 0.1f+0.2f==0.3f?1:0;"
+  },
+  {
+   "name": "unary-minus",
+   "body": "return (int)(-3.5f)",
+   "type": "int",
+   "pre": "",
+   "value": -3,
+   "cs": "return (int)(-3.5f);"
+  },
+  {
+   "name": "promote-int",
+   "body": "var i=2\nreturn (int)(1.5f+i)",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "int i=2; return (int)(1.5f+i);"
+  },
+  {
+   "name": "promote-long",
+   "body": "var l=2L\nreturn (int)(1.5f+l)",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "long l=2L; return (int)(1.5f+l);"
+  },
+  {
+   "name": "promote-uint",
+   "body": "var u=2u\nreturn (int)(1.5f+u)",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "uint u=2u; return (int)(1.5f+u);"
+  },
+  {
+   "name": "promote-ulong",
+   "body": "var u=2ul\nreturn (int)(1.5f+u)",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "ulong u=2ul; return (int)(1.5f+u);"
+  },
+  {
+   "name": "int-to-float-rounding",
+   "body": "var i:int=16777217\nlet f:float=i\nif(f==16777216f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int i=16777217; float f=i; return f==16777216f?1:0;"
+  },
+  {
+   "name": "long-to-float-rounding",
+   "body": "var l:long=16777217L\nlet f:float=l\nif(f==16777216f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "long l=16777217L; float f=l; return f==16777216f?1:0;"
+  },
+  {
+   "name": "comparisons",
+   "body": "if(1.5f<2f && 2f>=2f && 1.5f!=3f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return 1.5f<2f&&2f>=2f&&1.5f!=3f?1:0;"
+  },
+  {
+   "name": "division-by-zero-infinity",
+   "body": "let f:float=1f/0f\nif(f>1f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "float f=1f/0f; return f>1f?1:0;"
+  },
+  {
+   "name": "nan-not-equal",
+   "body": "let n:float=0f/0f\nif(n!=n){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "float n=0f/0f; return n!=n?1:0;"
+  },
+  {
+   "name": "nan-comparison-false",
+   "body": "let n:float=0f/0f\nif(n<1f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "float n=0f/0f; return n<1f?1:0;"
+  },
+  {
+   "name": "cast-unchecked-truncate",
+   "body": "let f:float=2.9f\nreturn unchecked((int)f)",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "float f=2.9f; return unchecked((int)f);"
+  },
+  {
+   "name": "cast-checked-truncate",
+   "body": "let f:float=2.9f\nreturn checked((int)f)",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "float f=2.9f; return checked((int)f);"
+  },
+  {
+   "name": "cast-unchecked-saturate",
+   "body": "let f:float=1e10f\nreturn unchecked((int)f)",
+   "type": "int",
+   "pre": "",
+   "value": 2147483647,
+   "cs": "float f=1e10f; return unchecked((int)f);"
+  },
+  {
+   "name": "cast-unchecked-nan",
+   "body": "let f:float=0f/0f\nreturn unchecked((int)f)",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "float f=0f/0f; return unchecked((int)f);"
+  },
+  {
+   "name": "cast-unchecked-byte-wrap",
+   "body": "let f:float=300f\nreturn (int)unchecked((byte)f)",
+   "type": "int",
+   "pre": "",
+   "value": 44,
+   "cs": "float f=300f; return unchecked((byte)f);"
+  },
+  {
+   "name": "cast-unchecked-byte-negative",
+   "body": "let f:float=-1f\nreturn (int)unchecked((byte)f)",
+   "type": "int",
+   "pre": "",
+   "value": 255,
+   "cs": "float f=-1f; return unchecked((byte)f);"
+  },
+  {
+   "name": "constant-folding",
+   "body": "const f:float=1.5f+2.5f\nreturn (int)f",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "const float f=1.5f+2.5f; return (int)f;"
+  },
+  {
+   "name": "field-storage",
+   "body": "let h=Holder(1.5f)\nreturn (int)h.value",
+   "type": "int",
+   "pre": "type Holder={value:float}\n",
+   "extra": "class Holder{public float value;}",
+   "value": 1,
+   "cs": "return (int)new Holder{value=1.5f}.value;"
+  },
+  {
+   "name": "generic-storage",
+   "body": "let b=Box<float>(2.5f)\nreturn (int)b.value",
+   "type": "int",
+   "pre": "type Box<T>={value:T}\n",
+   "extra": "class Box<T>{public T value;}",
+   "value": 2,
+   "cs": "return (int)new Box<float>{value=2.5f}.value;"
+  },
+  {
+   "name": "reference-read",
+   "body": "var f:float=3.5f\nlet p=&f\nreturn (int)*p",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "float f=3.5f; ref float p=ref f; return (int)p;"
+  },
+  {
+   "name": "function-abi",
+   "body": "return (int)idf(2.5f)",
+   "type": "int",
+   "pre": "fn idf(v:float)->float ensures true {return v}\n",
+   "value": 2,
+   "cs": "return (int)Idf(2.5f); float Idf(float v)=>v;"
+  },
+  {
+   "name": "float-equals-int",
+   "body": "if(1.5f==1){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "return 1.5f==1?1:0;"
+  },
+  {
+   "name": "checked-out-of-range-runtime",
+   "body": "let f:float=1e10f\nreturn checked((int)f)",
+   "type": "int",
+   "pre": "",
+   "error": "System.OverflowException",
+   "cs": "float f=1e10f; return checked((int)f);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "unsuffixed-double-literal",
+   "body": "let f:float=@@1.5\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "double-suffix",
+   "body": "let f:float=@@1.5d\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "decimal-suffix",
+   "body": "let f:float=@@1.5m\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "invalid-suffix",
+   "body": "let f:float=@@1.5fs\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "float-plus-bool",
+   "body": "return 1.5f@@+true",
+   "code": "AI3107"
+  },
+  {
+   "name": "float-condition",
+   "body": "if(@@1.5f){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "implicit-float-to-int",
+   "body": "let f:float=1.5f\nlet i:int=@@f\nreturn i",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-float-to-byte",
+   "body": "let f:float=1.5f\nlet b:byte=@@f\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (int)(@@float)true",
+   "code": "AI3107"
+  },
+  {
+   "name": "shift-float",
+   "body": "let f:float=1.5f\nreturn (int)(f@@<<1)",
+   "code": "AI3107"
+  },
+  {
+   "name": "bitwise-not-float",
+   "body": "let f:float=1.5f\nreturn (int)(@@~f)",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-checked-overflow",
+   "body": "const c:int=checked((@@int)1e10f)\nreturn 0",
+   "code": "AI3111"
+  }
+ ]
+}

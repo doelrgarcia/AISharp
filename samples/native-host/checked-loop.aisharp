@@ -1,0 +1,18 @@
+module native.example
+intent "Compute using the independent native AI# compiler"
+
+fn sumTo(limit: int) -> int
+ensures true
+{
+    var total = 0
+    for (var i = 1; i <= limit; i++) {
+        total += i
+    }
+    return total
+}
+
+fn main() -> int
+ensures true
+{
+    return sumTo(5)
+}

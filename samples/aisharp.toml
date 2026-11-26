@@ -1,0 +1,13 @@
+# aisharp.toml — AI# package manifest for the orders-service sample.
+[package]
+name = "orders-service"
+version = "0.1.0"
+target = "net9.0"
+sources = ["*.aisharp"]
+
+[policy]
+default = "OrdersDataPolicy"
+
+[build]
+output = "artifacts"
+generate_csharp = true

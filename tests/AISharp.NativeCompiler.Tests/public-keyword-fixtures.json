@@ -1,0 +1,72 @@
+{
+ "cases": [
+  {
+   "name": "public-read",
+   "body": "let p=P(3)\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "cs": "var p=new P(3); return p.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class Q{public int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={public a:int}\n"
+  },
+  {
+   "name": "public-write",
+   "body": "var p=P(1)\np.a=7\nreturn p.a",
+   "value": 7,
+   "type": "int",
+   "cs": "var p=new P(1); p.a=7; return p.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class Q{public int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={public a:int}\n"
+  },
+  {
+   "name": "public-with",
+   "body": "let p=P(1)\nlet q=p with {a=5}\nreturn q.a",
+   "value": 5,
+   "type": "int",
+   "cs": "var p=new P(1); var q=new P(5); return q.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class Q{public int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={public a:int}\n"
+  },
+  {
+   "name": "public-initializer",
+   "body": "let p=P { a=4 }\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "cs": "var p=new P(4); return p.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class Q{public int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={public a:int}\n"
+  },
+  {
+   "name": "public-mixed-readonly",
+   "body": "let p=Q(2,3)\nreturn p.a+p.b",
+   "value": 5,
+   "type": "int",
+   "cs": "var q=new Q(2,3); return q.a+q.b;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class Q{public int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type Q={public readonly a:int, public b:int}\n"
+  },
+  {
+   "name": "public-function-arg",
+   "body": "return sum(P(6))",
+   "value": 6,
+   "type": "int",
+   "cs": "int Sum(P p)=>p.a; return Sum(new P(6));",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class Q{public int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={public a:int}\nfn sum(p:P)->int\nensures true\n{return p.a}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "public-duplicate",
+   "body": "let p=P(1)\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={public public @@a:int}\n"
+  },
+  {
+   "name": "public-repeat-modifiers",
+   "body": "let p=P(1)\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={public readonly public @@a:int}\n"
+  }
+ ]
+}

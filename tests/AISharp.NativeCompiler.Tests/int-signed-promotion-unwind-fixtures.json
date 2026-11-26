@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {"name":"wide-destination-does-not-promote-int-expression","pre":"","body":"let a=buffer(3)\nvar left:int=2147483647\nvar right:int=1\nlet wide:long=left[[origin]]+right\nreturn (int)wide","outcome":"faulted","fault":"System.OverflowException","origin":"origin","owners":1,"allocationCount":1},
+    {"name":"promoted-add-overflow-cleanup","pre":"","body":"let a=buffer(3)\nvar left:long=9223372036854775807L\nvar right:int=1\nreturn (int)(left[[origin]]+right)","outcome":"faulted","fault":"System.OverflowException","origin":"origin","owners":1,"allocationCount":1,"bom":true,"crlf":true,"outputFault":true},
+    {"name":"promoted-multiply-overflow-propagates","pre":"fn scale(a:long,b:int)->long ensures true {let inner=buffer(1)\nreturn a[[origin]]*b}\n","body":"let outer=buffer(2)\nreturn (int)[[site]]scale(9223372036854775807L,2)","outcome":"faulted","fault":"System.OverflowException","origin":"origin","sites":["site"],"owners":2,"allocationCount":2,"dropOrder":[2,1]},
+    {"name":"promoted-remainder-zero-cleanup","pre":"","body":"let a=buffer(3)\nvar left:long=42L\nvar right:int=0\nreturn unchecked((int)(left[[origin]]%right))","outcome":"faulted","fault":"System.DivideByZeroException","origin":"origin","owners":1,"allocationCount":1},
+    {"name":"wrapped-promoted-arithmetic-returns","pre":"","body":"let a=buffer(3)\nvar left:long=9223372036854775807L\nvar right:int=1\nreturn unchecked((int)(left+right))","outcome":"returned","value":0,"owners":1,"allocationCount":1},
+    {"name":"wide-shift-with-negative-count-returns","pre":"","body":"let a=buffer(3)\nvar left:long=-1L\nvar count:int=-1\nreturn (int)(left>>>count)","outcome":"returned","value":1,"owners":1,"allocationCount":1}
+  ],
+  "negative": [
+    {"name":"reject-i64-shift-count","pre":"","body":"var left:long=42L\nvar count:long=1L\nreturn (int)(left@@<<count)","length":2,"code":"AI3107"},
+    {"name":"reject-checked-i64-constant-overflow","pre":"","body":"return (int)(9223372036854775807L@@*2)","length":1,"code":"AI3111"},
+    {"name":"reject-wide-compound-narrowing","pre":"","body":"var x:i32=42\nvar y:i64=1L\nx@@+=y\nreturn x","length":2,"code":"AI3107"}
+  ]
+}

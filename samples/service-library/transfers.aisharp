@@ -1,0 +1,71 @@
+module banking.transfers
+
+intent "Compute deterministic transfers and surface transfer outcomes via unions"
+
+type TransferStatus = Approved | Denied | Pending
+
+type Transfer = {
+    fromId: int,
+    toId: int,
+    amount: int,
+    status: TransferStatus
+}
+
+type TransferReceipt = {
+    transferId: int,
+    fromBalanceAfter: int,
+    toBalanceAfter: int,
+    status: TransferStatus
+}
+
+fn proposeTransfer(fromId: int, toId: int, amount: int) -> Transfer
+    requires amount > 0
+    requires fromId != toId
+    ensures true
+{
+    let initial: TransferStatus = Pending
+    return Transfer(fromId, toId, amount, initial)
+}
+
+fn approveTransfer(transfer: Transfer) -> Transfer
+    requires transfer.amount > 0
+    ensures true
+{
+    let approved: TransferStatus = Approved
+    return Transfer(transfer.fromId, transfer.toId, transfer.amount, approved)
+}
+
+fn denyTransfer(transfer: Transfer) -> Transfer
+    ensures true
+{
+    let denied: TransferStatus = Denied
+    return Transfer(transfer.fromId, transfer.toId, transfer.amount, denied)
+}
+
+fn settleTransfer(transferId: int, fromBalance: int, toBalance: int, amount: int) -> TransferReceipt
+    requires transferId > 0
+    requires amount > 0
+    requires fromBalance >= amount
+    ensures true
+{
+    let newFromBalance = fromBalance - amount
+    let newToBalance = toBalance + amount
+    let settled: TransferStatus = Approved
+    return TransferReceipt(transferId, newFromBalance, newToBalance, settled)
+}
+
+fn rejectInsufficient(transferId: int, fromBalance: int, toBalance: int) -> TransferReceipt
+    requires transferId > 0
+    ensures true
+{
+    let rejected: TransferStatus = Denied
+    return TransferReceipt(transferId, fromBalance, toBalance, rejected)
+}
+
+test "proposed transfer starts pending" {
+    expect proposeTransfer(1, 2, 10).status == Pending
+}
+
+test "approveTransfer sets status to Approved" {
+    expect approveTransfer(proposeTransfer(1, 2, 10)).status == Approved
+}

@@ -1,0 +1,67 @@
+{
+ "cases": [
+  {
+   "name": "borrow-live-field",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let n=bufferSize(&p.a)\n return n",
+   "call": "&p.a",
+   "field": "a",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "borrow-sibling-after-partial-move",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let x=p.a\n let n=bufferSize(&p.b)\n return n",
+   "call": "&p.b",
+   "field": "b",
+   "value": 3,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "borrow-field-after-valid-initialization",
+   "types": "type T={ a:owned buffer, b:int, c:owned buffer }\n",
+   "body": " var p:T\n p.a=buffer(2)\n let n=bufferSize(&p.a)\n return n",
+   "call": "&p.a",
+   "field": "a",
+   "value": 2,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "borrow-live-field-in-condition",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n var n:int=0\n if(bufferSize(&p.a)>0){n=bufferSize(&p.b)}\n return n",
+   "call": "&p.a",
+   "field": "a",
+   "value": 3,
+   "allocations": 2,
+   "releases": 2
+  }
+ ],
+ "negative": [
+  {
+   "name": "borrow-moved-field-in-call",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let x=p.a\n let n=bufferSize(&p.a)\n return n",
+   "call": "&p.a",
+   "field": "a"
+  },
+  {
+   "name": "borrow-uninitialized-field-in-call",
+   "types": "type T={ a:owned buffer, b:int, c:owned buffer }\n",
+   "body": " var p:T\n p.b=1\n let n=bufferSize(&p.a)\n return n",
+   "call": "&p.a",
+   "field": "a"
+  },
+  {
+   "name": "borrow-moved-field-in-condition",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let x=p.a\n if(bufferSize(&p.a)>0){return 1}\n return 0",
+   "call": "&p.a",
+   "field": "a"
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+# aisharp.toml — AI# package manifest for the service-library sample.
+# This sample exercises records, unions, functions, contracts, effects,
+# model-call schema, and tests across multiple AI# source files.
+
+[package]
+name = "service-library"
+version = "0.1.0"
+target = "net9.0"
+sources = ["*.aisharp"]
+
+[policy]
+default = "AccountPolicy"
+
+[build]
+output = "artifacts"
+generate_csharp = true

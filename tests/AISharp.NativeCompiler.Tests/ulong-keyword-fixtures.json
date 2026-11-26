@@ -1,0 +1,484 @@
+{
+ "cases": [
+  {
+   "name": "spec-minimum",
+   "body": "let v:ulong=0ul\nreturn (int)v",
+   "type": "int",
+   "value": 0,
+   "cs": "ulong v=0ul; return (int)v;"
+  },
+  {
+   "name": "spec-maximum",
+   "body": "let v:ulong=18446744073709551615ul\nif(v==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong v=18446744073709551615ul; return v==18446744073709551615ul?1:0;"
+  },
+  {
+   "name": "literal-one",
+   "body": "return (int)1ul",
+   "type": "int",
+   "value": 1,
+   "cs": "return (int)1ul;"
+  },
+  {
+   "name": "literal-upper",
+   "body": "return (int)2UL",
+   "type": "int",
+   "value": 2,
+   "cs": "return (int)2UL;"
+  },
+  {
+   "name": "literal-lu-order",
+   "body": "return (int)3lu",
+   "type": "int",
+   "value": 3,
+   "cs": "return (int)3lu;"
+  },
+  {
+   "name": "literal-hex",
+   "body": "if(0xFFFFFFFFFFFFFFFFul==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "return 0xFFFFFFFFFFFFFFFFul==ulong.MaxValue?1:0;"
+  },
+  {
+   "name": "literal-u-suffix-falls-ulong",
+   "body": "if(4294967296u==4294967296ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "return 4294967296u==4294967296ul?1:0;"
+  },
+  {
+   "name": "escaped-nominal",
+   "body": "let v:@ulong=@ulong(9)\nreturn v.value",
+   "type": "int",
+   "pre": "type @ulong={value:int}\n",
+   "value": 9
+  },
+  {
+   "name": "implicit-uint",
+   "body": "var u:uint=4294967295u\nlet l:ulong=u\nif(l==4294967295ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "uint u=4294967295u; ulong l=u; return l==4294967295ul?1:0;"
+  },
+  {
+   "name": "implicit-byte",
+   "body": "var b:byte=255\nlet l:ulong=b\nif(l==255ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "byte b=255; ulong l=b; return l==255ul?1:0;"
+  },
+  {
+   "name": "implicit-char",
+   "body": "var c:char='A'\nlet l:ulong=c\nif(l==65ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "char c='A'; ulong l=c; return l==65ul?1:0;"
+  },
+  {
+   "name": "implicit-constant",
+   "body": "let l:ulong=42\nreturn (int)l",
+   "type": "int",
+   "value": 42,
+   "cs": "ulong l=42; return (int)l;"
+  },
+  {
+   "name": "promotion-uint",
+   "body": "var a:ulong=1ul\nvar b:uint=2u\nif(a+b==3ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=1ul; uint b=2u; return a+b==3ul?1:0;"
+  },
+  {
+   "name": "promotion-byte",
+   "body": "var a:ulong=1ul\nvar b:byte=255\nif(a+b==256ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=1ul; byte b=255; return a+b==256ul?1:0;"
+  },
+  {
+   "name": "promotion-char",
+   "body": "var a:ulong=1ul\nvar c:char='A'\nif(a+c==66ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=1ul; char c='A'; return a+c==66ul?1:0;"
+  },
+  {
+   "name": "promotion-constant",
+   "body": "var a:ulong=1ul\nif(a+2==3ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=1ul; return a+2==3ul?1:0;"
+  },
+  {
+   "name": "shift-63",
+   "body": "if((1ul<<63)==9223372036854775808ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "return (1ul<<63)==9223372036854775808ul?1:0;"
+  },
+  {
+   "name": "shift-right",
+   "body": "if((18446744073709551615ul>>1)==9223372036854775807ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "return (ulong.MaxValue>>1)==9223372036854775807ul?1:0;"
+  },
+  {
+   "name": "complement",
+   "body": "var a:ulong=0ul\nif(~a==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=0ul; return ~a==ulong.MaxValue?1:0;"
+  },
+  {
+   "name": "comparison-unsigned",
+   "body": "var a:ulong=18446744073709551615ul\nif(a>0ul && a>9223372036854775807ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=ulong.MaxValue; return a>0ul&&a>9223372036854775807ul?1:0;"
+  },
+  {
+   "name": "add-wrap",
+   "body": "var a:ulong=18446744073709551615ul\nreturn (int)unchecked(a+1ul)",
+   "type": "int",
+   "value": 0,
+   "cs": "ulong a=ulong.MaxValue; return (int)unchecked(a+1ul);"
+  },
+  {
+   "name": "add-fault",
+   "body": "var a:ulong=18446744073709551615ul\nreturn (int)(a+1ul)",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=ulong.MaxValue; return (int)(a+1ul);"
+  },
+  {
+   "name": "sub-fault",
+   "body": "var a:ulong=0ul\nreturn (int)(a-1ul)",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=0ul; return (int)(a-1ul);"
+  },
+  {
+   "name": "sub-wrap",
+   "body": "var a:ulong=0ul\nif(unchecked(a-1ul)==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=0ul; return unchecked(a-1ul)==ulong.MaxValue?1:0;"
+  },
+  {
+   "name": "mul-fault",
+   "body": "var a:ulong=4294967296ul\nreturn (int)(a*a)",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=4294967296ul; return (int)(a*a);"
+  },
+  {
+   "name": "mul-wrap",
+   "body": "var a:ulong=4294967296ul\nreturn (int)unchecked(a*a)",
+   "type": "int",
+   "value": 0,
+   "cs": "ulong a=4294967296ul; return (int)unchecked(a*a);"
+  },
+  {
+   "name": "divide",
+   "body": "if(18446744073709551615ul/3ul==6148914691236517205ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "return ulong.MaxValue/3ul==6148914691236517205ul?1:0;"
+  },
+  {
+   "name": "divide-zero",
+   "body": "var z:ulong=0ul\nreturn (int)(1ul/z)",
+   "type": "int",
+   "error": "System.DivideByZeroException",
+   "cs": "ulong z=0ul; return (int)(1ul/z);"
+  },
+  {
+   "name": "cast-fits",
+   "body": "var l:long=5L\nlet v:ulong=(ulong)l\nreturn (int)v",
+   "type": "int",
+   "value": 5,
+   "cs": "long l=5L; ulong v=(ulong)l; return (int)v;"
+  },
+  {
+   "name": "cast-ulong-long-fault",
+   "body": "var a:ulong=18446744073709551615ul\nreturn (int)(long)a",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=ulong.MaxValue; return (int)(long)a;"
+  },
+  {
+   "name": "cast-ulong-long-wrap",
+   "body": "var a:ulong=18446744073709551615ul\nreturn unchecked((int)(long)a)",
+   "type": "int",
+   "value": -1,
+   "cs": "ulong a=ulong.MaxValue; return unchecked((int)(long)a);"
+  },
+  {
+   "name": "cast-long-ulong-fault",
+   "body": "var l:long=-1L\nreturn (int)(ulong)l",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "long l=-1L; return (int)(ulong)l;"
+  },
+  {
+   "name": "cast-long-ulong-wrap",
+   "body": "var l:long=-1L\nif(unchecked((ulong)l)==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "long l=-1L; return unchecked((ulong)l)==ulong.MaxValue?1:0;"
+  },
+  {
+   "name": "cast-ulong-uint-fault",
+   "body": "var a:ulong=4294967296ul\nreturn (int)(uint)a",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=4294967296ul; return (int)(uint)a;"
+  },
+  {
+   "name": "cast-ulong-uint-wrap",
+   "body": "var a:ulong=4294967296ul\nreturn (int)unchecked((uint)a)",
+   "type": "int",
+   "value": 0,
+   "cs": "ulong a=4294967296ul; return (int)unchecked((uint)a);"
+  },
+  {
+   "name": "cast-ulong-byte-fault",
+   "body": "var a:ulong=300ul\nreturn (int)(byte)a",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=300ul; return (int)(byte)a;"
+  },
+  {
+   "name": "cast-ulong-byte-wrap",
+   "body": "var a:ulong=300ul\nreturn (int)unchecked((byte)a)",
+   "type": "int",
+   "value": 44,
+   "cs": "ulong a=300ul; return (int)unchecked((byte)a);"
+  },
+  {
+   "name": "cast-int-ulong-wrap",
+   "body": "var i:int=-1\nif(unchecked((ulong)i)==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "int i=-1; return unchecked((ulong)i)==ulong.MaxValue?1:0;"
+  },
+  {
+   "name": "field-storage",
+   "body": "let h=Holder(18446744073709551615ul)\nif(h.value==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "type Holder={value:ulong}\n",
+   "value": 1,
+   "cs": "return new Holder{value=ulong.MaxValue}.value==ulong.MaxValue?1:0;",
+   "extra": "class Holder{public ulong value;}"
+  },
+  {
+   "name": "generic-storage",
+   "body": "let b=Box<ulong>(7ul)\nreturn (int)b.value",
+   "type": "int",
+   "pre": "type Box<T>={value:T}\n",
+   "value": 7,
+   "cs": "return (int)new Box<ulong>{value=7ul}.value;",
+   "extra": "class Box<T>{public T value;}"
+  },
+  {
+   "name": "reference-store",
+   "body": "var a:ulong=1ul\nlet p=&mut a\n*p=18446744073709551615ul\nif(*p==18446744073709551615ul){return 1}\nreturn 0",
+   "type": "int",
+   "value": 1,
+   "cs": "ulong a=1ul; ref ulong p=ref a; p=ulong.MaxValue; return p==ulong.MaxValue?1:0;"
+  },
+  {
+   "name": "function-abi",
+   "body": "return (int)idv(18446744073709551615ul)",
+   "type": "int",
+   "pre": "fn idv(v:ulong)->ulong ensures true {return v-18446744073709551615ul}\n",
+   "value": 0,
+   "cs": "return (int)Idv(ulong.MaxValue); ulong Idv(ulong v)=>v-ulong.MaxValue;"
+  },
+  {
+   "name": "compound",
+   "body": "var a:ulong=1ul\na+=2ul\nreturn (int)a",
+   "type": "int",
+   "value": 3,
+   "cs": "ulong a=1ul; a+=2ul; return (int)a;"
+  },
+  {
+   "name": "compound-constant",
+   "body": "var a:ulong=1ul\na+=2\nreturn (int)a",
+   "type": "int",
+   "value": 3,
+   "cs": "ulong a=1ul; a+=2; return (int)a;"
+  },
+  {
+   "name": "compound-wrap",
+   "body": "var a:ulong=18446744073709551615ul\nunchecked{a+=1ul}\nreturn (int)a",
+   "type": "int",
+   "value": 0,
+   "cs": "ulong a=ulong.MaxValue; unchecked{a+=1ul;} return (int)a;"
+  },
+  {
+   "name": "update-fault",
+   "body": "var a:ulong=18446744073709551615ul\na++\nreturn 0",
+   "type": "int",
+   "error": "System.OverflowException",
+   "cs": "ulong a=ulong.MaxValue; a++; return 0;"
+  },
+  {
+   "name": "update-wrap",
+   "body": "var a:ulong=18446744073709551615ul\nunchecked{a++}\nreturn (int)a",
+   "type": "int",
+   "value": 0,
+   "cs": "ulong a=ulong.MaxValue; unchecked{a++;} return (int)a;"
+  },
+  {
+   "name": "constant-fold",
+   "body": "const a:ulong=1ul\nconst b:ulong=2ul\nreturn (int)(a+b)",
+   "type": "int",
+   "value": 3,
+   "cs": "const ulong a=1ul; const ulong b=2ul; return (int)(a+b);"
+  },
+  {
+   "name": "constant-wrap",
+   "body": "const c:ulong=unchecked(18446744073709551615ul+1ul)\nreturn (int)c",
+   "type": "int",
+   "value": 0,
+   "cs": "const ulong c=unchecked(ulong.MaxValue+1ul); return (int)c;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "literal-too-large",
+   "body": "let v:ulong=@@18446744073709551616ul\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-unsupported-suffix",
+   "body": "let v:ulong=@@1uu\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-negative",
+   "body": "let v:ulong=@@-1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-int-variable",
+   "body": "var i:int=1\nlet v:ulong=@@i\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-long",
+   "body": "var l:long=1L\nlet v:ulong=@@l\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-ulong-long-target",
+   "body": "var a:ulong=1ul\nlet l:long=@@a\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-ulong-uint-target",
+   "body": "var a:ulong=1ul\nlet u:uint=@@a\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-ulong-byte-target",
+   "body": "var a:ulong=1ul\nlet b:byte=@@a\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "mixed-long",
+   "body": "var a:ulong=1ul\nvar l:long=1L\nif(a@@+l==2ul){return 1}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "mixed-int-variable",
+   "body": "var a:ulong=1ul\nvar i:int=1\nif(a@@+i==2ul){return 1}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "mixed-sbyte-variable",
+   "body": "var a:ulong=1ul\nvar s:sbyte=1\nif(a@@+s==2ul){return 1}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "unary-minus",
+   "body": "var a:ulong=1ul\nreturn (int)(@@-a)",
+   "code": "AI3107"
+  },
+  {
+   "name": "condition",
+   "body": "var a:ulong=1ul\nif(@@a){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let v:ulong=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-string",
+   "body": "let v:ulong=@@\"bad\"\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "unassigned",
+   "body": "var v:ulong\nreturn (int)@@v",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let v:ulong=1ul\n@@v=2ul\nreturn 0",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let v:ulong=1ul\nlet @@v:ulong=2ul\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let v:ulong=1ul}\nreturn (int)@@v",
+   "code": "AI3103"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "logical-operand",
+   "body": "return 1ul@@&&true",
+   "code": "AI3107"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (int)(@@ulong)true",
+   "code": "AI3107"
+  },
+  {
+   "name": "compound-int-variable",
+   "body": "var i:int=1\nvar v:ulong=1ul\nv@@+=i\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "shift-count-ulong",
+   "body": "var v:ulong=1ul\nvar c:ulong=1ul\nreturn (int)(v@@<<c)",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-arithmetic-overflow",
+   "body": "const c:ulong=18446744073709551615ul@@+1ul\nreturn 0",
+   "code": "AI3111"
+  },
+  {
+   "name": "constant-conversion-overflow",
+   "body": "let v:ulong=(@@ulong)-1\nreturn 0",
+   "code": "AI3111"
+  }
+ ]
+}

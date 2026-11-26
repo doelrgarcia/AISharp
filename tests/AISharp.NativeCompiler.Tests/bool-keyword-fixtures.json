@@ -1,0 +1,210 @@
+{
+ "cases": [
+  {
+   "name": "literal-true",
+   "body": "return true",
+   "type": "bool",
+   "value": true,
+   "cs": "return true;"
+  },
+  {
+   "name": "literal-false",
+   "body": "return false",
+   "type": "bool",
+   "value": false,
+   "cs": "return false;"
+  },
+  {
+   "name": "logical-not",
+   "body": "return !false",
+   "type": "bool",
+   "value": true,
+   "cs": "return !false;"
+  },
+  {
+   "name": "logical-and",
+   "body": "return true && false",
+   "type": "bool",
+   "value": false,
+   "cs": "return true&&false;"
+  },
+  {
+   "name": "logical-or",
+   "body": "return false || true",
+   "type": "bool",
+   "value": true,
+   "cs": "return false||true;"
+  },
+  {
+   "name": "logical-xor",
+   "body": "return true ^ false",
+   "type": "bool",
+   "value": true,
+   "cs": "return true^false;"
+  },
+  {
+   "name": "bitwise",
+   "body": "return (true & true) | (false ^ false)",
+   "type": "bool",
+   "value": true,
+   "cs": "return (true&true)|(false^false);"
+  },
+  {
+   "name": "equality",
+   "body": "return 1==1 && 1!=2",
+   "type": "bool",
+   "value": true,
+   "cs": "return 1==1&&1!=2;"
+  },
+  {
+   "name": "condition-if",
+   "body": "if(true){return true}\nreturn false",
+   "type": "bool",
+   "value": true,
+   "cs": "if(true)return true; return false;"
+  },
+  {
+   "name": "condition-value",
+   "body": "let b:bool=true\nif(b){return b}\nreturn false",
+   "type": "bool",
+   "value": true,
+   "cs": "bool b=true; if(b)return b; return false;"
+  },
+  {
+   "name": "while",
+   "body": "var i=0\nwhile(i<2){i++}\nreturn i==2",
+   "type": "bool",
+   "value": true,
+   "cs": "int i=0; while(i<2)i++; return i==2;"
+  },
+  {
+   "name": "for-continue",
+   "body": "var n=0\nfor(var i=0;i<3;i++){if(i==1){continue}\nn++}\nreturn n==2",
+   "type": "bool",
+   "value": true,
+   "cs": "int n=0; for(int i=0;i<3;i++){if(i==1)continue;n++;} return n==2;"
+  },
+  {
+   "name": "short-circuit-and",
+   "body": "var n=0\nlet a=false && ((n=1)==1)\nreturn a==false && n==0",
+   "type": "bool",
+   "value": true,
+   "cs": "int n=0; bool a=false && ((n=1)==1); return a==false&&n==0;"
+  },
+  {
+   "name": "short-circuit-or",
+   "body": "var n=0\nlet b=true || ((n=1)==1)\nreturn b && n==0",
+   "type": "bool",
+   "value": true,
+   "cs": "int n=0; bool b=true || ((n=1)==1); return b&&n==0;"
+  },
+  {
+   "name": "bool-field",
+   "body": "let h=Holder(true)\nreturn h.value",
+   "type": "bool",
+   "pre": "type Holder={value:bool}\n",
+   "value": true,
+   "cs": "return new Holder{value=true}.value;",
+   "extra": "class Holder{public bool value;}"
+  },
+  {
+   "name": "bool-generic",
+   "body": "let b=Box<bool>(false)\nreturn b.value",
+   "type": "bool",
+   "pre": "type Box<T>={value:T}\n",
+   "value": false,
+   "cs": "return new Box<bool>{value=false}.value;",
+   "extra": "class Box<T>{public T value;}"
+  },
+  {
+   "name": "bool-reference",
+   "body": "var b:bool=true\nlet p=&b\nreturn *p",
+   "type": "bool",
+   "value": true,
+   "cs": "bool b=true; ref bool p=ref b; return p;"
+  },
+  {
+   "name": "bool-parameter-result",
+   "body": "return negate(false)",
+   "type": "bool",
+   "pre": "fn negate(v:bool)->bool ensures true {return !v}\n",
+   "value": true,
+   "cs": "return Negate(false); bool Negate(bool v)=>!v;"
+  },
+  {
+   "name": "bool-annotation",
+   "body": "let b:bool=false\nreturn b",
+   "type": "bool",
+   "value": false,
+   "cs": "bool b=false; return b;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "int-initializer",
+   "body": "let b:bool=@@1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "bool-int-initializer",
+   "body": "let x:int=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "int-condition",
+   "body": "if(@@1){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "bool-arithmetic",
+   "body": "return true@@+1",
+   "code": "AI3107"
+  },
+  {
+   "name": "bool-argument",
+   "body": "return take(@@true)",
+   "code": "AI3107",
+   "pre": "fn take(v:int)->int ensures true {return v}\n"
+  },
+  {
+   "name": "unassigned",
+   "body": "var b:bool\nif(@@b){return 1}\nreturn 0",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let b=true\n@@b=false\nreturn 0",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let b=true\nlet @@b=false\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let b=true}\nif(@@b){return 1}\nreturn 0",
+   "code": "AI3103"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (@@int)true",
+   "code": "AI3107"
+  },
+  {
+   "name": "not-on-int",
+   "body": "return @@!1",
+   "code": "AI3107"
+  },
+  {
+   "name": "bool-equality-int",
+   "body": "return true@@==1",
+   "code": "AI3107"
+  }
+ ]
+}

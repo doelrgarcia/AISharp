@@ -1,0 +1,40 @@
+{
+ "cases": [
+  {
+   "name": "inner-loop-only",
+   "body": "var total=0\nfor(var i=0;i<3;i++){for(var j=0;j<5;j++){if(j==2){break}\ntotal++}}\nreturn total",
+   "type": "int",
+   "pre": "",
+   "value": 6,
+   "cs": "int total=0; for(int i=0;i<3;i++){for(int j=0;j<5;j++){if(j==2)break; total++;}} return total;"
+  },
+  {
+   "name": "while-break",
+   "body": "var i=0\nwhile(true){i++\nif(i==4){break}}\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "int i=0; while(true){i++; if(i==4)break;} return i;"
+  },
+  {
+   "name": "break-after-assignment",
+   "body": "var x=0\nfor(var i=0;i<5;i++){x=i\nif(i==2){break}}\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "int x=0; for(int i=0;i<5;i++){x=i; if(i==2)break;} return x;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "outside-loop",
+   "body": "@@break\nreturn 0",
+   "code": "AI3104"
+  },
+  {
+   "name": "inside-if-outside-loop",
+   "body": "if(true){@@break}\nreturn 0",
+   "code": "AI3104"
+  }
+ ]
+}

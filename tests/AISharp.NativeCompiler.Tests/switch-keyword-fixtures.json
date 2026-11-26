@@ -1,0 +1,149 @@
+{
+ "cases": [
+  {
+   "name": "switch-basic",
+   "body": "switch(2)\n{\ncase 1:\nreturn 10\ncase 2:\nreturn 20\ndefault:\nreturn 30\n}",
+   "value": 20,
+   "type": "int",
+   "pre": "",
+   "cs": "switch(2){case 1:return 10;case 2:return 20;default:return 30;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-default",
+   "body": "switch(9)\n{\ncase 1:\nreturn 1\ndefault:\nreturn 7\n}",
+   "value": 7,
+   "type": "int",
+   "pre": "",
+   "cs": "switch(9){case 1:return 1;default:return 7;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-no-match-no-default",
+   "body": "switch(9)\n{\ncase 1:\nreturn 1\n}\nreturn 5",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "switch(9){case 1:return 1;} return 5;",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-multi-label",
+   "body": "switch(2)\n{\ncase 1:\ncase 2:\nreturn 8\ndefault:\nreturn 0\n}",
+   "value": 8,
+   "type": "int",
+   "pre": "",
+   "cs": "switch(2){case 1:case 2:return 8;default:return 0;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-enum",
+   "body": "switch(Color.Green)\n{\ncase Color.Red:\nreturn 1\ncase Color.Green:\nreturn 2\ndefault:\nreturn 3\n}",
+   "value": 2,
+   "type": "int",
+   "pre": "enum Color { Red, Green, Blue }\n",
+   "cs": "switch(Color.Green){case Color.Red:return 1;case Color.Green:return 2;default:return 3;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-char",
+   "body": "switch('b')\n{\ncase 'a':\nreturn 1\ncase 'b':\nreturn 2\ndefault:\nreturn 0\n}",
+   "value": 2,
+   "type": "int",
+   "pre": "",
+   "cs": "switch('b'){case 'a':return 1;case 'b':return 2;default:return 0;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-bool",
+   "body": "switch(true)\n{\ncase true:\nreturn 1\ncase false:\nreturn 2\ndefault:\nreturn 0\n}",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "switch(true){case true:return 1;case false:return 2;default:return 0;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-break",
+   "body": "var x=0\nswitch(1)\n{\ncase 1:\nx=5\nbreak\ndefault:\nx=9\nbreak\n}\nreturn x",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "var x=0;switch(1){case 1:x=5;break;default:x=9;break;}return x;",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-default-before-case",
+   "body": "switch(2)\n{\ndefault:\nreturn 9\ncase 2:\nreturn 5\n}",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "switch(2){default:return 9;case 2:return 5;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-nested-loop-break",
+   "body": "var x=0\nswitch(1)\n{\ncase 1:\nwhile(true)\n{\nbreak\n}\nx=3\nbreak\n}\nreturn x",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "var x=0;switch(1){case 1:while(true){break;}x=3;break;}return x;",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-long-control",
+   "body": "let v=2L\nswitch(v)\n{\ncase 1L:\nreturn 1\ncase 2L:\nreturn 2\ndefault:\nreturn 0\n}",
+   "value": 2,
+   "type": "int",
+   "pre": "",
+   "cs": "long v=2L;switch(v){case 1L:return 1;case 2L:return 2;default:return 0;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  },
+  {
+   "name": "switch-byte-control",
+   "body": "let v:byte=2\nswitch(v)\n{\ncase 1:\nreturn 1\ncase 2:\nreturn 2\ndefault:\nreturn 0\n}",
+   "value": 2,
+   "type": "int",
+   "pre": "",
+   "cs": "byte v=2;switch(v){case 1:return 1;case 2:return 2;default:return 0;}",
+   "extra": "public enum Color { Red, Green, Blue }"
+  }
+ ],
+ "negative": [
+  {
+   "name": "switch-duplicate-case",
+   "body": "switch(1)\n{\ncase 1:\nreturn 1\ncase @@1:\nreturn 2\n}",
+   "code": "AI3107"
+  },
+  {
+   "name": "switch-duplicate-default",
+   "body": "switch(1)\n{\ncase 1:\nreturn 1\ndefault:\nreturn 2\n@@default:\nreturn 3\n}",
+   "code": "AI3107"
+  },
+  {
+   "name": "switch-invalid-control",
+   "body": "@@switch(1.5)\n{\ncase 1:\nreturn 1\n}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "switch-case-type-mismatch",
+   "body": "switch(1)\n{\ncase @@2.0:\nreturn 1\n}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "switch-fallthrough",
+   "body": "var x=1\nswitch(1)\n{\ncase 1:\n@@x=1\ncase 2:\nx=2\nbreak\n}\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "switch-nonconstant-label",
+   "body": "let x=1\nswitch(1)\n{\ncase @@x:\nreturn 1\n}",
+   "code": "AI3107"
+  },
+  {
+   "name": "switch-empty",
+   "body": "@@switch(1)\n{\n}",
+   "code": "AI3107"
+  }
+ ]
+}

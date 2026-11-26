@@ -1,0 +1,30 @@
+{
+ "cases": [
+  {
+   "name": "not-match",
+   "body": "let n=2\nreturn match n {not 1 => 10, _ => 20}",
+   "value": 10,
+   "type": "int",
+   "cs": "return 10;"
+  },
+  {
+   "name": "not-fallback",
+   "body": "let n=1\nreturn match n {not 1 => 10, _ => 20}",
+   "value": 20,
+   "type": "int",
+   "cs": "return 20;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "not-wildcard",
+   "body": "let n=1\nreturn match n {@@not _ => 10, _ => 20}",
+   "code": "AI3107"
+  },
+  {
+   "name": "not-nonname",
+   "body": "let n=1\nreturn match (n+0) {@@not 1 => 10, _ => 20}",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "aisharp.selfhost-prerequisites/1",
+  "milestone": "file-io",
+  "checks": [
+    {
+      "host": "32",
+      "runtimeValue": 68,
+      "writeBytes": [
+        7,
+        8,
+        9
+      ],
+      "argsRuntimeValue": 68,
+      "artifactSha256": "47809d97d648b0d42260ba2e030988078f95a721ae21cb4cacb61aad89975a6c",
+      "pointerBits": 32
+    },
+    {
+      "host": "64",
+      "runtimeValue": 68,
+      "writeBytes": [
+        7,
+        8,
+        9
+      ],
+      "argsRuntimeValue": 68,
+      "artifactSha256": "100adc50541aeaa93999fbb6813618cceb4b2517578249db3e5cda2ac36b811b",
+      "pointerBits": 64
+    },
+    {
+      "host": "32d",
+      "runtimeValue": 68,
+      "writeBytes": [
+        7,
+        8,
+        9
+      ],
+      "argsRuntimeValue": 68,
+      "artifactSha256": "8f5af848abc702db47a9af516abc950ff33367eeb39ba387451e4661117e9f04",
+      "pointerBits": 32
+    },
+    {
+      "host": "64d",
+      "runtimeValue": 68,
+      "writeBytes": [
+        7,
+        8,
+        9
+      ],
+      "argsRuntimeValue": 68,
+      "artifactSha256": "83db40f7f15bcce7c549784a1cef27058f5d6e4c797627b05e271fee290be0b6",
+      "pointerBits": 64
+    }
+  ],
+  "ok": true
+}

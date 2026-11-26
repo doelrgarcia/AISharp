@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {"name":"narrow-fault-cleans-live-owner","pre":"","body":"let owner=buffer(8)\nvar wide:long=2147483648L\nreturn ( [[origin]]i32)wide","outcome":"faulted","fault":"System.OverflowException","origin":"origin","owners":1,"allocationCount":1,"bom":true,"crlf":true,"outputFault":true},
+    {"name":"narrow-fault-across-call","pre":"fn narrow(wide:long)->int ensures true {let child=buffer(1)\nreturn ([[origin]]int)wide}\n","body":"let owner=buffer(2)\nreturn [[call]]narrow(2147483648L)","outcome":"faulted","fault":"System.OverflowException","origin":"origin","sites":["call"],"owners":2,"allocationCount":2,"dropOrder":[2,1]},
+    {"name":"wrapping-narrow-cleans-owner-on-normal-exit","pre":"","body":"let owner=buffer(8)\nvar wide:long=2147483648L\nreturn unchecked((i32)wide)","outcome":"returned","value":-2147483648,"owners":1,"allocationCount":1},
+    {"name":"checked-long-negation-fault","pre":"","body":"let owner=buffer(8)\nvar wide:long=-9223372036854775808L\nreturn unchecked((i32)checked([[origin]]-wide))","outcome":"faulted","fault":"System.OverflowException","origin":"origin","owners":1,"allocationCount":1},
+    {"name":"direct-fail-widens-to-authenticated-error","pre":"","body":"let owner=buffer(2)\nvar n:int=-42\n[[origin]]fail n","fails":"long","outcome":"failed","errorType":"int64","origin":"origin","owners":1,"allocationCount":1},
+    {"name":"explicit-err-widens-to-authenticated-error","pre":"fn produce(n:int)->Result<int,i64> ensures true {return Result<int,i64>.[[origin]]Err(n)}\n","body":"return produce(-42)[[site]]?","fails":"long","outcome":"failed","errorType":"int64","origin":"origin","sites":["site"]},
+    {"name":"fallible-normal-return-widens","pre":"fn produce(n:int)->long fails bool ensures true {return n}\n","body":"return (int)produce(-42)?","fails":"bool","outcome":"returned","value":-42}
+  ],
+  "negative": [
+    {"name":"direct-fail-does-not-narrow","pre":"fn produce(n:long)->int fails int ensures true {@@fail n}\n","body":"return 0","length":4,"code":"AI3131","expectedRelated":[{"kind":"failure-declaration","needle":"fails int","shift":0,"length":5}]},
+    {"name":"propagation-does-not-widen-error","pre":"fn produce()->int fails int ensures true {fail 42}\nfn use()->int fails long ensures true {return produce()@@?}\n","body":"return 0","length":1,"code":"AI3131","expectedRelated":[{"kind":"failure-declaration","needle":"fails long","shift":0,"length":5}]},
+    {"name":"checked-constant-narrowing","pre":"","body":"return checked((@@i32)2147483648L)","length":3,"code":"AI3111"}
+  ]
+}

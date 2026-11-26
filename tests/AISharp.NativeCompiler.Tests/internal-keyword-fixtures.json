@@ -1,0 +1,78 @@
+{
+ "cases": [
+  {
+   "name": "internal-read",
+   "body": "let p=P(3)\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "cs": "var p=new P(3); return p.a;",
+   "extra": "public class P{internal int a; public P(int a){this.a=a;}} public class Q{internal int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={internal a:int}\n"
+  },
+  {
+   "name": "internal-write",
+   "body": "var p=P(1)\np.a=7\nreturn p.a",
+   "value": 7,
+   "type": "int",
+   "cs": "var p=new P(1); p.a=7; return p.a;",
+   "extra": "public class P{internal int a; public P(int a){this.a=a;}} public class Q{internal int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={internal a:int}\n"
+  },
+  {
+   "name": "internal-with",
+   "body": "let p=P(1)\nlet q=p with {a=5}\nreturn q.a",
+   "value": 5,
+   "type": "int",
+   "cs": "var p=new P(1); var q=new P(5); return q.a;",
+   "extra": "public class P{internal int a; public P(int a){this.a=a;}} public class Q{internal int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={internal a:int}\n"
+  },
+  {
+   "name": "internal-initializer",
+   "body": "let p=P { a=4 }\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "cs": "var p=new P(4); return p.a;",
+   "extra": "public class P{internal int a; public P(int a){this.a=a;}} public class Q{internal int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={internal a:int}\n"
+  },
+  {
+   "name": "internal-mixed",
+   "body": "let p=Q(2,3)\nreturn p.a+p.b",
+   "value": 5,
+   "type": "int",
+   "cs": "var p=new Q(2,3); return p.a+p.b;",
+   "extra": "public class P{internal int a; public P(int a){this.a=a;}} public class Q{internal int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type Q={internal a:int, public b:int}\n"
+  },
+  {
+   "name": "internal-function-arg",
+   "body": "return sum(P(6))",
+   "value": 6,
+   "type": "int",
+   "cs": "int Sum(P p)=>p.a; return Sum(new P(6));",
+   "extra": "public class P{internal int a; public P(int a){this.a=a;}} public class Q{internal int a; public int b; public Q(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={internal a:int}\nfn sum(p:P)->int\nensures true\n{return p.a}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "internal-duplicate",
+   "body": "let p=P(1)\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={internal internal @@a:int}\n"
+  },
+  {
+   "name": "internal-private-conflict",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={internal private @@a:int}\n"
+  },
+  {
+   "name": "internal-public-conflict",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={public internal @@a:int}\n"
+  }
+ ]
+}

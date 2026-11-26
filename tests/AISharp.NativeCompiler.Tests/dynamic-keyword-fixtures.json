@@ -1,0 +1,104 @@
+{
+ "cases": [
+  {
+   "name": "dyn-add",
+   "body": "let a:dynamic=(dynamic)2\nlet b=(dynamic)3\nlet c=a+b\nreturn (int)((double)c)",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "return 5;"
+  },
+  {
+   "name": "dyn-sub",
+   "body": "let a:dynamic=(dynamic)7\nlet b=(dynamic)2\nlet c=a-b\nreturn (int)((double)c)",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "return 5;"
+  },
+  {
+   "name": "dyn-mul",
+   "body": "let a:dynamic=(dynamic)4\nlet b=(dynamic)3\nlet c=a*b\nreturn (int)((double)c)",
+   "value": 12,
+   "type": "int",
+   "pre": "",
+   "cs": "return 12;"
+  },
+  {
+   "name": "dyn-div",
+   "body": "let a:dynamic=(dynamic)8\nlet b=(dynamic)2\nlet c=a/b\nreturn (int)((double)c)",
+   "value": 4,
+   "type": "int",
+   "pre": "",
+   "cs": "return 4;"
+  },
+  {
+   "name": "dyn-string",
+   "body": "let a:dynamic=(dynamic)\"ab\"\nlet b=(dynamic)\"cd\"\nlet c=a+b\nif((string)c==\"abcd\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "dyn-eq-num",
+   "body": "let a:dynamic=(dynamic)1\nlet b=(dynamic)1\nif(a==b){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "dyn-ne",
+   "body": "let a:dynamic=(dynamic)1\nlet b=(dynamic)2\nif(a!=b){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "dyn-lt",
+   "body": "let a:dynamic=(dynamic)1\nlet b=(dynamic)2\nif(a<b){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "dyn-string-eq",
+   "body": "let a:dynamic=(dynamic)\"x\"\nlet b=(dynamic)\"x\"\nif(a==b){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "dyn-field",
+   "body": "let p=P((dynamic)2)\nlet c=p.a+(dynamic)3\nreturn (int)((double)c)",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={a:dynamic}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "dyn-function",
+   "body": "return f((dynamic)4)",
+   "value": 5,
+   "type": "int",
+   "pre": "fn f(a:dynamic)->int\nensures true\n{let b=(dynamic)1\nlet c=a+b\nreturn (int)((double)c)}\n",
+   "cs": "return 5;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "dyn-mixed",
+   "body": "let a:dynamic=(dynamic)1\nlet c=a@@+1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "dyn-unsupported-op",
+   "body": "let a:dynamic=(dynamic)1\nlet b=(dynamic)2\nlet c=a@@&b\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

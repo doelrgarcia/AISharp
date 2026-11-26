@@ -1,0 +1,131 @@
+{
+ "cases": [
+  {
+   "name": "forward-skip",
+   "body": "var x=1\ngoto skip\nx=2\nskip:\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int x=1; goto skip; skip: return x;"
+  },
+  {
+   "name": "in-order-assignments",
+   "body": "var x=0\nx=1\ngoto after\nx=99\nafter:\nx+=10\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 11,
+   "cs": "int x=0; x=1; goto after; after: x+=10; return x;"
+  },
+  {
+   "name": "backward-loop",
+   "body": "var x=0\ntop:\nx+=1\nif(x<5){goto top}\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int x=0; top: x+=1; if(x<5){goto top;} return x;"
+  },
+  {
+   "name": "goto-from-nested-block",
+   "body": "var x=0\n{\nx=7\ngoto done\n}\ndone:\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "cs": "int x=0; {x=7; goto done;} done: return x;"
+  },
+  {
+   "name": "assigned-before-jump",
+   "body": "var x=5\ngoto skip\nx=1\nskip:\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int x=5; goto skip; skip: return x;"
+  },
+  {
+   "name": "label-fallthrough-and-goto",
+   "body": "var x=1\nif(x==1){goto join}\njoin:\nreturn x+1",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "int x=1; if(x==1){goto join;} join: return x+1;"
+  },
+  {
+   "name": "multiple-labels",
+   "body": "var x=0\ngoto one\ntwo:\nx+=10\nreturn x\none:\nx+=1\ngoto two",
+   "type": "int",
+   "pre": "",
+   "value": 11,
+   "cs": "int x=0; goto one; two: x+=10; return x; one: x+=1; goto two;"
+  },
+  {
+   "name": "label-in-if-branch-backward",
+   "body": "var x=0\nwhile(true){\nx+=1\nif(x==3){goto finish}\n}\nfinish:\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "int x=0; while(true){x+=1;if(x==3){goto finish;}} finish: return x;"
+  },
+  {
+   "name": "goto-skip-nested",
+   "body": "var x=0\nif(true){x=1\ngoto outside\nx=2}\noutside:\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int x=0; if(true){x=1;goto outside;} outside: return x;"
+  },
+  {
+   "name": "label-after-declaration",
+   "body": "var x:int\ngoto assign\nassign:\nx=4\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "int x; goto assign; assign: x=4; return x;"
+  },
+  {
+   "name": "skip-unreachable-return",
+   "body": "goto done\nreturn 0\ndone:\nreturn 3",
+   "type": "int",
+   "pre": "",
+   "value": 3
+  },
+  {
+   "name": "forward-label-earlier-goto",
+   "body": "var x=0\ngoto first\nfirst:\nx=2\ngoto second\nsecond:\nx+=3\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int x=0; goto first; first: x=2; goto second; second: x+=3; return x;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "unresolved-label",
+   "body": "@@goto missing\nreturn 0",
+   "code": "AI3103"
+  },
+  {
+   "name": "duplicate-label",
+   "body": "one:\n@@one:\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "read-before-assignment",
+   "body": "var x:int\ngoto skip\nx=1\nskip:\nreturn @@x",
+   "code": "AI3102"
+  },
+  {
+   "name": "jump-into-block",
+   "body": "@@goto inner\n{\ninner:\n}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "jump-into-if-body",
+   "body": "if(true){\ninner:\n}\n@@goto inner\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "skip-local-declaration",
+   "body": "var x=1\ngoto done\nvar y=2\n@@done:\nreturn x",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/5",
+  "milestone": "functions-and-calls",
+  "lexerSourceSha256": "c9ac00c6ecc521574704ba1abd7fd146a4a7709f58b13452b79d0ec12ad868a8",
+  "programSourceSha256": "34b1e9017a041e6064edc48b399abbce8bb587b1c70be1106742bcf8075561b9",
+  "checks": [
+    {
+      "host": "32",
+      "positiveCases": 25,
+      "negativeCases": 9
+    },
+    {
+      "host": "64",
+      "positiveCases": 25,
+      "negativeCases": 9
+    },
+    {
+      "host": "32d",
+      "positiveCases": 25,
+      "negativeCases": 9
+    },
+    {
+      "host": "64d",
+      "positiveCases": 25,
+      "negativeCases": 9
+    }
+  ],
+  "ok": true
+}

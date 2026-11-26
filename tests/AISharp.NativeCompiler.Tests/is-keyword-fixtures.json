@@ -1,0 +1,91 @@
+{
+ "cases": [
+  {
+   "name": "is-true",
+   "body": "let u=A\nif(u is A){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type U=A|B\n",
+   "cs": "int u=0; if(u==0){return 1;} return 0;"
+  },
+  {
+   "name": "is-false",
+   "body": "let u=A\nif(u is B){return 1}\nreturn 0",
+   "value": 0,
+   "type": "int",
+   "pre": "type U=A|B\n",
+   "cs": "int u=0; if(u==1){return 1;} return 0;"
+  },
+  {
+   "name": "is-else",
+   "body": "let u=B\nif(u is A){return 1}else{return 2}",
+   "value": 2,
+   "type": "int",
+   "pre": "type U=A|B\n",
+   "cs": "int u=1; if(u==0){return 1;}else{return 2;}"
+  },
+  {
+   "name": "is-not",
+   "body": "let u=B\nif(!(u is A)){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type U=A|B\n",
+   "cs": "int u=1; if(!(u==0)){return 1;} return 0;"
+  },
+  {
+   "name": "is-while",
+   "body": "let u=B\nvar n=0\nwhile(u is B)\n{\nn=n+1\nif(n>2){break}\n}\nreturn n",
+   "value": 3,
+   "type": "int",
+   "pre": "type U=A|B\n",
+   "cs": "int u=1; int n=0; while(u==1){n=n+1; if(n>2){break;}} return n;"
+  },
+  {
+   "name": "is-value",
+   "body": "let u=A\nlet b=u is A\nif(b){return 7}\nreturn 0",
+   "value": 7,
+   "type": "int",
+   "pre": "type U=A|B\n",
+   "cs": "int u=0; bool b=(u==0); if(b){return 7;} return 0;"
+  },
+  {
+   "name": "is-three-cases",
+   "body": "let u=C\nif(u is C){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type U=A|B|C\n",
+   "cs": "int u=2; if(u==2){return 1;} return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "is-int",
+   "body": "let x=1\nif(x @@is A){return 1}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "is-product",
+   "body": "let p=P(1)\nif(p @@is A){return 1}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\ntype U=A|B\n"
+  },
+  {
+   "name": "is-payload",
+   "body": "let u=Data(1)\nif(u @@is Data){return 1}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type U=Data(int)|Empty\n"
+  },
+  {
+   "name": "is-unknown",
+   "body": "let u=A\nif(u is @@Missing){return 1}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type U=A|B\n"
+  },
+  {
+   "name": "is-literal",
+   "body": "let u=A\nif(u is @@1){return 1}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type U=A|B\n"
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "cases": [
+  {
+   "name": "or-first",
+   "body": "let n=1\nreturn match n {1 or 2 => 10, _ => 20}",
+   "value": 10,
+   "type": "int",
+   "cs": "return 10;"
+  },
+  {
+   "name": "or-second",
+   "body": "let n=2\nreturn match n {1 or 2 => 10, _ => 20}",
+   "value": 10,
+   "type": "int",
+   "cs": "return 10;"
+  },
+  {
+   "name": "or-fallback",
+   "body": "let n=3\nreturn match n {1 or 2 => 10, _ => 20}",
+   "value": 20,
+   "type": "int",
+   "cs": "return 20;"
+  },
+  {
+   "name": "or-three",
+   "body": "let n=3\nreturn match n {1 or 2 or 3 => 10, _ => 20}",
+   "value": 10,
+   "type": "int",
+   "cs": "return 10;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "or-nonname",
+   "body": "let n=1\nreturn match (n+0) {@@1 or 2 => 10, _ => 20}",
+   "code": "AI3107"
+  },
+  {
+   "name": "or-mixed",
+   "body": "let n=1\nreturn match n {1 or 2 @@and 3 => 10, _ => 20}",
+   "code": "AI3107"
+  }
+ ]
+}

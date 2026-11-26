@@ -1,0 +1,89 @@
+{
+  "cases": [
+    {
+      "name": "zero",
+      "body": "return 0",
+      "value": 0
+    },
+    {
+      "name": "minimum",
+      "body": "return -2147483648",
+      "value": -2147483648
+    },
+    {
+      "name": "maximum",
+      "body": "return 2147483647",
+      "value": 2147483647
+    },
+    {
+      "name": "boolean",
+      "body": "return true",
+      "value": true,
+      "type": "bool"
+    },
+    {
+      "name": "false",
+      "body": "return false",
+      "value": false,
+      "type": "bool"
+    },
+    {
+      "name": "precedence",
+      "body": "return 2+3*4-8/2",
+      "value": 10
+    },
+    {
+      "name": "parentheses",
+      "body": "return (2+3)*(4-1)",
+      "value": 15
+    },
+    {
+      "name": "arguments-order",
+      "body": "var x=1\nreturn pair(x,x=2)",
+      "value": 12,
+      "pre": "fn pair(a: int,b: int) -> int\nensures true\n{return a*10+b}\n"
+    },
+    {
+      "name": "short-circuit",
+      "body": "var n=0\nlet a=false && ((n=1)==1)\nlet b=true || ((n=2)==2)\nreturn n",
+      "value": 0
+    },
+    {
+      "name": "if-flow",
+      "body": "var x: int\nlet b=true\nif(b){x=7}else{x=9}\nreturn x",
+      "value": 7
+    },
+    {
+      "name": "while",
+      "body": "var i=0\nvar n=0\nwhile(i<5){i++\nn+=i}\nreturn n",
+      "value": 15
+    },
+    {
+      "name": "for-continue",
+      "body": "var n=0\nfor(var i=0;i<6;i++){if(i==3){continue}\nn+=i}\nreturn n",
+      "value": 12
+    }
+  ],
+  "negative": [
+    [
+      "unknown",
+      "return @@missing",
+      "AI3103"
+    ],
+    [
+      "literal-high",
+      "return @@2147483648",
+      "AI3107"
+    ],
+    [
+      "break-target",
+      "@@break\nreturn 0",
+      "AI3104"
+    ],
+    [
+      "continue-target",
+      "@@continue\nreturn 0",
+      "AI3104"
+    ]
+  ]
+}

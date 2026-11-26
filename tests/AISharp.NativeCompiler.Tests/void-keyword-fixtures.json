@@ -1,0 +1,47 @@
+{
+ "cases": [
+  {
+   "name": "call-unit-fn",
+   "body": "noop()\nreturn 3",
+   "type": "int",
+   "pre": "fn noop()->void ensures true {return}\n",
+   "value": 3,
+   "cs": "void Noop(){} Noop(); return 3;"
+  },
+  {
+   "name": "unit-fn-in-loop",
+   "body": "for(var i=0;i<3;i++){noop()}\nreturn 2",
+   "type": "int",
+   "pre": "fn noop()->void ensures true {return}\n",
+   "value": 2,
+   "cs": "void Noop(){} for(int i=0;i<3;i++)Noop(); return 2;"
+  },
+  {
+   "name": "unit-fn-branch",
+   "body": "var c:bool=flag()\nif(c){noop()}\nreturn 1",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\nfn noop()->void ensures true {return}\n",
+   "value": 1,
+   "cs": "bool c=true; void Noop(){} if(c)Noop(); return 1;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "returned-value",
+   "body": "bad()\nreturn 0",
+   "code": "AI3020",
+   "pre": "fn bad()->void ensures true {@@return 1}\n"
+  },
+  {
+   "name": "unit-field",
+   "body": "let h=H(1)\nreturn 0",
+   "code": "AI3110",
+   "pre": "type H={@@value:unit}\n"
+  },
+  {
+   "name": "unit-local",
+   "body": "let @@x:unit\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,96 @@
+{
+ "cases": [
+  {
+   "name": "sealed-product",
+   "body": "let p=P(1,2)\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "pre": "sealed type P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); return p.a*10+p.b;",
+   "extra": "public sealed class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "sealed-field",
+   "body": "let q=Q(P(3,4))\nreturn q.p.a+q.p.b",
+   "value": 7,
+   "type": "int",
+   "pre": "sealed type P={a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(3,4)); return q.p.a+q.p.b;",
+   "extra": "public sealed class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "sealed-function",
+   "body": "return sum(P(2,3))",
+   "value": 5,
+   "type": "int",
+   "pre": "sealed type P={a:int, b:int}\nfn sum(p:P)->int\nensures true\n{return p.a+p.b}\n",
+   "cs": "int Sum(P p)=>p.a+p.b; return Sum(new P(2,3));",
+   "extra": "public sealed class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "sealed-generic",
+   "body": "let b=Box<int>(5)\nreturn b.value",
+   "value": 5,
+   "type": "int",
+   "pre": "sealed type Box<T>={value:T}\n",
+   "cs": "var b=new Box<int>(5); return b.value;",
+   "extra": "public sealed class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "sealed-required",
+   "body": "let p=P { a=4 }\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "pre": "sealed type P={required a:int, b:int}\n",
+   "cs": "var p=new P(4,0); return p.a;",
+   "extra": "public sealed class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  },
+  {
+   "name": "sealed-readonly",
+   "body": "let p=P(2,3)\nreturn p.a*10+p.b",
+   "value": 23,
+   "type": "int",
+   "pre": "sealed type P={readonly a:int, b:int}\n",
+   "cs": "var p=new P(2,3); return p.a*10+p.b;",
+   "extra": "public sealed class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public class Box<T>{public T value; public Box(T v){this.value=v;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "sealed-enum",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@sealed enum E { A }\n"
+  },
+  {
+   "name": "sealed-alias",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@sealed alias A=int\n"
+  },
+  {
+   "name": "sealed-union",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "sealed type @@U=A|B\n"
+  },
+  {
+   "name": "sealed-duplicate",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@sealed sealed type P={a:int}\n"
+  },
+  {
+   "name": "sealed-file-combo",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@sealed file type P={a:int}\n"
+  },
+  {
+   "name": "sealed-not-type",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@sealed fn f()->int\nensures true\n{return 0}\n"
+  }
+ ]
+}

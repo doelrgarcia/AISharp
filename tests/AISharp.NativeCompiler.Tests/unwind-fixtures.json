@@ -1,0 +1,2256 @@
+{
+  "cases": [
+    {
+      "name": "direct-success",
+      "pre": "",
+      "body": "return 42",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "boolean-success",
+      "pre": "",
+      "body": "return true",
+      "type": "bool",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": true,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "direct-failure",
+      "pre": "",
+      "body": "[[origin]]fail true",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": []
+    },
+    {
+      "name": "unit-error",
+      "pre": "",
+      "body": "[[origin]]fail",
+      "type": "int",
+      "fails": "unit",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "unit",
+      "origin": "origin",
+      "sites": []
+    },
+    {
+      "name": "propagate-success",
+      "pre": "fn get()->int fails bool ensures true {return 42}\n",
+      "body": "return get()[[site]]?",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "propagate-failure",
+      "pre": "fn get()->int fails bool ensures true {[[origin]]fail true}\n",
+      "body": "return get()[[site]]?",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "nested-failure",
+      "pre": "fn get()->int fails bool ensures true {[[origin]]fail true}\nfn pass()->int fails bool ensures true {return get()[[inner]]?}\n",
+      "body": "return pass()[[outer]]?",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "inner",
+        "outer"
+      ]
+    },
+    {
+      "name": "unit-success",
+      "pre": "fn get()->unit fails bool ensures true {}\n",
+      "body": "get()?\nreturn 42",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "unit-explicit-return",
+      "pre": "fn get()->unit fails bool ensures true {return}\n",
+      "body": "get()?\nreturn 42",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "empty-success",
+      "pre": "type Empty={}\nfn get()->Empty fails bool ensures true {return Empty()}\nfn take(e:Empty)->int ensures true {return 42}\n",
+      "body": "return take(get()?)",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "owner-success",
+      "pre": "fn get()->owned buffer fails bool ensures true {return buffer(42)}\n",
+      "body": "return bufferLength(get()?)",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "owner-error",
+      "pre": "fn get()->int fails owned buffer ensures true {[[origin]]fail buffer(7)}\n",
+      "body": "return get()[[site]]?",
+      "type": "int",
+      "fails": "owned buffer",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ],
+      "errorType": "owned-buffer",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "product-error",
+      "pre": "type Error={a:owned buffer,b:owned buffer}\nfn get()->int fails Error ensures true {[[origin]]fail Error(buffer(3),buffer(4))}\n",
+      "body": "return get()[[site]]?",
+      "type": "int",
+      "fails": "Error",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        1,
+        2
+      ],
+      "errorType": "product<Error>",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "shared-success",
+      "pre": "fn get(n:&int)->&int fails bool ensures true {return n}\n",
+      "body": "let n=42\nlet r=get(&n)?\nreturn *r",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "exclusive-success",
+      "pre": "fn get(n:&mut int)->&mut int fails bool ensures true {return n}\n",
+      "body": "var n=41\nlet r=get(&mut n)?\n*r=42\nreturn n",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "shared-error",
+      "pre": "type Error=Bad|Other\nfn get(e:&Error)->int fails &Error ensures true {fail e}\nfn pass(e:&Error)->int fails &Error ensures true {return get(e)?}\n",
+      "body": "let e:Error=Bad\nreturn match pass(&e) {Ok(n)=>n,Err(r)=>match *r {Bad=>42,Other=>0}}",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "exclusive-error",
+      "pre": "fn get(n:&mut int)->int fails &mut int ensures true {fail n}\n",
+      "body": "var n=41\nmatch get(&mut n) {Ok(value)=>value,Err(r)=>*r=42}\nreturn n",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "option-success",
+      "pre": "fn get()->std.core.Option<int> ensures true {return Some(42)}\nfn pass()->std.core.Option<int> ensures true {return Some(get()?)}\n",
+      "body": "return match pass() {Some(n)=>n,None=>0}",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "option-absence",
+      "pre": "fn get()->std.core.Option<int> ensures true {return None}\nfn pass()->std.core.Option<int> ensures true {return Some(get()?)}\n",
+      "body": "return match pass() {Some(n)=>n,None=>42}",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "nested-conditional-absence",
+      "pre": "fn get()->std.core.Option<std.core.Result<int,bool>> ensures true {return None}\n",
+      "body": "let x=get()\nreturn 42",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "nested-conditional-result",
+      "pre": "fn get()->std.core.Option<std.core.Result<int,bool>> ensures true {return Some(Err(true))}\n",
+      "body": "return match get() {Some(r)=>match r {Ok(n)=>n,Err(_)=>42},None=>0}",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "guard-failure",
+      "pre": "fn guard()->bool fails bool ensures true {[[origin]]fail true}\n",
+      "body": "let x:std.core.Option<owned buffer>=Some(buffer(42))\nlet y=buffer(3)\nreturn match x {Some(b) when guard()[[site]]?=>bufferLength(b),Some(b)=>bufferLength(b),None=>0}",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        1,
+        2
+      ],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "guard-success",
+      "pre": "fn guard()->bool fails bool ensures true {return true}\n",
+      "body": "let x:std.core.Option<owned buffer>=Some(buffer(42))\nreturn match x {Some(b) when guard()?=>bufferLength(b),Some(b)=>bufferLength(b),None=>0}",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "argument-prefix-cleanup",
+      "pre": "fn join(a:owned buffer,n:int)->int ensures true {return bufferLength(a)+n}\nfn bad()->int fails bool ensures true {[[origin]]fail true}\n",
+      "body": "let x=buffer(3)\nreturn join(buffer(4),bad()[[site]]?)",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        2,
+        1
+      ],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "aggregate-prefix-cleanup",
+      "pre": "type P={a:owned buffer,n:int,b:owned buffer}\nfn bad()->int fails bool ensures true {[[origin]]fail true}\n",
+      "body": "let p=P(buffer(3),bad()[[site]]?,buffer(4))\nreturn p.n",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "short-circuit-skip",
+      "pre": "fn bad()->bool fails bool ensures true {fail true}\n",
+      "body": "let a=false && bad()?\nlet b=true || bad()?\nif(a || !b){return 0}\nreturn 42",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "short-circuit-fail",
+      "pre": "fn bad()->bool fails bool ensures true {[[origin]]fail true}\n",
+      "body": "let a=true && bad()[[site]]?\nreturn 0",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "postfix-projection",
+      "pre": "type P={n:int}\nfn get()->P fails bool ensures true {return P(42)}\n",
+      "body": "return get()?.n",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "nested-postfix",
+      "pre": "fn get()->std.core.Result<int,bool> fails bool ensures true {return std.core.Result<int,bool>.Ok(42)}\n",
+      "body": "return get()??",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "manual-result-target",
+      "pre": "fn get()->int fails bool ensures true {return 42}\nfn pass()->std.core.Result<int,bool> ensures true {return Ok(get()?)}\n",
+      "body": "return match pass() {Ok(n)=>n,Err(_)=>0}",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "shadowed-result",
+      "pre": "type Result<T,E>=Mine(T)|Other(E)\nfn get()->int fails bool ensures true {return 42}\n",
+      "body": "return get()?",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "closed-success",
+      "pre": "type Status=Ready|Other\nfn get()->Status fails bool ensures true {return Ready}\n",
+      "body": "return match get()? {Ready=>42,Other=>0}",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "payload-success",
+      "pre": "type U=A(int)|B(owned buffer)\nfn get()->U fails bool ensures true {return B(buffer(42))}\n",
+      "body": "return match get()? {A(n)=>n,B(b)=>bufferLength(b)}",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "reference-effect-success",
+      "pre": "fn set(dst:&mut &int,src:&int)->unit fails bool ensures true {*dst=src}\n",
+      "body": "let a=1\nlet b=42\nvar r:&int=&a\nset(&mut r,&b)?\nreturn *r",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "reference-effect-failure",
+      "pre": "fn set(dst:&mut &int,src:&int)->unit fails bool ensures true {*dst=src\nfail true}\n",
+      "body": "let a=1\nlet b=42\nvar r:&int=&a\nmatch set(&mut r,&b) {Ok(_)=>0,Err(_)=>0}\nreturn *r",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "loop-propagation",
+      "pre": "fn step(n:int)->int fails bool ensures true {if(n==3){[[origin]]fail true}\nreturn n}\n",
+      "body": "var sum=0\nfor(var i=0;i<5;i++){sum+=step(i)[[site]]?}\nreturn sum",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "loop-retained-outcomes",
+      "pre": "fn get()->int fails bool ensures true {return 21}\n",
+      "body": "var a:std.core.Result<int,bool>=Ok(0)\nvar b:std.core.Result<int,bool>=Ok(0)\nfor(var i=0;i<2;i++){let r=get()\nif(i==0){a=r}else{b=r}}\nreturn (match a {Ok(n)=>n,Err(_)=>0})+(match b {Ok(n)=>n,Err(_)=>0})",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "recursive-cause",
+      "pre": "fn step(n:int)->int fails bool ensures true {if(n==0){[[origin]]fail true}\nreturn step(n-1)[[inner]]?}\n",
+      "body": "return step(12)[[outer]]?",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner"
+      ],
+      "omittedFrames": 5
+    },
+    {
+      "name": "copy-handler",
+      "pre": "fn get()->int fails bool ensures true {fail true}\n",
+      "body": "let r=get()\nlet s=r\nmatch s {Ok(_)=>0,Err(_)=>0}\nreturn 42",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "borrow-handler",
+      "pre": "fn get()->int fails bool ensures true {fail true}\nfn handle(r:&std.core.Result<int,bool>)->int ensures true {return match r {Ok(n)=>*n,Err(_)=>42}}\n",
+      "body": "let r=get()\nreturn handle(&r)",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "conditional-borrow-handler",
+      "pre": "fn get()->int fails bool ensures true {fail true}\n",
+      "body": "var a:std.core.Result<int,bool>=Ok(0)\nvar b:std.core.Result<int,bool>=Ok(0)\nlet flag=bufferLength(buffer(1))==1\nvar r:&std.core.Result<int,bool>\nif(flag){a=get()\nr=&a}else{b=get()\nr=&b}\nmatch r {Ok(_)=>0,Err(_)=>0}\nreturn 42",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "product-forward-handler",
+      "pre": "type P={r:std.core.Result<int,bool>}\nfn get()->int fails bool ensures true {fail true}\nfn pass()->P ensures true {return P(get())}\n",
+      "body": "let p=pass()\nreturn match p.r {Ok(n)=>n,Err(_)=>42}",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "unit-error-propagation",
+      "pre": "fn bad()->int fails unit ensures true {[[origin]]fail}\n",
+      "body": "return bad()[[site]]?",
+      "type": "int",
+      "fails": "unit",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "unit",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ]
+    },
+    {
+      "name": "output-cleanup",
+      "pre": "fn bad()->int fails owned buffer ensures true {[[origin]]fail buffer(7)}\n",
+      "body": "return bad()[[site]]?",
+      "type": "int",
+      "fails": "owned buffer",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ],
+      "errorType": "owned-buffer",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "outputFault": true
+    },
+    {
+      "name": "minimum-success",
+      "pre": "",
+      "body": "return -2147483648",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": -2147483648,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "maximum-success",
+      "pre": "",
+      "body": "return 2147483647",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 2147483647,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "escaped-failure-names",
+      "pre": "fn @fail()->int ensures true {return 20}\nfn @fails()->int ensures true {return 22}\n",
+      "body": "return @fail()+@fails()",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "lookalike-api-domain",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\nfn get()->Result<int,bool> ensures true {return Err(true)}\n",
+      "body": "get()\nreturn 42",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "manual-domain-value",
+      "pre": "",
+      "body": "let r:std.core.Result<int,bool>=Err(true)\nreturn 42",
+      "type": "int",
+      "fails": null,
+      "outcome": "returned",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "zero-sized-error-owner",
+      "pre": "fn get()->int fails owned buffer ensures true {[[origin]]fail buffer(0)}\n",
+      "body": "return get()[[site]]?",
+      "type": "int",
+      "fails": "owned buffer",
+      "outcome": "failed",
+      "errorType": "owned-buffer",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "value": null,
+      "owners": 1,
+      "allocationCount": 0,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "bom-crlf-cause",
+      "pre": "",
+      "body": "[[origin]]fail true",
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "value": 42,
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [],
+      "bom": true,
+      "crlf": true
+    },
+    {
+      "name": "reference-outcome-forward",
+      "pre": "fn get()->int fails bool ensures true {return 42}\nfn put(out:&mut Result<int,bool>)->unit ensures true {*out=get()}\n",
+      "body": "var x:Result<int,bool>=Ok(0)\nput(&mut x)\nreturn match x {Ok(n)=>n,Err(_)=>0}",
+      "type": "int",
+      "outcome": "returned",
+      "value": 42
+    },
+    {
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "owners": 1,
+      "name": "for-update-failure",
+      "pre": "fn advance(p:&mut int)->int fails bool ensures true {*p+=1\nif(*p==2){[[origin]]fail true}\nreturn *p}\n",
+      "body": "let owner=buffer(3)\nfor(var i=0;i<4;advance(&mut i)[[site]]?){}\nreturn 0"
+    },
+    {
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "owners": 1,
+      "name": "while-condition-failure",
+      "pre": "fn condition(n:int)->bool fails bool ensures true {if(n==2){[[origin]]fail true}\nreturn n<4}\n",
+      "body": "let owner=buffer(3)\nvar i=0\nwhile(condition(i)[[site]]?){i++}\nreturn i"
+    },
+    {
+      "type": "int",
+      "fails": "bool",
+      "outcome": "failed",
+      "errorType": "bool",
+      "origin": "origin",
+      "sites": [],
+      "owners": 0,
+      "name": "failure-value-expression",
+      "pre": "fn get()->bool fails bool ensures true {return true}\n",
+      "body": "[[origin]]fail get()?"
+    },
+    {
+      "name": "unwind-add-overflow",
+      "pre": "fn high()->int ensures true {return 2147483647}\n",
+      "body": "let b=buffer(3)\nreturn high()[[origin]]+1",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OverflowException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-sub-overflow",
+      "pre": "fn low()->int ensures true {return -2147483648}\n",
+      "body": "let b=buffer(3)\nreturn low()[[origin]]-1",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OverflowException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-mul-overflow",
+      "pre": "fn high()->int ensures true {return 2147483647}\n",
+      "body": "let b=buffer(3)\nreturn high()[[origin]]*2",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OverflowException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-neg-overflow",
+      "pre": "fn low()->int ensures true {return -2147483648}\n",
+      "body": "let b=buffer(3)\nreturn [[origin]]-low()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OverflowException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-div-overflow",
+      "pre": "fn low()->int ensures true {return -2147483648}\n",
+      "body": "let b=buffer(3)\nreturn low()[[origin]]/-1",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OverflowException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-div-zero",
+      "pre": "fn zero()->int ensures true {return 0}\n",
+      "body": "let b=buffer(3)\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-rem-zero",
+      "pre": "fn zero()->int ensures true {return 0}\n",
+      "body": "let b=buffer(3)\nreturn 1[[origin]]%zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-create-negative",
+      "pre": "",
+      "body": "let b=[[origin]]buffer(-1)\nreturn bufferLength(b)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.ArgumentOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 0,
+      "allocationCount": 0
+    },
+    {
+      "name": "unwind-create-capacity",
+      "pre": "",
+      "body": "let earlier=buffer(2)\nlet b=[[origin]]buffer(67108865)\nreturn bufferLength(b)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "AISharp.AllocationLimitException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-create-allocation",
+      "pre": "",
+      "body": "let earlier=buffer(3)\nlet b=[[origin]]buffer(4)\nreturn bufferLength(b)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OutOfMemoryException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1,
+      "failAt": 2,
+      "memory": {
+        "attempts": 2,
+        "allocationFailures": 1
+      }
+    },
+    {
+      "name": "unwind-consuming-get-bounds",
+      "pre": "",
+      "body": "return [[origin]]bufferGet(buffer(3),3)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.IndexOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-consuming-get-negative",
+      "pre": "",
+      "body": "return [[origin]]bufferGet(buffer(3),-1)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.IndexOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-consuming-set-bounds",
+      "pre": "",
+      "body": "let b=[[origin]]bufferSet(buffer(3),3,42)\nreturn bufferLength(b)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.IndexOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-consuming-set-value",
+      "pre": "",
+      "body": "let b=[[origin]]bufferSet(buffer(3),0,256)\nreturn bufferLength(b)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.ArgumentOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-consuming-set-negative-index",
+      "pre": "",
+      "body": "let b=[[origin]]bufferSet(buffer(3),-1,42)\nreturn bufferLength(b)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.IndexOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-shared-peek",
+      "pre": "",
+      "body": "let b=buffer(3)\nreturn [[origin]]bufferPeek(&b,3)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.IndexOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-exclusive-write",
+      "pre": "",
+      "body": "var b=buffer(3)\n[[origin]]bufferWrite(&mut b,3,42)\nreturn 0",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.IndexOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-exclusive-value",
+      "pre": "",
+      "body": "var b=buffer(3)\n[[origin]]bufferWrite(&mut b,0,-1)\nreturn 0",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.ArgumentOutOfRangeException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-argument-prefix",
+      "pre": "fn zero()->int ensures true {return 0}\nfn join(b:owned buffer,n:int)->int ensures true {return bufferLength(b)+n}\n",
+      "body": "let earlier=buffer(3)\nreturn join(buffer(4),1[[origin]]/zero())",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "unwind-callee-parameter",
+      "pre": "fn zero()->int ensures true {return 0}\nfn bad(b:owned buffer)->int ensures true {let local=buffer(4)\nreturn 1[[origin]]/zero()}\n",
+      "body": "let earlier=buffer(2)\nreturn [[outer]]bad(buffer(3))",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "outer"
+      ],
+      "owners": 3,
+      "allocationCount": 3,
+      "dropOrder": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "unwind-aggregate-prefix",
+      "pre": "fn zero()->int ensures true {return 0}\ntype P={a:owned buffer,n:int,b:owned buffer}\n",
+      "body": "let p=P(buffer(3),1[[origin]]/zero(),buffer(4))\nreturn p.n",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-partial-product",
+      "pre": "fn zero()->int ensures true {return 0}\ntype P={a:owned buffer,b:owned buffer}\n",
+      "body": "var p:P\np.a=buffer(3)\nlet later=buffer(4)\np.b=buffer(5)\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 3,
+      "allocationCount": 3,
+      "dropOrder": [
+        2,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "unwind-partial-acquisition",
+      "pre": "type P={a:owned buffer,b:owned buffer}\n",
+      "body": "var p:P\np.a=buffer(3)\nlet later=buffer(4)\np.b=[[origin]]buffer(5)\nreturn 42",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OutOfMemoryException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        2,
+        1
+      ],
+      "failAt": 3,
+      "memory": {
+        "attempts": 3,
+        "allocationFailures": 1
+      }
+    },
+    {
+      "name": "unwind-late-initialization",
+      "pre": "fn zero()->int ensures true {return 0}\n",
+      "body": "var first:owned buffer\nlet second=buffer(2)\nfirst=buffer(3)\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "unwind-moved-product-field",
+      "pre": "fn zero()->int ensures true {return 0}\ntype P={a:owned buffer,b:owned buffer}\n",
+      "body": "let p=P(buffer(3),buffer(4))\nlet moved=p.a\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "unwind-temporary-field",
+      "pre": "fn zero()->int ensures true {return 0}\ntype P={a:owned buffer,b:owned buffer}\nfn make()->P ensures true {return P(buffer(3),buffer(4))}\n",
+      "body": "let field=make().a\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "unwind-active-union",
+      "pre": "fn zero()->int ensures true {return 0}\ntype E=A(owned buffer)|B(owned buffer)|Empty\n",
+      "body": "let x:E=B(buffer(3))\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-guard-subject",
+      "pre": "fn zero()->int ensures true {return 0}\nfn guard()->bool ensures true {return (1[[origin]]/zero())==0}\n",
+      "body": "let x:Option<owned buffer>=Some(buffer(3))\nlet later=buffer(4)\nreturn match x {Some(b) when [[site]]guard()=>bufferLength(b),Some(b)=>bufferLength(b),None=>0}",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "unwind-for-update",
+      "pre": "fn zero()->int ensures true {return 0}\nfn advance(p:&mut int)->int ensures true {*p+=1\nif(*p==2){return 1[[origin]]/zero()}\nreturn *p}\n",
+      "body": "let b=buffer(3)\nfor(var i=0;i<4;[[site]]advance(&mut i)){}\nreturn 0",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-while-condition",
+      "pre": "fn zero()->int ensures true {return 0}\nfn condition(n:int)->bool ensures true {if(n==2){return (1[[origin]]/zero())==0}\nreturn n<4}\n",
+      "body": "let b=buffer(3)\nvar i=0\nwhile([[site]]condition(i)){i++}\nreturn 42",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "site"
+      ],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "unwind-chain-7",
+      "pre": "fn zero()->int ensures true {return 0}\nfn step(n:int)->int ensures true {let b=buffer(0)\nif(n==0){return 1[[origin]]/zero()}\nreturn [[inner]]step(n-1)}\n",
+      "body": "return [[outer]]step(7)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "outer"
+      ],
+      "owners": 8,
+      "allocationCount": 0,
+      "dropOrder": [
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "omittedFrames": 0
+    },
+    {
+      "name": "unwind-chain-8",
+      "pre": "fn zero()->int ensures true {return 0}\nfn step(n:int)->int ensures true {let b=buffer(0)\nif(n==0){return 1[[origin]]/zero()}\nreturn [[inner]]step(n-1)}\n",
+      "body": "return [[outer]]step(8)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner"
+      ],
+      "owners": 9,
+      "allocationCount": 0,
+      "dropOrder": [
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "omittedFrames": 1
+    },
+    {
+      "name": "unwind-chain-20",
+      "pre": "fn zero()->int ensures true {return 0}\nfn step(n:int)->int ensures true {let b=buffer(0)\nif(n==0){return 1[[origin]]/zero()}\nreturn [[inner]]step(n-1)}\n",
+      "body": "return [[outer]]step(20)",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner",
+        "inner"
+      ],
+      "owners": 21,
+      "allocationCount": 0,
+      "dropOrder": [
+        21,
+        20,
+        19,
+        18,
+        17,
+        16,
+        15,
+        14,
+        13,
+        12,
+        11,
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "omittedFrames": 13
+    },
+    {
+      "name": "unwind-recursion-entry",
+      "pre": "fn step(b:owned buffer)->int ensures true {return [[origin]]step(b)}\n",
+      "body": "return [[outer]]step(buffer(3))",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "AISharp.RecursionLimitException",
+      "origin": "origin",
+      "sites": [
+        "origin",
+        "origin",
+        "origin",
+        "origin",
+        "origin",
+        "origin",
+        "origin",
+        "origin"
+      ],
+      "owners": 1,
+      "allocationCount": 1,
+      "omittedFrames": 119
+    },
+    {
+      "name": "unwind-bom-crlf",
+      "pre": "fn zero()->int ensures true {return 0}\n",
+      "body": "let b=buffer(3)\nreturn 1[[origin]]/zero()",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.DivideByZeroException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1,
+      "bom": true,
+      "crlf": true,
+      "outputFault": true
+    },
+    {
+      "name": "unwind-normal-reference-replacement",
+      "pre": "fn set(dst:&mut &int,p:&int)->unit ensures true {*dst=p}\n",
+      "body": "let fresh=42\nvar p=&fresh\n{let old=0\np=&old\nset(&mut p,&fresh)}\nreturn *p",
+      "outcome": "returned",
+      "value": 42
+    },
+    {
+      "name": "unwind-loop-node-reuse",
+      "pre": "",
+      "body": "for(var i=0;i<600;i++){let b=buffer(0)}\nreturn 42",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 600,
+      "allocationCount": 0,
+      "dropOrder": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
+        256
+      ],
+      "memory": {
+        "dropTraceTruncated": true
+      }
+    },
+    {
+      "name": "unwind-wrap-safe",
+      "pre": "",
+      "body": "let b=buffer(3)\nreturn unchecked(2147483647+1)==(-2147483648)",
+      "type": "bool",
+      "outcome": "returned",
+      "value": true,
+      "owners": 1
+    },
+    {
+      "name": "unwind-rem-minimum-fault",
+      "pre": "fn low()->int ensures true {return -2147483648}\n",
+      "body": "let b=buffer(3)\nreturn low()[[origin]]%-1+42",
+      "type": "int",
+      "outcome": "faulted",
+      "fault": "System.OverflowException",
+      "origin": "origin",
+      "sites": [],
+      "owners": 1,
+      "allocationCount": 1
+    },
+    {
+      "name": "contextual-mode-identifiers",
+      "pre": "fn faults(unwind:int)->int ensures true {let abort=unwind\nreturn abort}\n",
+      "body": "return faults(42)",
+      "outcome": "returned",
+      "value": 42
+    },
+    {
+      "name": "default-abort-preserved",
+      "pre": "fn zero()->int ensures true {return 0}\n",
+      "body": "let b=buffer(3)\nreturn 1/zero()",
+      "mode": null,
+      "outcome": "threw",
+      "terminalException": "System.DivideByZeroException",
+      "owners": 1,
+      "memory": {
+        "releases": 0,
+        "drops": 0,
+        "liveBytes": 3,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "explicit-abort-preserved",
+      "pre": "fn zero()->int ensures true {return 0}\n",
+      "body": "let b=buffer(3)\nreturn 1/zero()",
+      "mode": "abort",
+      "outcome": "threw",
+      "terminalException": "System.DivideByZeroException",
+      "owners": 1,
+      "memory": {
+        "releases": 0,
+        "drops": 0,
+        "liveBytes": 3,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "nonfaulting-length-store",
+      "pre": "fn work(dst:&mut &int,old:&int,b:owned buffer)->unit ensures true {let local=3\n*dst=&local\nlet n=bufferLength(b)\n*dst=old}\n",
+      "body": "let stable=42\nvar p=&stable\nwork(&mut p,&stable,buffer(3))\nreturn *p",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 1
+    },
+    {
+      "name": "nonfaulting-size-store",
+      "pre": "fn work(dst:&mut &int,old:&int,b:owned buffer)->unit ensures true {let local=3\n*dst=&local\nlet n=bufferSize(&b)\n*dst=old}\n",
+      "body": "let stable=42\nvar p=&stable\nwork(&mut p,&stable,buffer(3))\nreturn *p",
+      "outcome": "returned",
+      "value": 42,
+      "owners": 1
+    }
+  ],
+  "negative": [
+    {
+      "name": "outside-carrier",
+      "pre": "fn get()->int fails bool ensures true {return 42}\n",
+      "body": "return get()@@?",
+      "type": "int",
+      "fails": null,
+      "code": "AI3131",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "return-declaration",
+          "needle": "fn main",
+          "shift": 3,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "non-carrier",
+      "pre": "",
+      "body": "return 42@@?",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3130",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "lookalike",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let r:Result<int,bool>=Ok(42)\nreturn r@@?",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3130",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "wrong-error",
+      "pre": "fn get()->int fails bool ensures true {fail true}\n",
+      "body": "return get()@@?",
+      "type": "int",
+      "fails": "int",
+      "code": "AI3131",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails int",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "option-to-result",
+      "pre": "fn get()->std.core.Option<int> ensures true {return None}\n",
+      "body": "return get()@@?",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3131",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "borrowed-carrier",
+      "pre": "",
+      "body": "let r:std.core.Result<int,bool>=Ok(42)\nreturn (&r)@@?",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3130",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "fail-outside",
+      "pre": "",
+      "body": "@@fail true",
+      "type": "int",
+      "fails": null,
+      "code": "AI3132",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "return-declaration",
+          "needle": "fn main",
+          "shift": 3,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "wrong-failure-value",
+      "pre": "",
+      "body": "@@fail true",
+      "type": "int",
+      "fails": "int",
+      "code": "AI3131",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails int",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "wrong-success-value",
+      "pre": "",
+      "body": "@@return true",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3020",
+      "length": 6,
+      "expectedRelated": []
+    },
+    {
+      "name": "missing-success-value",
+      "pre": "",
+      "body": "@@return",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3020",
+      "length": 6,
+      "expectedRelated": []
+    },
+    {
+      "name": "missing-error-value",
+      "pre": "",
+      "body": "@@fail",
+      "type": "int",
+      "fails": "bool",
+      "code": "AI3131",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "ignored-call",
+      "pre": "fn get()->int fails bool ensures true {fail true}\n",
+      "body": "get()\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "ignored-local",
+      "pre": "fn get()->int fails bool ensures true {fail true}\n",
+      "body": "let r=get()\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "callee-discard",
+      "pre": "fn get()->int fails bool ensures true {fail true}\nfn discard(r:std.core.Result<int,bool>)->unit ensures true {}\n",
+      "body": "@@discard(get())\nreturn 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 7,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "borrow-no-handle",
+      "pre": "fn get()->int fails bool ensures true {fail true}\nfn ignore(r:&std.core.Result<int,bool>)->int ensures true {return 42}\n",
+      "body": "let r=get()\n@@return ignore(&r)",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "conditional-ignore",
+      "pre": "fn get()->int fails bool ensures true {fail true}\nfn flag()->bool ensures true {return bufferLength(buffer(1))==1}\n",
+      "body": "let r=get()\nif(flag()){match r {Ok(_)=>0,Err(_)=>0}}\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "nested-result-ignore",
+      "pre": "fn get()->int fails bool ensures true {fail true}\ntype P={r:std.core.Result<int,bool>}\n",
+      "body": "let p=P(get())\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "ignored-inner-result",
+      "pre": "fn get()->std.core.Option<std.core.Result<int,bool>> ensures true {return Some(Err(true))}\n",
+      "body": "let r=get()\nmatch r {Some(_)=>0,None=>0}\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fn get",
+          "shift": 3,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "both-producers-one-handler",
+      "pre": "fn get()->int fails bool ensures true {fail true}\n",
+      "body": "let a=get()\nlet b=get()\nmatch a {Ok(_)=>0,Err(_)=>0}\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 2
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails bool",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "missing-success-return",
+      "pre": "",
+      "body": "let n=1",
+      "type": "int",
+      "fails": "bool",
+      "headerMarker": true,
+      "code": "AI3020",
+      "length": 4,
+      "expectedRelated": []
+    },
+    {
+      "name": "manual-api-outcome-ignore",
+      "pre": "fn get()->std.core.Result<int,bool> ensures true {return Err(true)}\n",
+      "body": "get()\n@@return 42",
+      "type": "int",
+      "fails": null,
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "shift": 0,
+          "length": 3,
+          "occurrence": 1
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fn get",
+          "shift": 3,
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "error-reference-escape",
+      "pre": "fn bad()->int fails &int ensures true {let local=3\n@@fail &local}\n",
+      "body": "return 42",
+      "code": "AI3117",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "local=3",
+          "shift": 0,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "success-reference-escape",
+      "pre": "fn bad()->&int fails bool ensures true {let local=3\n@@return &local}\n",
+      "body": "return 42",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "local=3",
+          "shift": 0,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "failure-reference-mode",
+      "pre": "fn bad(p:&int)->int fails &mut int ensures true {@@fail p}\n",
+      "body": "return 42",
+      "code": "AI3131",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "failure-declaration",
+          "needle": "fails",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "reference-outcome-lost",
+      "pre": "fn get()->int fails bool ensures true {return 42}\nfn put(out:&mut Result<int,bool>)->unit ensures true {*out=get()}\n",
+      "body": "var x:Result<int,bool>=Ok(0)\nput(&mut x)\n@@return 42",
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "occurrence": 1,
+          "shift": 0,
+          "length": 3
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "overwritten-outcome",
+      "pre": "fn get()->int fails bool ensures true {return 42}\n",
+      "body": "var x=get()\nx=get()\n@@return match x {Ok(n)=>n,Err(_)=>0}",
+      "code": "AI3133",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "failure-producer",
+          "needle": "get()",
+          "occurrence": 1,
+          "shift": 0,
+          "length": 3
+        },
+        {
+          "kind": "failure-declaration",
+          "needle": "fails",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "fault-prefix-local-store",
+      "pre": "fn zero()->int ensures true {return 0}\nfn change(dst:&mut &int,old:&int)->unit ensures true {let local=3\n*dst=&local\nlet n=1/@@zero()\n*dst=old}\n",
+      "body": "return 42",
+      "code": "AI3117",
+      "length": 4,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "local=3",
+          "shift": 0,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "fault-prefix-callee-store",
+      "pre": "fn zero()->int ensures true {return 0}\nfn put(dst:&mut &int,p:&int,old:&int)->unit ensures true {*dst=p\nlet n=1/zero()\n*dst=old}\nfn caller(dst:&mut &int,old:&int)->unit ensures true {let local=3\n@@put(dst,&local,old)}\n",
+      "body": "return 42",
+      "code": "AI3117",
+      "length": 3,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "local=3",
+          "shift": 0,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "unknown-fault-mode",
+      "mode": "@@unknown",
+      "pre": "",
+      "body": "return 42",
+      "code": "AI3134",
+      "length": 7
+    },
+    {
+      "name": "duplicate-fault-mode",
+      "mode": "unwind\n@@faults abort",
+      "pre": "",
+      "body": "return 42",
+      "code": "AI3134",
+      "length": 6
+    },
+    {
+      "name": "unwind-inventory-capacity",
+      "pre": "",
+      "body": "return 42",
+      "headerMarker": true,
+      "generateOwners": 25001,
+      "code": "AI3100",
+      "length": 4,
+      "message": "Native unwind cleanup inventory limit exceeded."
+    }
+  ]
+}

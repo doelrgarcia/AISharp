@@ -1,0 +1,72 @@
+{
+ "cases": [
+  {
+   "name": "explicit-q-to-int",
+   "body": "return (int)Q(7)",
+   "value": 7,
+   "type": "int",
+   "pre": "type Q={v:int}\nexplicit operator (q:Q)->int\nensures true\n{return q.v}\nexplicit operator (v:int)->Q\nensures true\n{return Q(v)}\n",
+   "cs": "return (int)new Q(7);",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);} public struct Q{public int v; public Q(int v){this.v=v;} public static explicit operator int(Q q)=>q.v; public static explicit operator Q(int v)=>new Q(v);}"
+  },
+  {
+   "name": "explicit-int-to-q",
+   "body": "return ((Q)9).v",
+   "value": 9,
+   "type": "int",
+   "pre": "type Q={v:int}\nexplicit operator (q:Q)->int\nensures true\n{return q.v}\nexplicit operator (v:int)->Q\nensures true\n{return Q(v)}\n",
+   "cs": "return ((Q)9).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);} public struct Q{public int v; public Q(int v){this.v=v;} public static explicit operator int(Q q)=>q.v; public static explicit operator Q(int v)=>new Q(v);}"
+  },
+  {
+   "name": "explicit-q-local",
+   "body": "let q=Q(4)\nreturn (int)q",
+   "value": 4,
+   "type": "int",
+   "pre": "type Q={v:int}\nexplicit operator (q:Q)->int\nensures true\n{return q.v}\nexplicit operator (v:int)->Q\nensures true\n{return Q(v)}\n",
+   "cs": "var q=new Q(4); return (int)q;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);} public struct Q{public int v; public Q(int v){this.v=v;} public static explicit operator int(Q q)=>q.v; public static explicit operator Q(int v)=>new Q(v);}"
+  },
+  {
+   "name": "explicit-cast-uses-implicit",
+   "body": "return ((P)6).v",
+   "value": 6,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\n",
+   "cs": "return ((P)6).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);} public struct Q{public int v; public Q(int v){this.v=v;} public static explicit operator int(Q q)=>q.v; public static explicit operator Q(int v)=>new Q(v);}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "explicit-none",
+   "body": "return (@@int)R(1)",
+   "code": "AI3107",
+   "pre": "type R={v:int}\n"
+  },
+  {
+   "name": "explicit-identity",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Q={v:int}\n@@explicit operator (q:Q)->Q\nensures true\n{return q}\n"
+  },
+  {
+   "name": "explicit-reference",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type R={v:int}\n@@explicit operator (r:&int)->int\nensures true\n{return *r}\n"
+  },
+  {
+   "name": "explicit-wrong-arity",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Q={v:int}\nexplicit operator (a:Q,@@b:Q)->int\nensures true\n{return a.v}\n"
+  },
+  {
+   "name": "explicit-not-implicit",
+   "body": "let x:int=@@R(1)\nreturn x",
+   "code": "AI3107",
+   "pre": "type R={v:int}\nexplicit operator (r:R)->int\nensures true\n{return r.v}\n"
+  }
+ ]
+}

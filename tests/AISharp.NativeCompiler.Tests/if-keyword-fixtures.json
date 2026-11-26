@@ -1,0 +1,63 @@
+{
+ "cases": [
+  {
+   "name": "true-branch",
+   "body": "var c:bool=flag()\nvar n=0\nif(c){n=1}else{n=2}\nreturn n",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\n",
+   "value": 1,
+   "cs": "bool c=true; int n=0; if(c){n=1;}else{n=2;} return n;"
+  },
+  {
+   "name": "false-branch",
+   "body": "var c:bool=flagFalse()\nvar n=0\nif(c){n=1}else{n=2}\nreturn n",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\nfn flagFalse()->bool ensures true {return false}\n",
+   "value": 2,
+   "cs": "bool c=false; int n=0; if(c){n=1;}else{n=2;} return n;"
+  },
+  {
+   "name": "both-branches-assign",
+   "body": "var c:bool=flag()\nvar x:int\nif(c){x=1}else{x=2}\nreturn x",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\n",
+   "value": 1,
+   "cs": "bool c=true; int x; if(c){x=1;}else{x=2;} return x;"
+  },
+  {
+   "name": "nested-if",
+   "body": "var a:bool=flag()\nvar b:bool=flag()\nvar n=0\nif(a){if(b){n=1}else{n=2}}else{n=3}\nreturn n",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\n",
+   "value": 1,
+   "cs": "bool a=true,b=true; int n=0; if(a){if(b)n=1;else n=2;}else n=3; return n;"
+  },
+  {
+   "name": "condition-expression",
+   "body": "var n=0\nif(1==1){n=5}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int n=0; if(1==1)n=5; return n;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "int-condition",
+   "body": "var n=0\nif(@@1){n=1}\nreturn n",
+   "code": "AI3101"
+  },
+  {
+   "name": "assign-one-branch",
+   "body": "var c:bool=flag()\nvar x:int\nif(c){x=1}\nreturn @@x",
+   "code": "AI3102",
+   "pre": "fn flag()->bool ensures true {return true}\n"
+  },
+  {
+   "name": "condition-unit",
+   "body": "if(@@noop()){return 1}\nreturn 0",
+   "code": "AI3101",
+   "pre": "fn noop()->void ensures true {return}\n"
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+ "cases": [
+  {
+   "name": "null-eq",
+   "body": "if(null==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string a=null; if(a==null){return 1;} return 0;"
+  },
+  {
+   "name": "null-ne",
+   "body": "if(null!=\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string a=null; if(a!=\"x\"){return 1;} return 0;"
+  },
+  {
+   "name": "null-var",
+   "body": "let s:string=null\nif(s==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=null; if(s==null){return 1;} return 0;"
+  },
+  {
+   "name": "null-assign",
+   "body": "var s:string=\"x\"\ns=null\nif(s==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=\"x\"; s=null; if(s==null){return 1;} return 0;"
+  },
+  {
+   "name": "null-concat-left",
+   "body": "if(null+\"x\"==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string x=null+\"x\"; if(x==\"x\"){return 1;} return 0;"
+  },
+  {
+   "name": "null-concat-right",
+   "body": "if(\"x\"+null==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string x=\"x\"+null; if(x==\"x\"){return 1;} return 0;"
+  },
+  {
+   "name": "null-concat-both",
+   "body": "if(null+null==\"\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string x=(string)null+(string)null; if(x==\"\"){return 1;} return 0;"
+  },
+  {
+   "name": "null-field",
+   "body": "let p=P(null)\nif(p.a==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={a:string}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "null-param",
+   "body": "return f(null)",
+   "value": 1,
+   "type": "int",
+   "pre": "fn f(s:string)->int\nensures true\n{if(s==null){return 1}\nreturn 0}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "null-copy",
+   "body": "let s:string=null\nlet t=s\nif(t==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=null; string t=s; if(t==null){return 1;} return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "null-int",
+   "body": "let x:int=@@null\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "null-condition",
+   "body": "if(@@null){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "null-arithmetic",
+   "body": "let x=null@@+1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "null-return-int",
+   "body": "let y=1\n@@return null",
+   "code": "AI3020"
+  }
+ ]
+}

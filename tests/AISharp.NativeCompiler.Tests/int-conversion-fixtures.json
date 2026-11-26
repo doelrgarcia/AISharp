@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {"name":"widen-int-min","body":"var small:int=-2147483648\nlet wide:long=small\nreturn (int)wide","value":-2147483648},
+    {"name":"widen-int-max","body":"var small:i32=2147483647\nlet wide:i64=small\nreturn (i32)wide","value":2147483647},
+    {"name":"widen-call-return","pre":"fn widen(x:long)->i64 ensures true {return x}\nfn source(x:i32)->long ensures true {return x}\n","body":"var n:int=-17\nreturn (int)widen(n)+(int)source(n)","value":-34},
+    {"name":"widen-local-assignment","body":"var wide:long\nvar n:int=-42\nwide=n\nreturn (int)wide","value":-42},
+    {"name":"widen-reference-write","body":"var wide:long=0\nlet p=&mut wide\nvar n:int=-42\n*p=n\nreturn (int)*p","value":-42},
+    {"name":"widen-product-and-alias-identity","pre":"type Box<T>={value:T}\nfn read(x:Box<i64>)->long ensures true {return x.value}\n","body":"var n:i32=-42\nlet x=Box<long>(n)\nreturn (int)read(x)","value":-42},
+    {"name":"widen-union-payload","pre":"type U<T>=Data(T)|Empty\n","body":"var n:int=-42\nlet value=U<i64>.Data(n)\nreturn match value {Data(x)=>(int)x,Empty=>0}","value":-42},
+    {"name":"widen-typed-match-result","body":"var n:int=42\nvar a:bool=true\nlet w:long=match a {true=>n,false=>43L}\nreturn (i32)w","value":42},
+    {"name":"evaluation-once","body":"var n:i32=41\nlet w:long=n++\nreturn (int)w*100+n","value":4142},
+    {"name":"explicit-widen-and-identity","body":"let w=(i64)-42\nreturn (int)(i32)(long)w","value":-42},
+    {"name":"checked-narrow-int-min","body":"var w:long=-2_147_483_648L\nreturn checked((i32)w)","value":-2147483648},
+    {"name":"checked-narrow-positive-overflow","body":"var w:i64=2147483648L\nreturn checked((int)w)","error":"System.OverflowException"},
+    {"name":"default-narrow-negative-overflow","body":"var w:long=-2147483649L\nreturn (int)w","error":"System.OverflowException"},
+    {"name":"wrapped-narrow-positive-overflow","body":"var w:long=2147483648L\nreturn unchecked((int)w)","value":-2147483648},
+    {"name":"wrapped-narrow-negative-overflow","body":"var w:long=-2147483649L\nreturn unchecked((int)w)","value":2147483647},
+    {"name":"wrapped-narrow-int64-max","body":"var w:long=0x7fff_ffff_ffff_ffffL\nreturn unchecked((int)w)","value":-1},
+    {"name":"wrapped-narrow-int64-min","body":"var w:long=-9_223_372_036_854_775_808L\nreturn unchecked((int)w)","value":0},
+    {"name":"constant-widen-and-wrap","body":"const w:i64=2147483648L\nconst n:i32=unchecked((int)w)\nreturn n","value":-2147483648},
+    {"name":"long-negation-runtime","body":"var w:long=42L\nreturn (int)-w","value":-42},
+    {"name":"long-negation-overflow","body":"var w:long=-9223372036854775808L\nreturn unchecked((int)checked(-w))","error":"System.OverflowException"},
+    {"name":"long-negation-wrap","body":"var w:long=-9223372036854775808L\nreturn unchecked((int)-w)","value":0},
+    {"name":"qualified-int64-add","body":"return (int)(1L+2L)","value":3},
+    {"name":"mixed-comparison","body":"var n:int=-42\nvar w:long=-41L\nif(n<w && w>n && n!=w && (long)n==n){return 42}\nreturn 0","value":42}
+  ],
+  "negative": [
+    {"name":"implicit-narrow-local","body":"var w:long=42L\nlet x:i32=@@w\nreturn x","code":"AI3107","length":1,"crlf":true},
+    {"name":"implicit-narrow-assignment","body":"var w:long=42L\nvar x:i32=0\nx=@@w\nreturn x","code":"AI3107","length":1},
+    {"name":"implicit-narrow-call","pre":"fn take(x:i32)->int ensures true {return x}\n","body":"var w:i64=42L\nreturn take(@@w)","code":"AI3107","length":1},
+    {"name":"implicit-narrow-return","body":"var w:long=42L\n@@return w","code":"AI3020","length":6},
+    {"name":"implicit-narrow-field","pre":"type Box<T>={value:T}\n","body":"var w:long=42L\nlet b=Box<int>(@@w)\nreturn b.value","code":"AI3107","length":1},
+    {"name":"cast-bool","body":"return (@@int)true","code":"AI3107","length":3},
+    {"name":"checked-constant-overflow","body":"return checked((@@i32)2147483648L)","code":"AI3111","length":3},
+    {"name":"wide-literal-trailing-separator","body":"return (int)@@42_L","code":"AI3107","length":4},
+    {"name":"positive-int64-outside","body":"return unchecked((int)@@9223372036854775808L)","code":"AI3107","length":20},
+    {"name":"negative-int64-outside","body":"return unchecked((int)-@@9223372036854775809L)","code":"AI3107","length":20},
+    {"name":"wide-unassigned","body":"var w:long\nreturn (int)@@w","code":"AI3102","length":1},
+    {"name":"reference-width-not-covariant","pre":"fn take(x:&long)->int ensures true {return (int)*x}\n","body":"let n:i32=42\nreturn take(@@&n)","code":"AI3107","length":1},
+    {"name":"unqualified-int64-match-scrutinee","body":"var w:long=1L\nreturn match @@w {_=>0}","code":"AI3107","length":1}
+  ]
+}

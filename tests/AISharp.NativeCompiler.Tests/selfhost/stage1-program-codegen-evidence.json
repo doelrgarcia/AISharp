@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/10",
+  "milestone": "stage1-codegen-compiles-program-parser",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "programSourceSha256": "34b1e9017a041e6064edc48b399abbce8bb587b1c70be1106742bcf8075561b9",
+  "checks": [
+    {
+      "host": "32",
+      "programs": 5,
+      "compiledProgramParser": true,
+      "outputsMatched": true,
+      "programParserC": "program-32.c"
+    },
+    {
+      "host": "64",
+      "programs": 5,
+      "compiledProgramParser": true,
+      "outputsMatched": true,
+      "programParserC": "program-64.c"
+    },
+    {
+      "host": "32d",
+      "programs": 5,
+      "compiledProgramParser": true,
+      "outputsMatched": true,
+      "programParserC": "program-32d.c"
+    },
+    {
+      "host": "64d",
+      "programs": 5,
+      "compiledProgramParser": true,
+      "outputsMatched": true,
+      "programParserC": "program-64d.c"
+    }
+  ],
+  "ok": true
+}

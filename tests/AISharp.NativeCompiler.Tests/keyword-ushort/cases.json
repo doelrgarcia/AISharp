@@ -1,0 +1,83 @@
+{
+  "keyword": "ushort",
+  "aliases": [
+    "ushort",
+    "u16",
+    "System.UInt16"
+  ],
+  "target": "native-compiler",
+  "capabilityAtBaseline": "aisharp.native-bootstrap/14 (primitive implemented after the baseline)",
+  "statusAtBaseline": "SUPERSEDED: UInt16 primitive implemented; executable acceptance is ushort-keyword-fixtures.json",
+  "completionRule": "Do not mark complete until every positive/negative case below is executed through the native CLI and MSVC x86/x64 Od/O2, with exact diagnostics and source hashes.",
+  "positive": [
+    {
+      "id": "identity-min",
+      "purpose": "minimum value and type identity",
+      "source": "module UshortIdentity\nintent \"ushort min\"\nfn main() -> ushort\nensures true\n{\n    let value: ushort = 0\n    return value\n}\n"
+    },
+    {
+      "id": "identity-max",
+      "purpose": "maximum value",
+      "source": "module UshortIdentity\nintent \"ushort max\"\nfn main() -> ushort\nensures true\n{\n    let value: ushort = 65535\n    return value\n}\n"
+    },
+    {
+      "id": "alias-u16",
+      "purpose": "u16 is the same type",
+      "source": "module UshortAlias\nintent \"u16 alias\"\nfn main() -> u16\nensures true\n{\n    let value: u16 = 1\n    return value\n}\n"
+    },
+    {
+      "id": "parameter-result",
+      "purpose": "parameter and result ABI",
+      "source": "module UshortAbi\nintent \"ushort parameter\"\nfn identity(value: ushort) -> ushort\nensures true\n{\n    return value\n}\nfn main() -> int\nensures true\n{\n    return 0\n}\n"
+    },
+    {
+      "id": "widening",
+      "purpose": "implicit promotion/widening",
+      "source": "module UshortWiden\nintent \"ushort widening\"\nfn main() -> int\nensures true\n{\n    let small: ushort = 1\n    let value: int = small\n    return value\n}\n"
+    },
+    {
+      "id": "arithmetic-promotion",
+      "purpose": "ushort arithmetic promotes to a wider result",
+      "source": "module UshortArithmetic\nintent \"ushort arithmetic\"\nfn main() -> int\nensures true\n{\n    let left: ushort = 65535\n    let right: ushort = 1\n    return left + right\n}\n"
+    },
+    {
+      "id": "explicit-cast",
+      "purpose": "explicit narrowing/widening",
+      "source": "module UshortCast\nintent \"ushort cast\"\nfn main() -> ushort\nensures true\n{\n    let wide: int = 65535\n    let value: ushort = (ushort)wide\n    return value\n}\n"
+    }
+  ],
+  "negative": [
+    {
+      "id": "out-of-range-constant",
+      "expected": "diagnostic before backend",
+      "source": "module UshortBad\nintent \"ushort range\"\nfn main() -> ushort\nensures true\n{\n    let value: ushort = 65536\n    return value\n}\n"
+    },
+    {
+      "id": "implicit-narrowing",
+      "expected": "diagnostic before backend",
+      "source": "module UshortBad\nintent \"ushort narrowing\"\nfn main() -> ushort\nensures true\n{\n    let wide: int = 1\n    let value: ushort = wide\n    return value\n}\n"
+    },
+    {
+      "id": "negative-value",
+      "expected": "diagnostic before backend",
+      "source": "module UshortBad\nintent \"ushort negative\"\nfn main() -> ushort\nensures true\n{\n    let value: ushort = -1\n    return value\n}\n"
+    }
+  ],
+  "requiredExecution": {
+    "bits": [
+      32,
+      64
+    ],
+    "optimization": [
+      "Od",
+      "O2"
+    ],
+    "configuration": [
+      "Debug",
+      "Release"
+    ],
+    "mustRun": true,
+    "mustRejectReferenceOnlyProof": true
+  },
+  "closureEvidence": "keyword-ushort-evidence/native-cli-acceptance.json"
+}

@@ -1,0 +1,90 @@
+{
+ "cases": [
+  {
+   "name": "implicit-p-to-int-local",
+   "body": "let x:int=P(7)\nreturn x",
+   "value": 7,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\n",
+   "cs": "int x=new P(7); return x;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);}"
+  },
+  {
+   "name": "implicit-int-to-p-local",
+   "body": "let p:P=5\nreturn p.v",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\n",
+   "cs": "P p=5; return p.v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);}"
+  },
+  {
+   "name": "implicit-int-to-p-arg",
+   "body": "return f(5)",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\nfn f(p:P)->int\nensures true\n{return p.v}\n",
+   "cs": "int F(P p)=>p.v; return F(5);",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);}"
+  },
+  {
+   "name": "implicit-p-to-int-arg",
+   "body": "return g(P(3))",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\nfn g(x:int)->int\nensures true\n{return x}\n",
+   "cs": "int G(int x)=>x; return G(new P(3));",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);}"
+  },
+  {
+   "name": "implicit-p-to-int-return",
+   "body": "return P(9)",
+   "value": 9,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\n",
+   "cs": "return new P(9);",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);}"
+  },
+  {
+   "name": "implicit-p-copy",
+   "body": "let p=P(4)\nlet q:P=p\nreturn q.v",
+   "value": 4,
+   "type": "int",
+   "pre": "type P={v:int}\nimplicit operator (p:P)->int\nensures true\n{return p.v}\nimplicit operator (v:int)->P\nensures true\n{return P(v)}\n",
+   "cs": "var p=new P(4); P q=p; return q.v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static implicit operator int(P p)=>p.v; public static implicit operator P(int v)=>new P(v);}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "implicit-explicit-only",
+   "body": "let x:int=@@R(1)\nreturn x",
+   "code": "AI3107",
+   "pre": "type R={v:int}\nexplicit operator (r:R)->int\nensures true\n{return r.v}\n"
+  },
+  {
+   "name": "implicit-none",
+   "body": "let x:int=@@R(1)\nreturn x",
+   "code": "AI3107",
+   "pre": "type R={v:int}\n"
+  },
+  {
+   "name": "implicit-reference",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type R={v:int}\n@@implicit operator (r:&int)->int\nensures true\n{return *r}\n"
+  },
+  {
+   "name": "implicit-identity",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\n@@implicit operator (p:P)->P\nensures true\n{return p}\n"
+  },
+  {
+   "name": "implicit-wrong-arity",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\nimplicit operator (a:P,@@b:P)->int\nensures true\n{return a.v}\n"
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "unmanaged-both",
+   "body": "let b=Box<int>(4)\nlet p=Op(inc)\nreturn b.value+p(3)",
+   "value": 8,
+   "type": "int",
+   "pre": "type Box<T> where T: unmanaged={value:T}\nunmanaged fn Op(a: int)->int;\nfn inc(a: int)->int\nensures true\n{return a+1}\n",
+   "cs": "return 8;"
+  },
+  {
+   "name": "unmanaged-call",
+   "body": "let p=Op(inc)\nreturn p(6)",
+   "value": 7,
+   "type": "int",
+   "pre": "type Box<T> where T: unmanaged={value:T}\nunmanaged fn Op(a: int)->int;\nfn inc(a: int)->int\nensures true\n{return a+1}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "unmanaged-constraint",
+   "body": "let b=Box<Pair>(Pair(3,4))\nreturn b.value.a+b.value.b",
+   "value": 7,
+   "type": "int",
+   "pre": "type Box<T> where T: unmanaged={value:T}\ntype Pair={a:int, b:int}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "unmanaged-bool",
+   "body": "let b=Box<bool>(true)\nif(b.value){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type Box<T> where T: unmanaged={value:T}\n",
+   "cs": "return 1;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "unmanaged-string",
+   "body": "let b=@@Box<string>(\"x\")\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where T: unmanaged={value:T}\nunmanaged fn Op(a: int)->int;\nfn inc(a: int)->int\nensures true\n{return a+1}\n"
+  },
+  {
+   "name": "unmanaged-object",
+   "body": "let b=@@Box<object>(null)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where T: unmanaged={value:T}\nunmanaged fn Op(a: int)->int;\nfn inc(a: int)->int\nensures true\n{return a+1}\n"
+  },
+  {
+   "name": "unmanaged-bad-signature",
+   "body": "let p=Op(@@two)\nreturn 0",
+   "code": "AI3107",
+   "pre": "unmanaged fn Op(a: int)->int;\nfn two(a: int, b: int)->int\nensures true\n{return a+b}\n"
+  },
+  {
+   "name": "unmanaged-bad-call",
+   "body": "let p=Op(inc)\nreturn @@p(1,2)",
+   "code": "AI3107",
+   "pre": "unmanaged fn Op(a: int)->int;\nfn inc(a: int)->int\nensures true\n{return a+1}\n"
+  }
+ ]
+}

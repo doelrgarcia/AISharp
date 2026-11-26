@@ -1,0 +1,216 @@
+{
+ "cases": [
+  {
+   "name": "sizeof-int",
+   "body": "return sizeof(int)",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "return sizeof(int);"
+  },
+  {
+   "name": "sizeof-uint",
+   "body": "return sizeof(uint)",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "return sizeof(uint);"
+  },
+  {
+   "name": "sizeof-long",
+   "body": "return sizeof(long)",
+   "type": "int",
+   "pre": "",
+   "value": 8,
+   "cs": "return sizeof(long);"
+  },
+  {
+   "name": "sizeof-ulong",
+   "body": "return sizeof(ulong)",
+   "type": "int",
+   "pre": "",
+   "value": 8,
+   "cs": "return sizeof(ulong);"
+  },
+  {
+   "name": "sizeof-byte",
+   "body": "return sizeof(byte)",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return sizeof(byte);"
+  },
+  {
+   "name": "sizeof-sbyte",
+   "body": "return sizeof(sbyte)",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return sizeof(sbyte);"
+  },
+  {
+   "name": "sizeof-short",
+   "body": "return sizeof(short)",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "return sizeof(short);"
+  },
+  {
+   "name": "sizeof-ushort",
+   "body": "return sizeof(ushort)",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "return sizeof(ushort);"
+  },
+  {
+   "name": "sizeof-char",
+   "body": "return sizeof(char)",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "return sizeof(char);"
+  },
+  {
+   "name": "sizeof-bool",
+   "body": "return sizeof(bool)",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return sizeof(bool);"
+  },
+  {
+   "name": "sizeof-float",
+   "body": "return sizeof(float)",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "return sizeof(float);"
+  },
+  {
+   "name": "sizeof-double",
+   "body": "return sizeof(double)",
+   "type": "int",
+   "pre": "",
+   "value": 8,
+   "cs": "return sizeof(double);"
+  },
+  {
+   "name": "sizeof-nint",
+   "body": "return sizeof(nint)",
+   "type": "int",
+   "pre": "",
+   "value32": 4,
+   "value64": 8,
+   "cs": "return System.Runtime.InteropServices.Marshal.SizeOf(typeof(nint));"
+  },
+  {
+   "name": "sizeof-nuint",
+   "body": "return sizeof(nuint)",
+   "type": "int",
+   "pre": "",
+   "value32": 4,
+   "value64": 8,
+   "cs": "return System.Runtime.InteropServices.Marshal.SizeOf(typeof(nuint));"
+  },
+  {
+   "name": "sizeof-arithmetic",
+   "body": "return sizeof(int)*2+sizeof(byte)",
+   "type": "int",
+   "pre": "",
+   "value": 9,
+   "cs": "return sizeof(int)*2+sizeof(byte);"
+  },
+  {
+   "name": "sizeof-constant",
+   "body": "const n:int=sizeof(long)+sizeof(short)\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 10,
+   "cs": "const int n=sizeof(long)+sizeof(short); return n;"
+  },
+  {
+   "name": "sizeof-struct-mixed",
+   "body": "return sizeof(Holder)",
+   "type": "int",
+   "pre": "type Holder={a:byte,b:int,c:byte}\n",
+   "extra": "public struct SizeMixed{public byte a;public int b;public byte c;}",
+   "value": 12,
+   "cs": "return System.Runtime.InteropServices.Marshal.SizeOf(typeof(SizeMixed));"
+  },
+  {
+   "name": "sizeof-struct-long",
+   "body": "return sizeof(Holder)",
+   "type": "int",
+   "pre": "type Holder={a:byte,b:long,c:byte}\n",
+   "extra": "public struct SizeLong{public byte a;public long b;public byte c;}",
+   "value": 24,
+   "cs": "return System.Runtime.InteropServices.Marshal.SizeOf(typeof(SizeLong));"
+  },
+  {
+   "name": "sizeof-struct-nested",
+   "body": "return sizeof(Outer)",
+   "type": "int",
+   "pre": "type Inner={a:short,b:short}\ntype Outer={x:byte,i:Inner}\n",
+   "extra": "public struct SizeInner{public short a;public short b;} public struct SizeOuter{public byte x;public SizeInner i;}",
+   "value": 6,
+   "cs": "return System.Runtime.InteropServices.Marshal.SizeOf(typeof(SizeOuter));"
+  },
+  {
+   "name": "sizeof-struct-aligned",
+   "body": "return sizeof(Holder)",
+   "type": "int",
+   "pre": "type Holder={a:short,b:int}\n",
+   "extra": "public struct SizeAligned{public short a;public int b;}",
+   "value": 8,
+   "cs": "return System.Runtime.InteropServices.Marshal.SizeOf(typeof(SizeAligned));"
+  },
+  {
+   "name": "sizeof-field-read",
+   "body": "let h=Holder(1,2)\nreturn sizeof(Holder)*10+h.a+h.b",
+   "type": "int",
+   "pre": "type Holder={a:int,b:int}\n",
+   "extra": "public struct SizeField{public int a;public int b;}",
+   "value": 83,
+   "cs": "var h=new SizeField{a=1,b=2}; return System.Runtime.InteropServices.Marshal.SizeOf(typeof(SizeField))*10+h.a+h.b;"
+  },
+  {
+   "name": "sizeof-unused-type",
+   "body": "return sizeof(int)",
+   "type": "int",
+   "pre": "type Holder={a:byte}\n",
+   "value": 4,
+   "cs": "return sizeof(int);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "sizeof-reference-type",
+   "body": "return @@sizeof(&int)",
+   "code": "AI3107"
+  },
+  {
+   "name": "sizeof-void",
+   "body": "return @@sizeof(void)",
+   "code": "AI3107"
+  },
+  {
+   "name": "sizeof-reference-field",
+   "body": "return @@sizeof(Holder)",
+   "code": "AI3107",
+   "pre": "type Holder={value:&int}\n"
+  },
+  {
+   "name": "sizeof-union",
+   "body": "return @@sizeof(Choice)",
+   "code": "AI3107",
+   "pre": "type Choice=A(int)|B\n"
+  },
+  {
+   "name": "sizeof-unknown-type",
+   "body": "return sizeof(@@UnknownType)",
+   "code": "AI3100"
+  }
+ ]
+}

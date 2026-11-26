@@ -1,0 +1,87 @@
+module banking.accounts
+
+intent "Account records and pure helpers: records, unions, contracts, and time-tagged operations"
+
+policy AccountPolicy {
+    classification = secret
+    inference = local_only
+    external_text = tainted
+    capabilities = separated
+    training = forbidden
+    telemetry = opt_in_aggregate
+}
+
+type AccountKind = Checking | Savings | Money
+
+type AccountStatus = Open | Frozen | Closed
+
+type Account = {
+    id: int,
+    balance: int,
+    kind: AccountKind,
+    status: AccountStatus
+}
+
+type LedgerEntry = {
+    accountId: int,
+    delta: int,
+    timestamp: int
+}
+
+fn openAccount(id: int, startingBalance: int, kind: AccountKind) -> Account
+    requires id > 0
+    requires startingBalance >= 0
+    ensures true
+{
+    let initialKind: AccountKind = kind
+    let initialStatus: AccountStatus = Open
+    return Account(id, startingBalance, initialKind, initialStatus)
+}
+
+fn deposit(account: Account, amount: int) -> Account
+    requires amount > 0
+    ensures true
+{
+    let newBalance = account.balance + amount
+    return Account(account.id, newBalance, account.kind, account.status)
+}
+
+fn withdraw(account: Account, amount: int) -> Account
+    requires amount > 0
+    requires account.balance >= amount
+    ensures true
+{
+    let newBalance = account.balance - amount
+    return Account(account.id, newBalance, account.kind, account.status)
+}
+
+fn freezeAccount(account: Account) -> Account
+    ensures true
+{
+    let frozen: AccountStatus = Frozen
+    return Account(account.id, account.balance, account.kind, frozen)
+}
+
+fn closeAccount(account: Account) -> Account
+    requires account.balance == 0
+    ensures true
+{
+    let closed: AccountStatus = Closed
+    return Account(account.id, account.balance, account.kind, closed)
+}
+
+fn ledgerEntry(accountId: int, delta: int, timestamp: int) -> LedgerEntry
+    effects [time]
+    requires accountId > 0
+    ensures true
+{
+    return LedgerEntry(accountId, delta, timestamp)
+}
+
+test "openAccount stamps initial state" {
+    expect openAccount(1, 100, Checking).balance == 100
+}
+
+test "deposit increases balance" {
+    expect deposit(openAccount(2, 50, Savings), 25).balance == 75
+}

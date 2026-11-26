@@ -1,0 +1,126 @@
+{
+ "cases": [
+  {
+   "name": "alias-int",
+   "body": "let x:MyInt=5\nreturn x",
+   "value": 5,
+   "type": "int",
+   "pre": "alias MyInt = int\n",
+   "cs": "int x=5; return x;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-int-sizeof",
+   "body": "return sizeof(MyInt)",
+   "value": 4,
+   "type": "int",
+   "pre": "alias MyInt = int\n",
+   "cs": "return sizeof(int);",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-chain",
+   "body": "let x:B=2\nreturn x",
+   "value": 2,
+   "type": "int",
+   "pre": "alias A = int\nalias B = A\n",
+   "cs": "int x=2; return x;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-cast",
+   "body": "return (MyInt)5.9",
+   "value": 5,
+   "type": "int",
+   "pre": "alias MyInt = int\n",
+   "cs": "return (int)5.9;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-function",
+   "body": "return f(4)",
+   "value": 5,
+   "type": "int",
+   "pre": "alias MyInt = int\nfn f(x:MyInt)->MyInt\nensures true\n{return x+1}\n",
+   "cs": "int F(int x)=>x+1; return F(4);",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-product-ctor",
+   "body": "let p=PA(3)\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={a:int}\nalias PA = P\n",
+   "cs": "var p=new P(3); return p.a;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-product-field",
+   "body": "let p:PA=P(4)\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "pre": "type P={a:int}\nalias PA = P\n",
+   "cs": "var p=new P(4); return p.a;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-enum",
+   "body": "let c:CA=Color.Green\nreturn (int)c",
+   "value": 1,
+   "type": "int",
+   "pre": "enum Color { Red, Green }\nalias CA = Color\n",
+   "cs": "Color c=Color.Green; return (int)c;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-enum-cast",
+   "body": "return (int)((CA)1)",
+   "value": 1,
+   "type": "int",
+   "pre": "enum Color { Red, Green }\nalias CA = Color\n",
+   "cs": "return (int)((Color)1);",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  },
+  {
+   "name": "alias-long",
+   "body": "let x:L=7L\nreturn (int)x",
+   "value": 7,
+   "type": "int",
+   "pre": "alias L = long\n",
+   "cs": "long x=7L; return (int)x;",
+   "extra": "public enum Color { Red, Green } public struct P{public int a; public P(int a){this.a=a;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "alias-duplicate",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "alias A = int\nalias @@A = long\n"
+  },
+  {
+   "name": "alias-product-conflict",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\nalias @@P = int\n"
+  },
+  {
+   "name": "alias-unknown-target",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "alias A = @@Unknown\n"
+  },
+  {
+   "name": "alias-self-cycle",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "alias A = @@A\n"
+  },
+  {
+   "name": "alias-type-arguments",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "alias A = int@@<int>\n"
+  }
+ ]
+}

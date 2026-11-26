@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/27",
+  "milestone": "delegate-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "delegate-call",
+    "delegate-second-target",
+    "delegate-parameter",
+    "delegate-two-vars"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 4,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 4,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

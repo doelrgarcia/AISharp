@@ -1,0 +1,85 @@
+{
+ "cases": [
+  {
+   "name": "global-construction",
+   "body": "let p=global::P(1,2)\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); return p.a*10+p.b;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  },
+  {
+   "name": "global-field-type",
+   "body": "let q=Q(global::P(3,4))\nreturn q.p.a+q.p.b",
+   "value": 7,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\ntype Q={p:global::P}\n",
+   "cs": "var q=new Q(new P(3,4)); return q.p.a+q.p.b;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  },
+  {
+   "name": "global-function-return",
+   "body": "let p=make()\nreturn p.a",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={a:int}\nfn make()->global::P\nensures true\n{return global::P(5)}\n",
+   "cs": "P Make()=>new P(5,0); var p=Make(); return p.a;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  },
+  {
+   "name": "global-enum-value",
+   "body": "if(global::Color.Red==Color.Red){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "enum Color { Red, Green }\n",
+   "cs": "Color c=Color.Red; if(c==Color.Red){return 1;} return 0;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  },
+  {
+   "name": "global-alias",
+   "body": "let x:global::A=4\nreturn x",
+   "value": 4,
+   "type": "int",
+   "pre": "alias A=int\n",
+   "cs": "int x=4; return x;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  },
+  {
+   "name": "global-initializer",
+   "body": "let p=global::P { a=6 }\nreturn p.a",
+   "value": 6,
+   "type": "int",
+   "pre": "type P={a:int}\n",
+   "cs": "var p=new P(6,0); return p.a;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  },
+  {
+   "name": "global-nested",
+   "body": "let q=global::Q(global::P(1,2))\nreturn q.p.a",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(1,2)); return q.p.a;",
+   "extra": "public class P{public int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public P p; public Q(P p){this.p=p;}} public enum Color{Red,Green}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "global-missing",
+   "body": "let p=global::@@Missing()\nreturn 0",
+   "code": "AI3103"
+  },
+  {
+   "name": "global-no-type",
+   "body": "let x:global::@@=0\nreturn x",
+   "code": "AI3106"
+  },
+  {
+   "name": "global-using-directive",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "@@global using int;\n"
+  }
+ ]
+}

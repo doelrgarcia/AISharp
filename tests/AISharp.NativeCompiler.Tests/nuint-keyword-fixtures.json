@@ -1,0 +1,108 @@
+{
+ "cases": [
+  {
+   "name": "common-add",
+   "body": "var v:nuint=5\nv+=2\nreturn (int)v",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "cs": "nuint v=5; v+=2; return (int)v;"
+  },
+  {
+   "name": "uint-maximum",
+   "body": "let v:nuint=4294967295u\nif(v>0){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "nuint v=4294967295u; return v>0?1:0;"
+  },
+  {
+   "name": "ulong-maximum",
+   "body": "let v:nuint=18446744073709551615ul\nif(v>0){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "code32": "AI3107",
+   "value64": 1
+  },
+  {
+   "name": "zero",
+   "body": "let v:nuint=0u\nreturn (int)v",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "nuint v=0u; return (int)v;"
+  },
+  {
+   "name": "constant-int",
+   "body": "let v:nuint=7\nreturn (int)v",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "cs": "nuint v=7; return (int)v;"
+  },
+  {
+   "name": "int-maximum",
+   "body": "let v:nuint=2147483647\nif(v>0){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "nuint v=2147483647; return v>0?1:0;"
+  },
+  {
+   "name": "cast-from-negative-fault",
+   "body": "var i:int=-1\nlet v:nuint=(nuint)i\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "error": "System.OverflowException",
+   "cs": "int i=-1; nuint v=(nuint)i; return 0;"
+  },
+  {
+   "name": "cast-unchecked-wrap",
+   "body": "var i:int=-1\nif(unchecked((nuint)i)>0u){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int i=-1; return unchecked((nuint)i)>0u?1:0;"
+  },
+  {
+   "name": "conversion-to-int",
+   "body": "let v:nuint=9u\nreturn (int)v",
+   "type": "int",
+   "pre": "",
+   "value": 9,
+   "cs": "nuint v=9u; return (int)v;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "negative-constant",
+   "body": "let v:nuint=@@-1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "bool-assignment",
+   "body": "let v:nuint=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "signed-mismatch",
+   "body": "var n:nint=1\nlet u:nuint=@@n\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "condition",
+   "body": "let v:nuint=1\nif(@@v){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (int)(@@nuint)true",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "override-get",
+   "body": "let d=new Derived(1)\nreturn d.get()",
+   "value": 2,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\nvirtual fn add(this: Base, x: int)->int\nensures true\n{return x+1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\noverride fn add(this: Derived, x: int)->int\nensures true\n{return x+2}\n",
+   "cs": "return 2;"
+  },
+  {
+   "name": "override-param",
+   "body": "let d=new Derived(1)\nreturn d.add(3)",
+   "value": 5,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\nvirtual fn add(this: Base, x: int)->int\nensures true\n{return x+1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\noverride fn add(this: Derived, x: int)->int\nensures true\n{return x+2}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "override-calls-base",
+   "body": "let d=new Derived(1)\nreturn d.get()+d.add(1)",
+   "value": 5,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\nvirtual fn add(this: Base, x: int)->int\nensures true\n{return x+1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\noverride fn add(this: Derived, x: int)->int\nensures true\n{return x+2}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "override-default-and-override",
+   "body": "let b=new Base(1)\nlet d=new Derived(2)\nreturn b.add(4)+d.add(4)",
+   "value": 11,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\nvirtual fn add(this: Base, x: int)->int\nensures true\n{return x+1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\noverride fn add(this: Derived, x: int)->int\nensures true\n{return x+2}\n",
+   "cs": "return 11;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "override-no-virtual",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\noverride fn @@m(this: Base)->int\nensures true\n{return 1}\n"
+  },
+  {
+   "name": "override-signature",
+   "body": "let d=new Derived(1)\nreturn d.get(2)",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\noverride fn @@get(this: Derived, x: int)->int\nensures true\n{return x}\n"
+  },
+  {
+   "name": "override-not-derived",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\nclass Other={w:int}\nvirtual fn m(this: Base)->int\nensures true\n{return 1}\noverride fn @@m(this: Other)->int\nensures true\n{return 2}\n"
+  },
+  {
+   "name": "override-wrong-return",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn m(this: Base)->int\nensures true\n{return 1}\noverride fn @@m(this: Derived)->bool\nensures true\n{return true}\n"
+  }
+ ]
+}

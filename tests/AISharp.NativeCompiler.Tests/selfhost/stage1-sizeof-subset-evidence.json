@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "sizeof-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "sizeof-int",
+    "sizeof-uint",
+    "sizeof-long",
+    "sizeof-ulong",
+    "sizeof-byte",
+    "sizeof-sbyte",
+    "sizeof-short",
+    "sizeof-ushort",
+    "sizeof-char",
+    "sizeof-bool",
+    "sizeof-float",
+    "sizeof-double",
+    "sizeof-arithmetic",
+    "sizeof-constant",
+    "sizeof-struct-mixed",
+    "sizeof-struct-long",
+    "sizeof-struct-nested",
+    "sizeof-struct-aligned",
+    "sizeof-field-read",
+    "sizeof-unused-type"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 20,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 20,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 20,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 20,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

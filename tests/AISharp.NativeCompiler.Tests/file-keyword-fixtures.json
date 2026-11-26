@@ -1,0 +1,96 @@
+{
+ "cases": [
+  {
+   "name": "file-type-basic",
+   "body": "let p=P(3)\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "cs": "var p=new P(3); return p.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class QF{public P p; public QF(P p){this.p=p;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "file type P={a:int}\n"
+  },
+  {
+   "name": "file-type-field",
+   "body": "let q=QF(P(2))\nreturn q.p.a",
+   "value": 2,
+   "type": "int",
+   "cs": "var q=new QF(new P(2)); return q.p.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class QF{public P p; public QF(P p){this.p=p;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "file type P={a:int}\ntype QF={p:P}\n"
+  },
+  {
+   "name": "file-type-function",
+   "body": "let p=make()\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "cs": "int Make()=>4; return Make();",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class QF{public P p; public QF(P p){this.p=p;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "file type P={a:int}\nfn make()->P\nensures true\n{return P(4)}\n"
+  },
+  {
+   "name": "file-type-initializer",
+   "body": "let p=P { a=5 }\nreturn p.a",
+   "value": 5,
+   "type": "int",
+   "cs": "var p=new P(5); return p.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class QF{public P p; public QF(P p){this.p=p;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "file type P={a:int}\n"
+  },
+  {
+   "name": "file-type-with",
+   "body": "let p=P(1)\nlet q=p with {a=6}\nreturn q.a",
+   "value": 6,
+   "type": "int",
+   "cs": "var p=new P(1); var q=new P(6); return q.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class QF{public P p; public QF(P p){this.p=p;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "file type P={a:int}\n"
+  },
+  {
+   "name": "file-type-multiple",
+   "body": "let p=P(1)\nlet q=Q(2)\nreturn p.a+q.a",
+   "value": 3,
+   "type": "int",
+   "cs": "var p=new P(1); var q=new Q(2); return p.a+q.a;",
+   "extra": "public class P{public int a; public P(int a){this.a=a;}} public class QF{public P p; public QF(P p){this.p=p;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "file type P={a:int}\nfile type Q={a:int}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "file-enum",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@file enum E { A }\n"
+  },
+  {
+   "name": "file-generic",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "file type @@P<T>={a:T}\n"
+  },
+  {
+   "name": "file-duplicate",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@file file type P={a:int}\n"
+  },
+  {
+   "name": "file-not-type",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@file fn f()->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "file-alias",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@file alias A=int\n"
+  },
+  {
+   "name": "file-union",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "file type @@U=A|B\n"
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+module banking.summaries
+
+intent "Schema-constrained model call that summarizes account activity into a structured record"
+
+policy SummaryPolicy {
+    classification = secret
+    inference = local_only
+    external_text = tainted
+    capabilities = separated
+    training = forbidden
+    telemetry = opt_in_aggregate
+}
+
+schema AccountSummarySchema = {
+    accountId: int,
+    headline: string,
+    riskLevel: int
+}
+
+type AccountSummary = {
+    accountId: int,
+    headline: string,
+    riskLevel: int
+}
+
+fn defaultSummary(accountId: int) -> AccountSummary
+    requires accountId > 0
+    ensures true
+{
+    let headline = "no-activity"
+    let baselineRisk = 0
+    return AccountSummary(accountId, headline, baselineRisk)
+}
+
+fn escalate(summary: AccountSummary, addedRisk: int) -> AccountSummary
+    requires addedRisk >= 0
+    ensures true
+{
+    let raised = summary.riskLevel + addedRisk
+    return AccountSummary(summary.accountId, summary.headline, raised)
+}
+
+fn summarizeActivity(accountId: int, activityDigest: string) -> AccountSummarySchema
+    effects [model]
+    requires accountId > 0
+    ensures true
+{
+    let summary: AccountSummarySchema = model local "summarizer-v1"
+        .task("summarize account activity")
+        .input(activityDigest)
+        .output<AccountSummarySchema>()
+        .replay(seed = 1, temperature = 0.0)
+        .capture_provenance()
+        .run()
+    return summary
+}
+
+test "defaultSummary preserves account id" {
+    expect defaultSummary(7).accountId == 7
+}
+
+test "escalate raises risk by the provided delta" {
+    expect escalate(defaultSummary(7), 3).riskLevel == 3
+}

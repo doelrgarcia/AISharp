@@ -1,0 +1,64 @@
+{
+ "cases": [
+  {
+   "name": "notnull-int",
+   "body": "let b=Box<int>(5)\nreturn b.value",
+   "value": 5,
+   "type": "int",
+   "pre": "type Box<T> where T:notnull={value:T}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "notnull-product",
+   "body": "let b=Box<P>(P(3))\nreturn b.value.a",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={a:int}\ntype Box<T> where T:notnull={value:T}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "notnull-multi-params",
+   "body": "let p=Pair<int,int>(2,3)\nreturn p.a*10+p.b",
+   "value": 23,
+   "type": "int",
+   "pre": "type Pair<T,U> where T:notnull where U:notnull={a:T, b:U}\n",
+   "cs": "return 23;"
+  },
+  {
+   "name": "notnull-nested",
+   "body": "let b=Box<Box<int>>(Box<int>(4))\nreturn b.value.value",
+   "value": 4,
+   "type": "int",
+   "pre": "type Box<T> where T:notnull={value:T}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "notnull-unconstrained-string",
+   "body": "let b=Box<string>(\"x\")\nreturn 1",
+   "value": 1,
+   "type": "int",
+   "pre": "type Box<T>={value:T}\n",
+   "cs": "return 1;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "notnull-string",
+   "body": "let b=@@Box<string>(\"x\")\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where T:notnull={value:T}\n"
+  },
+  {
+   "name": "notnull-unknown-param",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where @@U:notnull={value:T}\n"
+  },
+  {
+   "name": "notnull-unknown-constraint",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where T:@@foo={value:T}\n"
+  }
+ ]
+}

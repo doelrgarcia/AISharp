@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/7",
+  "milestone": "stage1-codegen-compiles-lexer",
+  "lexerSourceSha256": "c9ac00c6ecc521574704ba1abd7fd146a4a7709f58b13452b79d0ec12ad868a8",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "checks": [
+    {
+      "host": "32",
+      "codegenSha256": "2c39fca77eedf9dac5da75eea20d815c581bcf8962e9d05468acfd1b11bd7796",
+      "referenceLexerSha256": "d95cf486fb18328078235a55bed307ae4704f601059717ae8d2509e2cf117ebd",
+      "generatedC": "lexer-32.c",
+      "tokensMatched": true
+    },
+    {
+      "host": "64",
+      "codegenSha256": "5d0415ce5f1815d6e6087138720bc79bb86bb597fc67971b7640e2fe7d95e3a8",
+      "referenceLexerSha256": "fa44d3a08deb1dd6561cbdf084f7b12ae402cad17f17e22cffd75aacd71a5041",
+      "generatedC": "lexer-64.c",
+      "tokensMatched": true
+    },
+    {
+      "host": "32d",
+      "codegenSha256": "144b7e334e40fa784a62f3b62a1843779899ba0d9e8ffe61d930ed240e4c4672",
+      "referenceLexerSha256": "2faa8d0d3bc576e37918bb284bb9bee6e84939d46d9354cc6050e37de5bd41a5",
+      "generatedC": "lexer-32d.c",
+      "tokensMatched": true
+    },
+    {
+      "host": "64d",
+      "codegenSha256": "a3eeae97fde020d906c476f40991a066d71c06b9a38a061c58d88cfe5209f416",
+      "referenceLexerSha256": "176571b12e08b2bf25bce83deb403c40db8b645857af7d7130c2466202f0df52",
+      "generatedC": "lexer-64d.c",
+      "tokensMatched": true
+    }
+  ],
+  "ok": true
+}

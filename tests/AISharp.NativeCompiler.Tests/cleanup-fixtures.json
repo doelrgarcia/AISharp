@@ -1,0 +1,356 @@
+{
+ "cases": [
+  {
+   "name": "loop-break",
+   "types": "",
+   "body": " var n:int=0\n while(n<3)\n {\n  let b=buffer(4)\n  n=n+1\n  if(n==2){break}\n }\n return 0",
+   "value": 0,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "loop-continue",
+   "types": "",
+   "body": " var n:int=0\n while(n<3)\n {\n  let b=buffer(4)\n  n=n+1\n  if(n<3){continue}\n }\n return 0",
+   "value": 0,
+   "allocations": 3,
+   "releases": 3
+  },
+  {
+   "name": "continue-nested",
+   "types": "",
+   "body": " var n:int=0\n while(n<3)\n {\n  let b=buffer(2)\n  {\n   let c=buffer(3)\n   n=n+1\n   if(n<3){continue}\n  }\n }\n return 0",
+   "value": 0,
+   "allocations": 6,
+   "releases": 6
+  },
+  {
+   "name": "break-nested",
+   "types": "",
+   "body": " var n:int=0\n while(n<3)\n {\n  let b=buffer(2)\n  {\n   let c=buffer(3)\n   n=n+1\n   break\n  }\n }\n return n",
+   "value": 1,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "preserve-enclosing",
+   "types": "",
+   "body": " let keep=buffer(5)\n var n:int=0\n while(n<2)\n {\n  let b=buffer(2)\n  n=n+1\n  if(n==1){continue}\n  break\n }\n let k=bufferSize(&keep)\n return k",
+   "value": 5,
+   "allocations": 3,
+   "releases": 3
+  },
+  {
+   "name": "nested-block",
+   "types": "",
+   "body": " {\n  let a=buffer(2)\n  {\n   let b=buffer(3)\n  }\n }\n return 0",
+   "value": 0,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "partial-init",
+   "types": "type T={ a:owned buffer, b:int, c:owned buffer }\n",
+   "body": " var p:T\n p.a=buffer(2)\n p.c=buffer(3)\n let n=bufferSize(&p.a)+bufferSize(&p.c)\n return n",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "partial-move",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let x=p.a\n let n=bufferSize(&x)+bufferSize(&p.b)\n return n",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "partial-init-then-move",
+   "types": "type T={ a:owned buffer, b:int, c:owned buffer }\n",
+   "body": " var p:T\n p.a=buffer(2)\n p.c=buffer(3)\n let x=p.a\n let n=bufferSize(&x)+bufferSize(&p.c)\n return n",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "loop-field-reinit",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " var p=T(buffer(2),buffer(3))\n var n:int=0\n while(n<2)\n {\n  let old=p.a\n  p.a=buffer(bufferSize(&old))\n  n=n+1\n }\n let m=bufferSize(&p.a)+bufferSize(&p.b)\n return m",
+   "value": 5,
+   "allocations": 4,
+   "releases": 4,
+   "dropOrder": [
+    1,
+    3,
+    4,
+    2
+   ]
+  },
+  {
+   "name": "break-product",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " var n:int=0\n while(n<2)\n {\n  let p=T(buffer(2),buffer(3))\n  n=n+1\n  if(n==1){break}\n }\n return 0",
+   "value": 0,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "continue-product",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " var n:int=0\n while(n<3)\n {\n  let p=T(buffer(2),buffer(3))\n  n=n+1\n  if(n<3){continue}\n }\n return 0",
+   "value": 0,
+   "allocations": 6,
+   "releases": 6
+  },
+  {
+   "name": "nested-product-scope",
+   "types": "type T={ a:owned buffer, b:int, c:owned buffer }\n",
+   "body": " {\n  var p:T\n  p.a=buffer(2)\n  let n=bufferSize(&p.a)\n }\n return 0",
+   "value": 0,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "return-field-expression",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n return bufferSize(&p.a)",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "return-intermediate-value",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let n=bufferSize(&p.a)\n return n",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "return-helper-product",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn take(p:T)->int ensures true {let n=bufferSize(&p.a)\nreturn n}\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let n=take(p)\n return n",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "return-scalar-after-buffer",
+   "types": "",
+   "body": " let b=buffer(2)\n return bufferSize(&b)",
+   "value": 2,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "return-product-owner",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn make()->T ensures true {let p=T(buffer(2),buffer(3))\nreturn p}\n",
+   "body": " let q=make()\n let n=bufferSize(&q.a)+bufferSize(&q.b)\n return n",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "return-buffer-owner",
+   "types": "fn make()->owned buffer ensures true {let b=buffer(3)\nreturn b}\n",
+   "body": " let b=make()\n let n=bufferSize(&b)\n return n",
+   "value": 3,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "nested-return-expression",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n {\n return bufferSize(&p.a)\n }",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "loop-return-expression",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n var n:int=0\n while(n<1)\n {\n return bufferSize(&p.a)\n }\n return 8",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "ordered-field-drop",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let a=buffer(2)\n let b=buffer(3)\n let p=T(a,b)\n return bufferSize(&p.a)",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ],
+   "stage1DropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "ordered-callee-drop",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn take(p:T)->int ensures true {let n=bufferSize(&p.a)\nreturn n}\n",
+   "body": " let a=buffer(2)\n let b=buffer(3)\n let p=T(a,b)\n let n=take(p)\n return n",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ],
+   "stage1DropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "return-match-buffer",
+   "types": "",
+   "body": " let b=buffer(2)\n let m=1\n return match m {1=>bufferSize(&b), _=>0}",
+   "value": 2,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "return-match-product",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let a=buffer(2)\n let b=buffer(3)\n let p=T(a,b)\n let m=1\n return match m {1=>bufferSize(&p.a), _=>0}",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ],
+   "stage1DropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "return-with-expression",
+   "types": "type P={x:int}\nfn mk()->P ensures true {\nlet b=buffer(2)\nlet p=P(1)\nreturn p with { x=bufferSize(&b) }\n}\n",
+   "body": " let q=mk()\n return q.x",
+   "value": 2,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "return-eval-once-expression",
+   "types": "",
+   "body": " let b=buffer(2)\n var x=1\n return (x + (x = 2)) + bufferSize(&b) - 2",
+   "value": 3,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "return-parameter-buffer",
+   "types": "fn id(b:owned buffer)->owned buffer ensures true {\nreturn b\n}\n",
+   "body": " let b=buffer(3)\n let c=id(b)\n return bufferSize(&c)",
+   "value": 3,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "return-parameter-product",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn id(p:T)->T ensures true {\nreturn p\n}\n",
+   "body": " let a=buffer(2)\n let b=buffer(3)\n let p=T(a,b)\n let q=id(p)\n return bufferSize(&q.a)+bufferSize(&q.b)",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ],
+   "stage1DropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "return-parameter-field",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn first(p:T)->owned buffer ensures true {\nreturn p.a\n}\n",
+   "body": " let a=buffer(2)\n let b=buffer(3)\n let p=T(a,b)\n let x=first(p)\n return bufferSize(&x)",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    2,
+    1
+   ],
+   "stage1DropOrder": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "return-aggregate-locals",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn mk()->T ensures true {\nlet a=buffer(2)\nlet b=buffer(3)\nreturn T(a,b)\n}\n",
+   "body": " let q=mk()\n return bufferSize(&q.a)+bufferSize(&q.b)",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ],
+   "stage1DropOrder": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "return-aggregate-fields",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn mk(p:T)->T ensures true {\nreturn T(p.a,p.b)\n}\n",
+   "body": " let a=buffer(2)\n let b=buffer(3)\n let p=T(a,b)\n let q=mk(p)\n return bufferSize(&q.a)+bufferSize(&q.b)",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2,
+   "dropOrder": [
+    1,
+    2
+   ],
+   "stage1DropOrder": [
+    1,
+    2
+   ]
+  }
+ ],
+ "negative": [
+  {
+   "name": "moved-field-use",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let x=p.a\n let n=p.a\n return 0"
+  },
+  {
+   "name": "uninitialized-field-read",
+   "types": "type T={ a:owned buffer, b:int, c:owned buffer }\n",
+   "body": " var p:T\n p.b=1\n return bufferLength(p.a)"
+  }
+ ],
+ "faults": [
+  {
+   "name": "return-fault-expression",
+   "types": "type T={ a:owned buffer, b:owned buffer }\n",
+   "body": " let p=T(buffer(2),buffer(3))\n return bufferSize(&p.a)+bufferPeek(&p.b,99)",
+   "fault": "System.IndexOutOfRangeException",
+   "allocations": 2,
+   "stage1Releases": 2
+  }
+ ]
+}

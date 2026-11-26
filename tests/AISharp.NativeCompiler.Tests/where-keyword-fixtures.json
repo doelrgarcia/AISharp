@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "where-class",
+   "body": "let d=new Derived(3)\nlet b=RefBox<Derived>(d)\nreturn b.value.b",
+   "value": 3,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "where-base",
+   "body": "let d=new Derived(4)\nlet b=BaseBox<Derived>(d)\nreturn b.value.b",
+   "value": 4,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "where-unmanaged",
+   "body": "let b=ValueBox<int>(7)\nreturn b.value",
+   "value": 7,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "where-two-params",
+   "body": "let d=new Derived(2)\nlet p=Pair<Derived, int>(d, 5)\nreturn p.second",
+   "value": 5,
+   "type": "int",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\ntype Pair<T, U> where T: class where U: unmanaged={first:T, second:U}\n",
+   "cs": "return 5;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "where-class-value",
+   "body": "let b=@@RefBox<int>(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\n"
+  },
+  {
+   "name": "where-base-unrelated",
+   "body": "let b=@@BaseBox<Other>(Other(1))\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\nclass Other={o:int}\n"
+  },
+  {
+   "name": "where-unmanaged-string",
+   "body": "let b=@@ValueBox<string>(\"x\")\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\n"
+  },
+  {
+   "name": "where-unknown-base",
+   "body": "let b=@@BaseBox<int>(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Base={a:int}\nclass Derived: Base={b:int}\ntype RefBox<T> where T: class={value:T}\ntype BaseBox<T> where T: Base={value:T}\ntype ValueBox<T> where T: unmanaged={value:T}\n"
+  }
+ ]
+}

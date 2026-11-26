@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/37",
+  "milestone": "finally-control-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "finally-normal",
+    "finally-return",
+    "finally-break",
+    "finally-continue",
+    "finally-fail"
+  ],
+  "excluded": [],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 5,
+      "excluded": [],
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 5,
+      "excluded": [],
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 5,
+      "excluded": [],
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 5,
+      "excluded": [],
+      "ok": true
+    }
+  ],
+  "ok": true
+}

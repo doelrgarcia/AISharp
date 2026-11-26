@@ -1,0 +1,326 @@
+module Stage1Lexer
+intent "stage1-lexer"
+fn emit32(out:&mut owned buffer, pos:int, value:int)->int
+ensures true
+{
+bufferWrite(out, pos, value%256)
+bufferWrite(out, pos+1, (value/256)%256)
+bufferWrite(out, pos+2, (value/65536)%256)
+bufferWrite(out, pos+3, (value/16777216)%256)
+return pos+4
+}
+fn emit4(out:&mut owned buffer, pos:int, lo:int, hi:int)->int
+ensures true
+{
+bufferWrite(out, pos, lo%256)
+bufferWrite(out, pos+1, (lo/256)%256)
+bufferWrite(out, pos+2, hi%256)
+bufferWrite(out, pos+3, (hi/256)%256)
+return pos+4
+}
+fn ident_start(c:int)->bool
+ensures true
+{
+if(c>=65 && c<=90)
+{
+return true
+}
+if(c>=97 && c<=122)
+{
+return true
+}
+return c==95
+}
+fn ident_part(c:int)->bool
+ensures true
+{
+if(ident_start(c))
+{
+return true
+}
+return c>=48 && c<=57
+}
+fn hex_digit(c:int)->int
+ensures true
+{
+if(c>=48 && c<=57){return c-48}
+if(c>=65 && c<=70){return c-55}
+if(c>=97 && c<=102){return c-87}
+return -1
+}
+fn main()->int
+ensures true
+{
+let source=fileRead(args[0])
+var out=buffer(bufferSize(&source)*16+64)
+var i=0
+var pos=0
+var written=0
+while(i<bufferSize(&source))
+{
+let c=bufferPeek(&source,i)
+if(c==32 || c==9 || c==10 || c==13)
+{
+i=i+1
+}
+else
+{
+if(c==64 && i+1<bufferSize(&source) && ident_start(bufferPeek(&source,i+1)))
+{
+let start=i+1
+i=i+1
+while(i<bufferSize(&source) && ident_part(bufferPeek(&source,i)))
+{
+i=i+1
+}
+pos=emit32(&mut out,pos,5)
+pos=emit32(&mut out,pos,0)
+pos=emit32(&mut out,pos,start)
+pos=emit32(&mut out,pos,i-start)
+written=written+1
+}
+else
+{
+if(ident_start(c))
+{
+let start=i
+i=i+1
+while(i<bufferSize(&source) && ident_part(bufferPeek(&source,i)))
+{
+i=i+1
+}
+pos=emit32(&mut out,pos,1)
+pos=emit32(&mut out,pos,0)
+pos=emit32(&mut out,pos,start)
+pos=emit32(&mut out,pos,i-start)
+written=written+1
+}
+else
+{
+if((c>=48 && c<=57) || (c==46 && i+1<bufferSize(&source) && bufferPeek(&source,i+1)>=48 && bufferPeek(&source,i+1)<=57))
+{
+let start=i
+if(c==48 && i+1<bufferSize(&source) && (bufferPeek(&source,i+1)==120 || bufferPeek(&source,i+1)==88))
+{
+i=i+2
+var hlo=0
+var hhi=0
+while(i<bufferSize(&source) && hex_digit(bufferPeek(&source,i))>=0)
+{
+let hd=hex_digit(bufferPeek(&source,i))
+hlo=hlo*16+hd
+hhi=hhi*16+hlo/65536
+hlo=hlo%65536
+hhi=hhi%65536
+i=i+1
+}
+if(i<bufferSize(&source) && (bufferPeek(&source,i)==76 || bufferPeek(&source,i)==108 || bufferPeek(&source,i)==85 || bufferPeek(&source,i)==117))
+{
+let hsf=bufferPeek(&source,i)
+i=i+1
+if((hsf==85 || hsf==117) && i<bufferSize(&source) && (bufferPeek(&source,i)==76 || bufferPeek(&source,i)==108)){i=i+1}
+if((hsf==76 || hsf==108) && i<bufferSize(&source) && (bufferPeek(&source,i)==85 || bufferPeek(&source,i)==117)){i=i+1}
+}
+pos=emit32(&mut out,pos,2)
+pos=emit4(&mut out,pos,hlo,hhi)
+pos=emit32(&mut out,pos,start)
+pos=emit32(&mut out,pos,i-start)
+written=written+1
+}
+else
+{
+var lo=0
+var hi=0
+var before_dot=1
+if(c==46){i=i+1
+before_dot=0}
+while(i<bufferSize(&source) && ((bufferPeek(&source,i)>=48 && bufferPeek(&source,i)<=57) || bufferPeek(&source,i)==95))
+{
+if(bufferPeek(&source,i)>=48 && bufferPeek(&source,i)<=57 && before_dot==1)
+{
+let dg=bufferPeek(&source,i)-48
+lo=lo*10+dg
+hi=hi*10+lo/65536
+lo=lo%65536
+hi=hi%65536
+}
+i=i+1
+}
+if(i<bufferSize(&source) && bufferPeek(&source,i)==46 && before_dot==1)
+{
+i=i+1
+before_dot=0
+while(i<bufferSize(&source) && ((bufferPeek(&source,i)>=48 && bufferPeek(&source,i)<=57) || bufferPeek(&source,i)==95)){i=i+1}
+}
+var exp=0
+var esign=1
+if(i<bufferSize(&source) && (bufferPeek(&source,i)==101 || bufferPeek(&source,i)==69))
+{
+i=i+1
+if(i<bufferSize(&source) && (bufferPeek(&source,i)==43 || bufferPeek(&source,i)==45))
+{
+if(bufferPeek(&source,i)==45){esign=-1}
+i=i+1
+}
+while(i<bufferSize(&source) && bufferPeek(&source,i)>=48 && bufferPeek(&source,i)<=57)
+{
+exp=exp*10+bufferPeek(&source,i)-48
+i=i+1
+}
+}
+if(esign<0){exp=0-exp}
+if(exp>0 && exp<=4)
+{
+var factor=1
+var e2=0
+while(e2<exp){factor=factor*10
+e2=e2+1}
+lo=lo*factor
+hi=hi*factor+lo/65536
+lo=lo%65536
+hi=hi%65536
+}
+if(exp<0 && exp>=-4 && hi==0)
+{
+var dfactor=1
+var e3=0
+while(e3<0-exp){dfactor=dfactor*10
+e3=e3+1}
+lo=lo/dfactor
+}
+if(i<bufferSize(&source) && (bufferPeek(&source,i)==76 || bufferPeek(&source,i)==108 || bufferPeek(&source,i)==85 || bufferPeek(&source,i)==117 || bufferPeek(&source,i)==70 || bufferPeek(&source,i)==102 || bufferPeek(&source,i)==68 || bufferPeek(&source,i)==100 || bufferPeek(&source,i)==77 || bufferPeek(&source,i)==109))
+{
+let sf=bufferPeek(&source,i)
+i=i+1
+if((sf==85 || sf==117) && i<bufferSize(&source) && (bufferPeek(&source,i)==76 || bufferPeek(&source,i)==108)){i=i+1}
+if((sf==76 || sf==108) && i<bufferSize(&source) && (bufferPeek(&source,i)==85 || bufferPeek(&source,i)==117)){i=i+1}
+}
+pos=emit32(&mut out,pos,2)
+pos=emit4(&mut out,pos,lo,hi)
+pos=emit32(&mut out,pos,start)
+pos=emit32(&mut out,pos,i-start)
+written=written+1
+}
+}
+else
+{
+if(c==34)
+{
+let start=i
+i=i+1
+var done=0
+while(i<bufferSize(&source) && done==0)
+{
+let d=bufferPeek(&source,i)
+if(d==92)
+{
+i=i+2
+}
+else
+{
+if(d==34)
+{
+done=1
+}
+i=i+1
+}
+}
+pos=emit32(&mut out,pos,3)
+pos=emit32(&mut out,pos,0)
+pos=emit32(&mut out,pos,start)
+pos=emit32(&mut out,pos,i-start)
+written=written+1
+}
+else
+{
+if(c==39)
+{
+let start=i
+i=i+1
+var cv=0
+if(i<bufferSize(&source))
+{
+let e=bufferPeek(&source,i)
+if(e==92 && i+1<bufferSize(&source))
+{
+i=i+1
+let e2=bufferPeek(&source,i)
+var handled=0
+if(e2==110){cv=10
+handled=1}
+if(handled==0 && e2==116){cv=9
+handled=1}
+if(handled==0 && e2==114){cv=13
+handled=1}
+if(handled==0 && e2==48){cv=0
+handled=1}
+if(handled==0 && e2==120)
+{
+i=i+1
+var hv=0
+while(i<bufferSize(&source) && hex_digit(bufferPeek(&source,i))>=0)
+{
+hv=hv*16+hex_digit(bufferPeek(&source,i))
+i=i+1
+}
+cv=hv
+handled=1
+i=i-1
+}
+if(handled==0 && e2==117)
+{
+i=i+1
+var uv=0
+var un=0
+while(un<4 && i<bufferSize(&source) && hex_digit(bufferPeek(&source,i))>=0)
+{
+uv=uv*16+hex_digit(bufferPeek(&source,i))
+i=i+1
+un=un+1
+}
+cv=uv
+handled=1
+i=i-1
+}
+if(handled==0){cv=e2}
+i=i+1
+}
+else{cv=e
+i=i+1}
+}
+if(i<bufferSize(&source) && bufferPeek(&source,i)==39){i=i+1}
+pos=emit32(&mut out,pos,6)
+pos=emit32(&mut out,pos,cv)
+pos=emit32(&mut out,pos,start)
+pos=emit32(&mut out,pos,i-start)
+written=written+1
+}
+else
+{
+pos=emit32(&mut out,pos,4)
+pos=emit32(&mut out,pos,c)
+pos=emit32(&mut out,pos,i)
+pos=emit32(&mut out,pos,1)
+written=written+1
+i=i+1
+}
+}
+}
+}
+}
+}
+}
+pos=emit32(&mut out,pos,0)
+pos=emit32(&mut out,pos,written)
+pos=emit32(&mut out,pos,bufferSize(&source))
+pos=emit32(&mut out,pos,0)
+var exact=buffer(pos)
+var k=0
+while(k<pos)
+{
+bufferWrite(&mut exact,k,bufferPeek(&out,k))
+k=k+1
+}
+fileWrite(args[1],exact)
+return 0
+}

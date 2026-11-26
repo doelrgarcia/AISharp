@@ -1,0 +1,130 @@
+{
+  "cases": [
+    {
+      "name": "ir-two-sided-join",
+      "pre": "fn choose(b: bool) -> int\nensures true\n{var x: int\nif(b){x=7}else{x=9}\nreturn x}\n",
+      "body": "return choose(true)+choose(false)",
+      "value": 16
+    },
+    {
+      "name": "ir-nested-short-circuit",
+      "body": "var n=0\nlet a=false\nlet b=true\nlet z=(a || (b && ((n=4)==4))) && ((n+=3)==7)\nif(z){return n}\nreturn -1",
+      "value": 7
+    },
+    {
+      "name": "ir-constant-short-circuit-skip",
+      "body": "var n=0\nlet a=false && ((n=1)==1)\nlet b=true || ((n=2)==2)\nreturn n",
+      "value": 0
+    },
+    {
+      "name": "ir-constant-short-circuit-take",
+      "body": "var n=0\nlet a=true && ((n=3)==3)\nlet b=false || ((n+=4)==7)\nreturn n",
+      "value": 7
+    },
+    {
+      "name": "ir-lexical-shadow-identities",
+      "body": "var total=0\n{let value=3\ntotal+=value}\n{let value=4\ntotal+=value}\nreturn total",
+      "value": 7
+    },
+    {
+      "name": "ir-nested-loop-exits",
+      "body": "var total=0\nfor(var i=0;i<4;i++){let outer=i\nvar j=0\nwhile(j<4){let inner=j\nj++\nif(inner==1){continue}\nif(inner==3){break}\ntotal+=outer+inner}}\nreturn total",
+      "value": 20
+    },
+    {
+      "name": "ir-early-return-scopes",
+      "pre": "fn choose(b: bool) -> int\nensures true\n{let outer=5\n{let inner=7\nif(b){return outer+inner}}\nreturn outer}\n",
+      "body": "return choose(true)+choose(false)",
+      "value": 17
+    },
+    {
+      "name": "ir-unit-fallthrough",
+      "pre": "fn notice(n: int) -> unit\nensures true\n{let copy=n}\n",
+      "body": "notice(3)\nreturn 6",
+      "value": 6
+    },
+    {
+      "name": "ir-dead-code",
+      "body": "return 8\nvar dead=9\ndead++",
+      "value": 8
+    },
+    {
+      "name": "ir-constant-dead-branch",
+      "body": "const yes=true\nvar x: int\nif(yes){x=9}else{let never=4}\nreturn x",
+      "value": 9
+    },
+    {
+      "name": "ir-return-from-loop",
+      "body": "for(var i=0;i<3;i++){let copy=i\nif(copy==1){return copy+9}}\nreturn 0",
+      "value": 10
+    },
+    {
+      "name": "ir-call-snapshot-wrap",
+      "pre": "fn pair(a: int,b: int) -> int\nensures true\n{return unchecked(a+b)}\n",
+      "body": "var n=2147483647\nreturn pair(n,unchecked(++n))",
+      "value": -1
+    },
+    {
+      "name": "ir-proven-dead-reads",
+      "body": "var n: int\nif(false){let a=n}\nwhile(false){let b=n}\nlet skipped=false && (n==1)\nreturn 11",
+      "value": 11
+    },
+    {
+      "name": "ir-proven-dead-update",
+      "body": "var n: int\nfor(;true;n++){return 12}",
+      "value": 12
+    },
+    {
+      "name": "ir-possible-initialization",
+      "pre": "fn maybe(b: bool) -> int\nensures true\n{var n: int\nif(b){n=1}\nn=2\nreturn n}\n",
+      "body": "return maybe(true)+maybe(false)",
+      "value": 4
+    }
+  ],
+  "negative": [
+    {
+      "name": "ir-uninitialized-join",
+      "body": "var n: int\nlet b=true\nif(b){n=1}\nreturn @@n",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "ir-conflicting-borrow",
+      "body": "var x=1\nlet p=&x\nx@@=2\nreturn *p",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "ir-invalid-owner",
+      "body": "var n: @@owned int=1\nreturn 0",
+      "code": "AI3100",
+      "length": 5
+    },
+    {
+      "name": "ir-invalid-lifetime-escape",
+      "body": "{let n=1}\nreturn @@n",
+      "code": "AI3103",
+      "length": 1
+    },
+    {
+      "name": "ir-invalid-immutable",
+      "body": "let n=1\n@@n=2\nreturn n",
+      "code": "AI3105",
+      "length": 1
+    },
+    {
+      "name": "ir-dead-name-still-binds",
+      "body": "return 1\nlet n=@@missing",
+      "code": "AI3103",
+      "length": 7
+    },
+    {
+      "name": "ir-dead-type-still-checks",
+      "body": "return 1\nlet n: bool=@@1",
+      "code": "AI3107",
+      "length": 1
+    }
+  ]
+}

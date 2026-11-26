@@ -1,0 +1,69 @@
+module orders.service
+
+use std.collections
+use std.http
+
+intent "Fetch active orders for a customer and never return archived orders"
+policy CustomerPII {
+    classification = secret
+    inference = local_only
+    external_text = tainted
+    capabilities = separated
+    training = forbidden
+    telemetry = opt_in_aggregate
+}
+capability OrdersApi
+capability tmpfs
+resource ModelSession
+resource Secret<T>
+effect json
+
+type OrderStatus = Active | Archived | Pending
+type OrderError = NetworkFailure | Unauthorized | InvalidPayload
+
+type Order = {
+    id: OrderId,
+    status: OrderStatus,
+    customerId: CustomerId
+}
+
+schema OrderPatch = {
+    customerId: CustomerId,
+    status: OrderStatus
+}
+
+tool validate_patch(patch: Patch) -> TestReport
+    sandbox = wasm
+    capabilities = [tmpfs]
+    timeout = 30s
+
+fn getActiveOrders(customerId: CustomerId, api: OrdersApi)
+    -> Result<List<Order>, OrderError>
+    effects [network]
+    requires customerId != empty
+    ensures result is Ok => result.value.all(o => o.status == Active)
+    invariant result is Err || result.value.count >= 0
+{
+    let response = await api.get("/customers/{customerId}/orders")
+    let orders = decode<List<Order>>(response)?
+    return Ok(orders.filter(o => o.status == Active))
+}
+
+fn summarizeOrders(session: owned ModelSession, key: borrowed Secret<ApiKey>)
+    -> Result<Summary, OrderError>
+    effects [network]
+    requires session != empty
+{
+    using session {
+        return Err(NetworkFailure)
+    }
+}
+
+test "archived orders are filtered" {
+    expect getActiveOrders(CustomerId(42), api) == Ok(sampleActiveOrders())
+}
+
+observe {
+    counter "orders.fetch.count"
+    histogram "orders.fetch.duration.ms"
+}

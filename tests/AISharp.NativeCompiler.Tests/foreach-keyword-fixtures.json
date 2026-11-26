@@ -1,0 +1,87 @@
+{
+ "cases": [
+  {
+   "name": "foreach-sum",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,5)\nbufferWrite(&mut b,1,7)\nbufferWrite(&mut b,2,9)\nvar total=0\nforeach(let x in &b)\n{\ntotal+=x\n}\nreturn total",
+   "value": 21,
+   "type": "int",
+   "cs": "var b=new[]{5,7,9}; int total=0; foreach(int x in b){total+=x;} return total;"
+  },
+  {
+   "name": "foreach-last",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,5)\nbufferWrite(&mut b,1,7)\nbufferWrite(&mut b,2,9)\nvar last=0\nforeach(let x in &b)\n{\nlast=x\n}\nreturn last",
+   "value": 9,
+   "type": "int",
+   "cs": "var b=new[]{5,7,9}; int last=0; foreach(int x in b){last=x;} return last;"
+  },
+  {
+   "name": "foreach-break",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,5)\nbufferWrite(&mut b,1,7)\nbufferWrite(&mut b,2,9)\nvar total=0\nforeach(let x in &b)\n{\ntotal+=x\nbreak\n}\nreturn total",
+   "value": 5,
+   "type": "int",
+   "cs": "var b=new[]{5,7,9}; int total=0; foreach(int x in b){total+=x; break;} return total;"
+  },
+  {
+   "name": "foreach-continue",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,5)\nbufferWrite(&mut b,1,7)\nbufferWrite(&mut b,2,9)\nvar total=0\nforeach(let x in &b)\n{\nif(x==7){continue}\ntotal+=x\n}\nreturn total",
+   "value": 14,
+   "type": "int",
+   "cs": "var b=new[]{5,7,9}; int total=0; foreach(int x in b){if(x==7){continue;} total+=x;} return total;"
+  },
+  {
+   "name": "foreach-empty",
+   "body": "var b=buffer(0)\nvar total=0\nforeach(let x in &b)\n{\ntotal+=x\n}\nreturn total",
+   "value": 0,
+   "type": "int",
+   "cs": "var b=new int[0]; int total=0; foreach(int x in b){total+=x;} return total;"
+  },
+  {
+   "name": "foreach-no-let",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,5)\nbufferWrite(&mut b,1,7)\nbufferWrite(&mut b,2,9)\nvar total=0\nforeach(x in &b)\n{\ntotal+=x\n}\nreturn total",
+   "value": 21,
+   "type": "int",
+   "cs": "var b=new[]{5,7,9}; int total=0; foreach(int x in b){total+=x;} return total;"
+  },
+  {
+   "name": "foreach-nested",
+   "body": "var a=buffer(2)\nvar b=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nbufferWrite(&mut b,0,10)\nbufferWrite(&mut b,1,20)\nvar total=0\nforeach(x in &a)\n{\nforeach(y in &b)\n{\ntotal+=x*y\n}\n}\nreturn total",
+   "value": 90,
+   "type": "int",
+   "cs": "var a=new[]{1,2}; var b=new[]{10,20}; int total=0; foreach(int x in a){foreach(int y in b){total+=x*y;}} return total;"
+  },
+  {
+   "name": "foreach-block-body",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,5)\nbufferWrite(&mut b,1,7)\nbufferWrite(&mut b,2,9)\nvar total=0\nforeach(x in &b)\n{\nif(x>5)\n{\ntotal+=x\n}\n}\nreturn total",
+   "value": 16,
+   "type": "int",
+   "cs": "var b=new[]{5,7,9}; int total=0; foreach(int x in b){if(x>5){total+=x;}} return total;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "foreach-reference-to-int",
+   "body": "var n=3\nlet r=&n\n@@foreach(x in r)\n{\nreturn 0\n}\nreturn 0",
+   "code": "AI3115"
+  },
+  {
+   "name": "foreach-await",
+   "body": "@@await foreach(x in &b)\n{\n}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "foreach-ref",
+   "body": "var b=buffer(1)\nforeach(@@ref x in &b)\n{\nreturn x\n}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "foreach-mutation",
+   "body": "var b=buffer(1)\nforeach(x in &b)\n{\nbufferWrite(@@&mut b,0,1)\n}\nreturn 0",
+   "code": "AI3114"
+  },
+  {
+   "name": "foreach-missing-in",
+   "body": "var b=buffer(1)\nforeach(x @@&b)\n{\nreturn 0\n}\nreturn 0",
+   "code": "AI3100"
+  }
+ ]
+}

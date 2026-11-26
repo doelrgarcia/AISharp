@@ -1,0 +1,123 @@
+{
+ "cases": [
+  {
+   "name": "in-scalar-read",
+   "body": "let v=5\nreturn read(v)",
+   "value": 5,
+   "type": "int",
+   "cs": "int v=5; return Read(v);",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn read(in x:int)->int\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-var-read",
+   "body": "var v=7\nreturn read(v)",
+   "value": 7,
+   "type": "int",
+   "cs": "int v=7; return Read(v);",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn read(in x:int)->int\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-two-params",
+   "body": "let x=2\nlet y=3\nreturn add(x,y)",
+   "value": 5,
+   "type": "int",
+   "cs": "int x=2,y=3; return Add(x,y);",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn add(in a:int,in b:int)->int\nensures true\n{return *a+*b}\n"
+  },
+  {
+   "name": "in-long",
+   "body": "let v=9L\nreturn (int)readLong(v)",
+   "value": 9,
+   "type": "int",
+   "cs": "long v=9L; return (int)ReadLong(v);",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn readLong(in x:long)->long\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-double",
+   "body": "let v=1.5\nlet r=readDouble(v)\nif(r==1.5){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "double v=1.5; var r=ReadDouble(v); if(r==1.5){return 1;} return 0;",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn readDouble(in x:double)->double\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-bool",
+   "body": "let v=true\nif(readBool(v)){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "bool v=true; if(ReadBool(v)){return 1;} return 0;",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn readBool(in x:bool)->bool\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-expression",
+   "body": "let v=4\nreturn read(v)*2+1",
+   "value": 9,
+   "type": "int",
+   "cs": "int v=4; return Read(v)*2+1;",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn read(in x:int)->int\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-loop",
+   "body": "let v=3\nvar total=0\nvar i=0\nwhile(i<2)\n{\ntotal+=read(v)\ni++\n}\nreturn total",
+   "value": 6,
+   "type": "int",
+   "cs": "int v=3; int total=0; for(var i=0;i<2;i++){total+=Read(v);} return total;",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn read(in x:int)->int\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-shadow-after",
+   "body": "let v=8\nlet a=read(v)\nvar w=2\nlet b=read(w)\nreturn a+b",
+   "value": 10,
+   "type": "int",
+   "cs": "int v=8; int a=Read(v); int w=2; int b=Read(w); return a+b;",
+   "extra": "public static int Read(in int x){return x;} public static int Add(in int a,in int b){return a+b;} public static long ReadLong(in long x){return x;} public static double ReadDouble(in double x){return x;} public static bool ReadBool(in bool x){return x;}",
+   "pre": "fn read(in x:int)->int\nensures true\n{return *x}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "in-rvalue",
+   "body": "return read(@@5)",
+   "code": "AI3115",
+   "pre": "fn read(in x:int)->int\nensures true\n{return *x}\n"
+  },
+  {
+   "name": "in-product",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\nfn f(in @@p:P)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "in-reference",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(in @@p:&int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "in-readonly-conflict",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(readonly in @@p:int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "in-params-conflict",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(in params @@p:int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "in-mutate",
+   "body": "var v=1\nmutate(v)\nreturn v",
+   "code": "AI3115",
+   "pre": "fn mutate(in x:int)->int\nensures true\n{@@*x=2\nreturn 0}\n"
+  }
+ ]
+}

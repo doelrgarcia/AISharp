@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/11",
+  "milestone": "keyword-subset-runtime",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "fixtures": [
+    {
+      "keyword": "break",
+      "name": "inner-loop-only",
+      "value": 6
+    },
+    {
+      "keyword": "break",
+      "name": "while-break",
+      "value": 4
+    },
+    {
+      "keyword": "break",
+      "name": "break-after-assignment",
+      "value": 2
+    },
+    {
+      "keyword": "continue",
+      "name": "skip-value",
+      "value": 4
+    },
+    {
+      "keyword": "continue",
+      "name": "increment-still-runs",
+      "value": 9
+    },
+    {
+      "keyword": "continue",
+      "name": "while-continue",
+      "value": 3
+    }
+  ],
+  "negatives": [
+    {
+      "keyword": "break",
+      "name": "outside-loop"
+    },
+    {
+      "keyword": "break",
+      "name": "inside-if-outside-loop"
+    },
+    {
+      "keyword": "continue",
+      "name": "outside-loop"
+    },
+    {
+      "keyword": "continue",
+      "name": "inside-if-outside-loop"
+    }
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 6,
+      "negativeCases": 4,
+      "keywords": [
+        "break",
+        "continue"
+      ],
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 6,
+      "negativeCases": 4,
+      "keywords": [
+        "break",
+        "continue"
+      ],
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 6,
+      "negativeCases": 4,
+      "keywords": [
+        "break",
+        "continue"
+      ],
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 6,
+      "negativeCases": 4,
+      "keywords": [
+        "break",
+        "continue"
+      ],
+      "ok": true
+    }
+  ],
+  "ok": true
+}

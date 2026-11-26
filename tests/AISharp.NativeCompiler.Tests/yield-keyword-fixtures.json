@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "yield-two",
+   "body": "let b=gen()\nreturn bufferPeek(&b,0)+bufferPeek(&b,1)",
+   "value": 3,
+   "type": "int",
+   "pre": "fn gen()->owned buffer\nensures true\n{\nyield return 1\nyield return 2\n}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "yield-break",
+   "body": "let b=gen()\nreturn bufferPeek(&b,0)",
+   "value": 5,
+   "type": "int",
+   "pre": "fn gen()->owned buffer\nensures true\n{\nyield return 5\nyield break\nyield return 7\n}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "yield-loop",
+   "body": "let b=gen()\nreturn bufferPeek(&b,0)+bufferPeek(&b,2)",
+   "value": 4,
+   "type": "int",
+   "pre": "fn gen()->owned buffer\nensures true\n{\nvar i=0\nwhile(i<3)\n{\nyield return i+1\ni=i+1\n}\n}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "yield-empty",
+   "body": "let b=gen()\nreturn bufferPeek(&b,0)",
+   "value": 0,
+   "type": "int",
+   "pre": "fn gen()->owned buffer\nensures true\n{\nif(false)\n{\nyield return 1\n}\n}\n",
+   "cs": "return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "yield-nonbuffer",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn @@bad()->int\nensures true\n{\nyield return 1\n}\n"
+  },
+  {
+   "name": "yield-invalid",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn gen()->owned buffer\nensures true\n{\n@@yield foo\n}\n"
+  },
+  {
+   "name": "yield-missing",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "fn gen()->owned buffer\nensures true\n{\nyield return @@;\n}\n"
+  },
+  {
+   "name": "yield-break-operand",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "fn gen()->owned buffer\nensures true\n{\nyield break @@1\n}\n"
+  }
+ ]
+}

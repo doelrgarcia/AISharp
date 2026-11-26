@@ -1,0 +1,64 @@
+{
+ "cases": [
+  {
+   "name": "unsafe-fn",
+   "body": "return f(2)",
+   "value": 5,
+   "type": "int",
+   "pre": "unsafe fn f(x:int)->int\nensures true\n{return x*2+1}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "unsafe-block",
+   "body": "unsafe { let x=3\nreturn x+4 }\nreturn 0",
+   "value": 7,
+   "type": "int",
+   "pre": "",
+   "cs": "return 7;"
+  },
+  {
+   "name": "unsafe-nested",
+   "body": "unsafe { unsafe { let x=5\nreturn x } }\nreturn 0",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "return 5;"
+  },
+  {
+   "name": "unsafe-block-control",
+   "body": "unsafe { var n=0\nwhile(n<3){n=n+1}\nreturn n }",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "return 3;"
+  },
+  {
+   "name": "unsafe-fn-fallible",
+   "body": "return g(4)",
+   "value": 9,
+   "type": "int",
+   "pre": "unsafe fn g(x:int)->int\nensures true\n{return x+5}\n",
+   "cs": "return 9;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "unsafe-type",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@unsafe type P={a:int}\n"
+  },
+  {
+   "name": "unsafe-local",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@unsafe let x=1\n"
+  },
+  {
+   "name": "unsafe-duplicate",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@unsafe unsafe fn f()->int\nensures true\n{return 0}\n"
+  }
+ ]
+}

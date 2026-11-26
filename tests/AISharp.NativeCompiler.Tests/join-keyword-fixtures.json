@@ -1,0 +1,58 @@
+{
+ "cases": [
+  {
+   "name": "join-sum",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in b on x equals y select x+y\nreturn bufferPeek(&q,0)+bufferPeek(&q,1)",
+   "value": 6,
+   "type": "int",
+   "pre": "",
+   "cs": "return 6;"
+  },
+  {
+   "name": "join-first",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in b on x equals y select x+y\nreturn bufferPeek(&q,0)",
+   "value": 2,
+   "type": "int",
+   "pre": "",
+   "cs": "return 2;"
+  },
+  {
+   "name": "join-product",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in b on x equals y select x*y\nreturn bufferPeek(&q,0)+bufferPeek(&q,1)",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "return 5;"
+  },
+  {
+   "name": "join-empty",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,4)\nvar q=from x in a join y in b on x equals y select x+y\nreturn bufferPeek(&q,0)+bufferPeek(&q,1)",
+   "value": 0,
+   "type": "int",
+   "pre": "",
+   "cs": "return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "join-left-key",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in b on @@y equals y select x\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "join-missing-on",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in b @@x equals y select x\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "join-missing-equals",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in b on x @@y select x\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "join-nonbuffer",
+   "body": "var a=buffer(2)\nbufferWrite(&mut a,0,1)\nbufferWrite(&mut a,1,2)\nvar b=buffer(2)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nvar q=from x in a join y in @@3 on x equals y select x\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

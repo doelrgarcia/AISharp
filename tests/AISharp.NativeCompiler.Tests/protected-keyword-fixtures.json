@@ -1,0 +1,93 @@
+{
+ "cases": [
+  {
+   "name": "protected-construction",
+   "body": "let p=P(3)\nreturn 7",
+   "value": 7,
+   "type": "int",
+   "cs": "int x=3; return 7;",
+   "extra": "public class P{protected int a; public int b; public P(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={protected a:int}\n"
+  },
+  {
+   "name": "protected-initializer",
+   "body": "let p=P { a=4 }\nreturn 7",
+   "value": 7,
+   "type": "int",
+   "cs": "int x=4; return 7;",
+   "extra": "public class P{protected int a; public int b; public P(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={protected a:int}\n"
+  },
+  {
+   "name": "protected-public-read",
+   "body": "let p=P(1,2)\nreturn p.b",
+   "value": 2,
+   "type": "int",
+   "cs": "var p=new P(1,2); return p.b;",
+   "extra": "public class P{protected int a; public int b; public P(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={protected a:int, b:int}\n"
+  },
+  {
+   "name": "protected-function-arg",
+   "body": "return sum(P(1,2))",
+   "value": 2,
+   "type": "int",
+   "cs": "int Sum(P p)=>p.b; return Sum(new P(1,2));",
+   "extra": "public class P{protected int a; public int b; public P(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={protected a:int, b:int}\nfn sum(p:P)->int\nensures true\n{return p.b}\n"
+  },
+  {
+   "name": "protected-mixed-public",
+   "body": "let p=P(1,2)\nreturn p.b*10+p.b",
+   "value": 22,
+   "type": "int",
+   "cs": "var p=new P(1,2); return p.b*10+p.b;",
+   "extra": "public class P{protected int a; public int b; public P(int a,int b){this.a=a;this.b=b;}}",
+   "pre": "type P={protected a:int, public b:int}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "protected-read-outside",
+   "body": "let p=P(1)\nreturn p.@@a",
+   "code": "AI3107",
+   "pre": "type P={protected a:int}\n"
+  },
+  {
+   "name": "protected-write-outside",
+   "body": "var p=P(1)\np.@@a=2\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={protected a:int}\n"
+  },
+  {
+   "name": "protected-borrow-outside",
+   "body": "var p=P(1)\nlet r=&mut p.@@a\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={protected a:int}\n"
+  },
+  {
+   "name": "protected-with",
+   "body": "let p=P(1)\nlet q=p with {@@a=2}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={protected a:int}\n"
+  },
+  {
+   "name": "protected-public-conflict",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={protected public @@a:int}\n"
+  },
+  {
+   "name": "protected-private-conflict",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={private protected @@a:int}\n"
+  },
+  {
+   "name": "protected-duplicate",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={protected protected @@a:int}\n"
+  }
+ ]
+}

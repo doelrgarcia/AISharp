@@ -1,0 +1,131 @@
+{
+ "cases": [
+  {
+   "name": "object-int",
+   "body": "let o:object=(object)5\nreturn (int)o",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)5; return (int)o;"
+  },
+  {
+   "name": "object-long",
+   "body": "let o=(object)5L\nreturn (int)((long)o)",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)5L; return (int)((long)o);"
+  },
+  {
+   "name": "object-bool",
+   "body": "let o=(object)true\nif((bool)o){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)true; if((bool)o){return 1;} return 0;"
+  },
+  {
+   "name": "object-char",
+   "body": "let o=(object)'A'\nreturn (int)((char)o)",
+   "value": 65,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)'A'; return (int)((char)o);"
+  },
+  {
+   "name": "object-float",
+   "body": "let o=(object)2.5F\nreturn (int)((float)o)",
+   "value": 2,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)2.5F; return (int)((float)o);"
+  },
+  {
+   "name": "object-double",
+   "body": "let o=(object)3.75\nreturn (int)((double)o)",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)3.75; return (int)((double)o);"
+  },
+  {
+   "name": "object-string",
+   "body": "let o=(object)\"abc\"\nif((string)o==\"abc\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)\"abc\"; if((string)o==\"abc\"){return 1;} return 0;"
+  },
+  {
+   "name": "object-eq-int",
+   "body": "if((object)1==(object)1){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "object-ne-tag",
+   "body": "if((object)1!=(object)\"1\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "object-eq-string",
+   "body": "if((object)\"x\"==(object)\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "object-copy",
+   "body": "let o:object=(object)7\nlet p=o\nreturn (int)p",
+   "value": 7,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=(object)7; object p=o; return (int)p;"
+  },
+  {
+   "name": "object-field",
+   "body": "let p=P((object)4)\nreturn (int)p.a",
+   "value": 4,
+   "type": "int",
+   "pre": "type P={a:object}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "object-function",
+   "body": "return f((object)6)",
+   "value": 6,
+   "type": "int",
+   "pre": "fn f(o:object)->int\nensures true\n{return (int)o}\n",
+   "cs": "return 6;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "object-arith",
+   "body": "let o=(object)1\nlet x=o@@+1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "object-box-product",
+   "body": "let o=@@(object)P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\n"
+  },
+  {
+   "name": "object-mixed-eq",
+   "body": "if((object)1@@==\"1\"){return 1}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "object-implicit",
+   "body": "let o:object=@@1\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/12",
+  "milestone": "bool-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "literal-true",
+    "literal-false",
+    "logical-not",
+    "logical-and",
+    "logical-or",
+    "logical-xor",
+    "bitwise",
+    "equality",
+    "condition-if",
+    "condition-value",
+    "while",
+    "for-continue",
+    "short-circuit-and",
+    "short-circuit-or",
+    "bool-field",
+    "bool-generic",
+    "bool-reference",
+    "bool-parameter-result",
+    "bool-annotation"
+  ],
+  "excluded": [],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 19,
+      "excluded": [],
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 19,
+      "excluded": [],
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 19,
+      "excluded": [],
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 19,
+      "excluded": [],
+      "ok": true
+    }
+  ],
+  "ok": true
+}

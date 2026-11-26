@@ -1,0 +1,83 @@
+{
+ "cases": [
+  {
+   "name": "executes-once-false",
+   "body": "var i=0\ndo{i++}while(false)\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int i=0; do{i++;}while(false); return i;"
+  },
+  {
+   "name": "count-loop",
+   "body": "var i=0\ndo{i++}while(i<3)\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "int i=0; do{i++;}while(i<3); return i;"
+  },
+  {
+   "name": "continue-reaches-condition",
+   "body": "var i=0\nvar n=0\ndo{i++\nif(i<3){continue}\nn++}while(i<4)\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "int i=0,n=0; do{i++; if(i<3)continue; n++;}while(i<4); return n;"
+  },
+  {
+   "name": "break-exits-loop",
+   "body": "var i=0\ndo{i++\nif(i==2){break}}while(true)\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "int i=0; do{i++; if(i==2)break;}while(true); return i;"
+  },
+  {
+   "name": "body-local-in-condition",
+   "body": "var i=0\ndo{let step=2\ni+=step}while(i<5)\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 6,
+   "cs": "int i=0; do{int step=2; i+=step;}while(i<5); return i;"
+  },
+  {
+   "name": "nested-in-for",
+   "body": "var total=0\nfor(var i=0;i<2;i++){var j=0\ndo{j++}while(j<3)\ntotal+=j}\nreturn total",
+   "type": "int",
+   "pre": "",
+   "value": 6,
+   "cs": "int total=0; for(int i=0;i<2;i++){int j=0; do{j++;}while(j<3); total+=j;} return total;"
+  },
+  {
+   "name": "condition-compound",
+   "body": "var i=0\ndo{i++}while(i<2 && i!=1)\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int i=0; do{i++;}while(i<2&&i!=1); return i;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "int-condition",
+   "body": "var i=0\ndo{i++}while(@@1)\nreturn i",
+   "code": "AI3101"
+  },
+  {
+   "name": "unit-condition",
+   "body": "do{noop()}while(@@noop())\nreturn 0",
+   "code": "AI3101",
+   "pre": "fn noop()->void ensures true {return}\n"
+  },
+  {
+   "name": "missing-trailing-while",
+   "body": "var i=0\ndo{i++}\n@@return i",
+   "code": "AI3100"
+  },
+  {
+   "name": "reserved-name",
+   "body": "let @@do=1\nreturn 0",
+   "code": "AI3106"
+  }
+ ]
+}

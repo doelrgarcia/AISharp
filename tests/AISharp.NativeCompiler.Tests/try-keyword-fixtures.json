@@ -1,0 +1,72 @@
+{
+ "cases": [
+  {
+   "name": "try-filter-true",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>0}",
+   "value": 13,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 3} catch(e) when e>2 {return e+10}\n}\n",
+   "cs": "return 13;"
+  },
+  {
+   "name": "try-filter-false",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>e}",
+   "value": 3,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 3} catch(e) when e>5 {return 1}\n}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "try-rethrow",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>e}",
+   "value": 4,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 3} catch(e) when e>2 {fail e+1}\n}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "try-finally-return",
+   "body": "var x=0\nlet r=f(&mut x)\nreturn r*10+x",
+   "value": 51,
+   "type": "int",
+   "pre": "fn f(x:&mut int)->int\nensures true\n{try {return 5} finally {*x=1}\n}\n",
+   "cs": "return 51;"
+  },
+  {
+   "name": "try-filter-finally",
+   "body": "var x=0\nlet r=f(&mut x)\nreturn match r {Ok(v)=>0,Err(e)=>e+x}",
+   "value": 10,
+   "type": "int",
+   "pre": "fn f(x:&mut int)->int fails int\nensures true\n{try {fail 3} catch(e) when e>5 {return 1} finally {*x=7}\n}\n",
+   "cs": "return 10;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "try-filter-nonbool",
+   "body": "return match f(3) {Ok(v)=>v,Err(e)=>0}",
+   "code": "AI3101",
+   "pre": "fn f(x:int)->int fails int\nensures true\n{try {if(x>0){fail x}} catch(e) when @@1 {return e}\nreturn 0}\n"
+  },
+  {
+   "name": "try-filter-no-binding",
+   "body": "@@try {fail 1} catch when true {return 0}",
+   "code": "AI3107"
+  },
+  {
+   "name": "try-body-local",
+   "body": "try {var @@x=1\nx=x+1} finally {return 0}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "try-nested",
+   "body": "try {@@try {return 0} finally {return 1}} finally {return 2}",
+   "code": "AI3107"
+  },
+  {
+   "name": "try-finally-fail",
+   "body": "try {return 0} finally {@@fail 1}",
+   "code": "AI3107"
+  }
+ ]
+}

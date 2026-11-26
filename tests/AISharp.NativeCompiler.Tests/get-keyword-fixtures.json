@@ -1,0 +1,42 @@
+{
+ "cases": [
+  {
+   "name": "get-value",
+   "body": "let c=Counter(4)\nreturn c.total",
+   "value": 5,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value+1}\nget next(this: Counter)->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "get-counter",
+   "body": "let c=Counter(0)\nlet a=c.next\nlet b=c.next\nreturn a*10+b",
+   "value": 12,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value+1}\nget next(this: Counter)->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n",
+   "cs": "return 12;"
+  },
+  {
+   "name": "get-receiver-copy",
+   "body": "let c=Counter(9)\nreturn c.total+c.total",
+   "value": 20,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value+1}\nget next(this: Counter)->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n",
+   "cs": "return 20;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "get-return-mismatch",
+   "body": "let c=Counter(1)\nreturn 0",
+   "code": "AI3020",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{@@return true}\nget next(this: Counter)->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n"
+  },
+  {
+   "name": "get-unknown-property",
+   "body": "let c=Counter(1)\nreturn c.@@missing",
+   "code": "AI3103",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value+1}\nget next(this: Counter)->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n"
+  }
+ ]
+}

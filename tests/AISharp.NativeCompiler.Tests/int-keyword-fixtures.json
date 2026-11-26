@@ -1,0 +1,253 @@
+{
+ "cases": [
+  {
+   "name": "spec-minimum",
+   "body": "return -2147483648",
+   "value": -2147483648
+  },
+  {
+   "name": "spec-maximum",
+   "body": "return 2147483647",
+   "value": 2147483647
+  },
+  {
+   "name": "spec-typed-sum",
+   "body": "var total:int=0\nfor(var i:int=1;i<=5;i++){total+=i}\nreturn total",
+   "value": 15
+  },
+  {
+   "name": "arithmetic-precedence",
+   "body": "return 1+2*3-8/2+8%3",
+   "value": 5
+  },
+  {
+   "name": "div-rem-signs",
+   "body": "var x=-17\nreturn x/5*10+x%5",
+   "value": -32
+  },
+  {
+   "name": "bitwise-shifts",
+   "body": "let x=-2147483648\nif((x>>>1)==1073741824 && (x>>1)==-1073741824 && (1<<-1)==-2147483648){return 1}\nreturn 0",
+   "value": 1
+  },
+  {
+   "name": "short-circuit",
+   "body": "var n=0\nlet a=false && ((n=1)==1)\nlet b=true || ((n=2)==2)\nreturn n",
+   "value": 0
+  },
+  {
+   "name": "evaluation-once",
+   "body": "var x=1\nlet a=x++\nlet b=++x\nreturn a*100+b*10+x",
+   "value": 133
+  },
+  {
+   "name": "compound-snapshot",
+   "body": "var x=1\nx+=(x=2)\nreturn x",
+   "value": 3
+  },
+  {
+   "name": "checked-add-overflow",
+   "body": "var x=2147483647\nreturn x+1",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "checked-multiply-overflow",
+   "body": "var x=65536\nreturn x*x",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "checked-cast-overflow",
+   "body": "var x=2147483648L\nreturn (int)x",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "divide-overflow",
+   "body": "var x=-2147483648\nvar y=-1\nreturn x/y",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "remainder-minimum",
+   "body": "var x=-2147483648\nvar y=-1\nreturn x%y",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "remainder-minimum-unchecked",
+   "body": "var x=-2147483648\nvar y=-1\nreturn unchecked(x%y)",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "remainder-zero",
+   "body": "var z=0\nreturn 1%z",
+   "error": "System.DivideByZeroException"
+  },
+  {
+   "name": "unchecked-add-wrap",
+   "body": "var x=2147483647\nreturn unchecked(x+1)",
+   "value": -2147483648
+  },
+  {
+   "name": "unchecked-cast-wrap",
+   "body": "var x=2147483648L\nreturn unchecked((int)x)",
+   "value": -2147483648
+  },
+  {
+   "name": "unchecked-update-wrap",
+   "body": "var x=2147483647\nunchecked{x++}\nreturn x",
+   "value": -2147483648
+  },
+  {
+   "name": "constant-remainder-minimum",
+   "body": "const x=-2147483648\nreturn x% -1",
+   "value": 0
+  },
+  {
+   "name": "narrow-promotions",
+   "body": "var a:byte=255\nvar b:sbyte=-128\nvar c:short=-32768\nvar d:ushort=65535\nreturn a+b+c+d",
+   "value": 32894
+  },
+  {
+   "name": "promote-to-long",
+   "body": "var a:ushort=65535\nvar b:sbyte=-2\nvar w:long=a\nreturn (int)(w+b)",
+   "value": 65533
+  },
+  {
+   "name": "widen-int-long",
+   "body": "var x:int=-2147483648\nlet y:long=x\nreturn (int)y",
+   "value": -2147483648
+  },
+  {
+   "name": "alias-local",
+   "body": "let x:i32=-2147483648\nlet y:int=x\nreturn (i32)y",
+   "value": -2147483648
+  },
+  {
+   "name": "alias-cast",
+   "body": "let y:long=123L\nreturn (i32)y",
+   "value": 123
+  },
+  {
+   "name": "alias-parameter",
+   "pre": "fn take(v:i32)->int ensures true {return v}\n",
+   "body": "return take(42)",
+   "value": 42
+  },
+  {
+   "name": "alias-generic",
+   "pre": "type Box<T>={value:T}\nfn read(v:Box<i32>)->int ensures true {return v.value}\n",
+   "body": "return read(Box<int>(42))",
+   "value": 42
+  },
+  {
+   "name": "alias-annotation",
+   "pre": "type Box<T>={value:T}\n",
+   "body": "let b:Box<int>=Box<i32>(42)\nreturn b.value",
+   "value": 42
+  },
+  {
+   "name": "field-storage",
+   "pre": "type Holder={value:int}\n",
+   "body": "let x=Holder(42)\nreturn x.value",
+   "value": 42
+  },
+  {
+   "name": "generic-storage",
+   "pre": "type Box<T>={value:T}\n",
+   "body": "let x=Box<int>(42)\nreturn x.value",
+   "value": 42
+  },
+  {
+   "name": "intrinsic-argument-promotion",
+   "body": "var n:byte=42\nreturn bufferLength(buffer(n))",
+   "value": 42
+  },
+  {
+   "name": "borrowed-intrinsic-promotion",
+   "body": "var n:u8=0\nvar value:u16=42\nvar b=buffer(1)\nbufferWrite(&mut b,n,value)\nreturn bufferPeek(&b,n)",
+   "value": 42
+  },
+  {
+   "name": "reference-store-promotion",
+   "body": "var a:ushort=0\nlet p=&mut a\nvar b:byte=255\n*p=b\nreturn *p",
+   "value": 255
+  }
+ ],
+ "negative": [
+  {
+   "name": "literal-high",
+   "body": "let x: int = @@2147483648\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-low",
+   "body": "let x: i32 = -@@2147483649\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let x: int = @@true\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-string",
+   "body": "let x: i32 = @@\"bad\"\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-narrow-long",
+   "body": "var x: long = 1\nlet y: int = @@x\nreturn y",
+   "code": "AI3107"
+  },
+  {
+   "name": "unassigned",
+   "body": "var x: int\nreturn @@x",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let x=1\n@@x=2\nreturn x",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let x=1\nlet @@x=2\nreturn x",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let x: int=1}\nreturn @@x",
+   "code": "AI3103"
+  },
+  {
+   "name": "condition",
+   "body": "if(@@1){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "operator-bool",
+   "body": "var x=1\nreturn x@@+true",
+   "code": "AI3107"
+  },
+  {
+   "name": "argument-bool",
+   "pre": "fn identity(v: int)->int ensures true {return v}\n",
+   "body": "return identity(@@true)",
+   "code": "AI3107"
+  },
+  {
+   "name": "local-type",
+   "body": "let b: bool=@@1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-division-fault",
+   "body": "const x=-2147483648\nreturn x@@/ -1",
+   "code": "AI3111",
+   "length": 1
+  }
+ ]
+}

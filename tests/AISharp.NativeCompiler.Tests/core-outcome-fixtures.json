@@ -1,0 +1,730 @@
+{
+  "cases": [
+    {
+      "name": "core-option-some",
+      "pre": "",
+      "body": "let x:Option<int>=Some(42)\nreturn match x {Some(n)=>n,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-option-none",
+      "pre": "",
+      "body": "let x:Option<int>=None\nreturn match x {Some(n)=>n,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-option-boolean",
+      "pre": "",
+      "body": "let x:Option<bool>=Some(true)\nreturn match x {Some(b)=>b,None=>false}",
+      "value": true,
+      "error": null,
+      "type": "bool",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-result-ok",
+      "pre": "",
+      "body": "let x:Result<int,bool>=Ok(42)\nreturn match x {Ok(n)=>n,Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-result-err",
+      "pre": "",
+      "body": "let x:Result<int,bool>=Err(false)\nreturn match x {Ok(_)=>true,Err(b)=>b}",
+      "value": false,
+      "error": null,
+      "type": "bool",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-result-unit",
+      "pre": "fn nothing()->unit ensures true {}\n",
+      "body": "let x:Result<unit,int>=Ok(nothing())\nmatch x {Ok(u)=>u,Err(_)=>nothing()}\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-option-unit-borrow",
+      "pre": "fn nothing()->unit ensures true {}\n",
+      "body": "let x:Option<unit>=Some(nothing())\nmatch &x {Some(u)=>u,None=>nothing()}\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-option-owner",
+      "pre": "",
+      "body": "let x:Option<owned buffer>=Some(buffer(42))\nreturn match x {Some(b)=>bufferLength(b),None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "core-result-owner",
+      "pre": "",
+      "body": "let x:Result<int,owned buffer>=Err(buffer(42))\nreturn match x {Ok(n)=>n,Err(b)=>bufferLength(b)}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "core-product-copy",
+      "pre": "type P={n:int,ok:bool}\nfn read(p:P)->int ensures true {if(p.ok){return p.n+15}\nreturn 0}\n",
+      "body": "let x:Option<P>=Some(P(27,true))\nreturn match x {Some(p)=>read(p),None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-product-owner",
+      "pre": "type P={b:owned buffer,n:int}\n",
+      "body": "let x:Result<P,bool>=Ok(P(buffer(40),2))\nreturn match x {Ok(p)=>bufferLength(p.b)+p.n,Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "core-nested",
+      "pre": "",
+      "body": "let x:Option<Result<int,bool>>=Some(Ok(42))\nreturn match x {Some(r)=>match r {Ok(n)=>n,Err(_)=>0},None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-nested-none-forward",
+      "pre": "fn relay(x:Option<Option<&int>>)->Option<Option<&int>> ensures true {return x}\n",
+      "body": "let x:Option<Option<&int>>=relay(Some(None))\nreturn match x {Some(o)=>match o {Some(p)=>*p,None=>42},None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-owner-borrow",
+      "pre": "",
+      "body": "let x:Option<owned buffer>=Some(buffer(42))\nlet n=match &x {Some(p)=>bufferSize(p),None=>0}\nreturn match x {Some(b)=>bufferLength(b)+n-42,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "core-result-exclusive-reference",
+      "pre": "",
+      "body": "var n=0\n{var x:Result<&mut int,unit>=Ok(&mut n)\nmatch &mut x {Ok(p)=>(**p=42),Err(_)=>0}}\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-reference-forward",
+      "pre": "fn relay(x:Option<&int>)->Option<&int> ensures true {return x}\n",
+      "body": "let n=42\nlet x:Option<&int>=relay(Some(&n))\nreturn match x {Some(p)=>*p,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-none-forward",
+      "pre": "fn relay(x:Option<&int>)->Option<&int> ensures true {return x}\n",
+      "body": "let x:Option<&int>=relay(None)\nreturn match x {Some(p)=>*p,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-clear-reference",
+      "pre": "fn clear(p:&mut Option<&int>)->unit ensures true {*p=None}\n",
+      "body": "var x:Option<&int>=None\n{let n=42\nx=Some(&n)\nclear(&mut x)}\nreturn match x {Some(p)=>*p,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-user-option-shadow",
+      "pre": "type Option<T>=Wrap(T)|Gone\n",
+      "body": "let x:Result<Option<int>,bool>=Ok(Wrap(42))\nreturn match x {Ok(o)=>match o {Wrap(n)=>n,Gone=>0},Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "core-user-result-shadow",
+      "pre": "type Result<T,E>=Yes(T)|No(E)\n",
+      "body": "let x:Option<Result<int,bool>>=Some(Yes(42))\nreturn match x {Some(r)=>match r {Yes(n)=>n,No(_)=>0},None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "core-nongeneric-shadow",
+      "pre": "type Option=Present(int)|Empty\n",
+      "body": "let x:Result<Option,bool>=Ok(Present(42))\nreturn match x {Ok(o)=>match o {Present(n)=>n,Empty=>0},Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "core-ordinary-value-names",
+      "pre": "",
+      "body": "let Option=40\nlet Result=2\nreturn Option+Result",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": []
+    },
+    {
+      "name": "core-generic-parameter-name",
+      "pre": "type Box<Result>={value:Result}\n",
+      "body": "let x:Box<int>=Box(42)\nreturn x.value",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": []
+    },
+    {
+      "name": "core-qualified-result",
+      "pre": "",
+      "body": "let x=Result<int,bool>.Ok(42)\nreturn match x {Result<int,bool>.Ok(n)=>n,Result<int,bool>.Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-qualified-none",
+      "pre": "",
+      "body": "let x=Option<int>.None\nreturn match x {Option<int>.Some(n)=>n,Option<int>.None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-single-evaluation",
+      "pre": "fn make(c:&mut int)->Option<int> ensures true {*c+=1\nreturn Some(41)}\n",
+      "body": "var calls=0\nlet n=match make(&mut calls) {Some(n)=>n,None=>0}\nreturn n+calls",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-temporary-owner-remainder",
+      "pre": "type H={x:Option<owned buffer>,y:owned buffer}\nfn make()->H ensures true {return H(Some(buffer(40)),buffer(2))}\n",
+      "body": "return match make().x {Some(b)=>bufferLength(b)+2,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "core-zero-owner",
+      "pre": "",
+      "body": "let x:Option<owned buffer>=Some(buffer(0))\nreturn match x {Some(b)=>bufferLength(b)+42,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 0,
+      "dropOrder": [
+        1
+      ]
+    },
+    {
+      "name": "core-minimum",
+      "pre": "",
+      "body": "let x:Result<int,bool>=Ok(-2147483648)\nreturn match x {Ok(n)=>n,Err(_)=>0}",
+      "value": -2147483648,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-maximum",
+      "pre": "",
+      "body": "let x:Option<int>=Some(2147483647)\nreturn match x {Some(n)=>n,None=>0}",
+      "value": 2147483647,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-closed-error",
+      "pre": "type Error=Bad|Unavailable\n",
+      "body": "let x:Result<int,Error>=Err(Bad)\nreturn match x {Ok(n)=>n,Err(e)=>match e {Bad=>42,Unavailable=>0}}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": []
+    },
+    {
+      "name": "core-declaration-capacity",
+      "pre": "type G0<T>={}\ntype G1<T>={}\ntype G2<T>={}\ntype G3<T>={}\ntype G4<T>={}\ntype G5<T>={}\ntype G6<T>={}\ntype G7<T>={}\ntype G8<T>={}\ntype G9<T>={}\ntype G10<T>={}\ntype G11<T>={}\ntype G12<T>={}\ntype G13<T>={}\ntype G14<T>={}\ntype G15<T>={}\ntype G16<T>={}\ntype G17<T>={}\ntype G18<T>={}\ntype G19<T>={}\ntype G20<T>={}\ntype G21<T>={}\ntype G22<T>={}\ntype G23<T>={}\ntype G24<T>={}\ntype G25<T>={}\ntype G26<T>={}\ntype G27<T>={}\ntype G28<T>={}\ntype G29<T>={}\ntype G30<T>={}\ntype G31<T>={}\ntype G32<T>={}\ntype G33<T>={}\ntype G34<T>={}\ntype G35<T>={}\ntype G36<T>={}\ntype G37<T>={}\ntype G38<T>={}\ntype G39<T>={}\ntype G40<T>={}\ntype G41<T>={}\ntype G42<T>={}\ntype G43<T>={}\ntype G44<T>={}\ntype G45<T>={}\ntype G46<T>={}\ntype G47<T>={}\ntype G48<T>={}\ntype G49<T>={}\ntype G50<T>={}\ntype G51<T>={}\ntype G52<T>={}\ntype G53<T>={}\ntype G54<T>={}\ntype G55<T>={}\ntype G56<T>={}\ntype G57<T>={}\ntype G58<T>={}\ntype G59<T>={}\ntype G60<T>={}\ntype G61<T>={}\ntype G62<T>={}\ntype G63<T>={}\ntype G64<T>={}\ntype G65<T>={}\ntype G66<T>={}\ntype G67<T>={}\ntype G68<T>={}\ntype G69<T>={}\ntype G70<T>={}\ntype G71<T>={}\ntype G72<T>={}\ntype G73<T>={}\ntype G74<T>={}\ntype G75<T>={}\ntype G76<T>={}\ntype G77<T>={}\ntype G78<T>={}\ntype G79<T>={}\ntype G80<T>={}\ntype G81<T>={}\ntype G82<T>={}\ntype G83<T>={}\ntype G84<T>={}\ntype G85<T>={}\ntype G86<T>={}\ntype G87<T>={}\ntype G88<T>={}\ntype G89<T>={}\ntype G90<T>={}\ntype G91<T>={}\ntype G92<T>={}\ntype G93<T>={}\ntype G94<T>={}\ntype G95<T>={}\ntype G96<T>={}\ntype G97<T>={}\ntype G98<T>={}\ntype G99<T>={}\ntype G100<T>={}\ntype G101<T>={}\ntype G102<T>={}\ntype G103<T>={}\ntype G104<T>={}\ntype G105<T>={}\ntype G106<T>={}\ntype G107<T>={}\ntype G108<T>={}\ntype G109<T>={}\ntype G110<T>={}\ntype G111<T>={}\ntype G112<T>={}\ntype G113<T>={}\ntype G114<T>={}\ntype G115<T>={}\ntype G116<T>={}\ntype G117<T>={}\ntype G118<T>={}\ntype G119<T>={}\ntype G120<T>={}\ntype G121<T>={}\ntype G122<T>={}\ntype G123<T>={}\ntype G124<T>={}\ntype G125<T>={}\ntype G126<T>={}\ntype G127<T>={}\n",
+      "body": "let x:Option<Result<int,bool>>=Some(Ok(42))\nreturn match x {Some(r)=>match r {Ok(n)=>n,Err(_)=>0},None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option",
+        "Result"
+      ]
+    },
+    {
+      "name": "core-unit-error-order",
+      "pre": "fn tick(n:&mut int)->unit ensures true {*n+=1}\n",
+      "body": "var n=0\nlet r:Result<int,unit>=Err(tick(&mut n))\nreturn match r {Ok(v)=>v,Err(_)=>n+41}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "core-function-name-preserved",
+      "pre": "fn Some(n:int)->int ensures true {return n+1}\n",
+      "body": "let n=Some(41)\nlet x:Option<int>=Option<int>.Some(n)\nreturn match x {Some(v)=>v,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "core-error-owner-borrow",
+      "pre": "",
+      "body": "let r:Result<owned buffer,owned buffer>=Err(buffer(3))\nlet n=match &r {Ok(p)=>bufferSize(p),Err(p)=>bufferSize(p)}\nreturn match r {Ok(p)=>bufferLength(p),Err(p)=>bufferLength(p)*10+n}",
+      "value": 33,
+      "error": null,
+      "type": "int",
+      "owners": 1
+    },
+    {
+      "name": "core-reference-slot-store",
+      "pre": "fn store(x:&mut Option<&int>,n:&int)->unit ensures true {*x=Some(n)}\n",
+      "body": "let n=42\nvar x:Option<&int>=None\nstore(&mut x,&n)\nreturn match x {Some(p)=>*p,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "core-empty-product-payloads",
+      "pre": "type Empty={}\nfn take(e:Empty)->int ensures true {return 42}\n",
+      "body": "let x:Result<Option<Empty>,Empty>=Ok(Some(Empty()))\nlet y=x\nlet z:Result<Option<Empty>,Empty>=Err(Empty())\nlet n:Option<Empty>=None\nlet a=match x {Ok(o)=>match o {Some(e)=>take(e),None=>0},Err(_)=>0}\nlet b=match y {Ok(o)=>match o {Some(e)=>take(e),None=>0},Err(_)=>0}\nlet c=match z {Ok(_)=>0,Err(e)=>take(e)}\nreturn a+b+c+(match n {Some(_)=>0,None=>42})-126",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option",
+        "Result"
+      ]
+    }
+  ],
+  "negative": [
+    {
+      "name": "core-option-arity",
+      "pre": "",
+      "body": "let x:@@Option<int,int>=None\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Option",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-result-arity",
+      "pre": "",
+      "body": "let x:@@Result<int>=Ok(42)\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Result",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-option-no-arguments",
+      "pre": "",
+      "body": "let x:@@Option=None\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Option",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-option-payload-type",
+      "pre": "",
+      "body": "let x:Option<int>=Some(@@true)\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "payload-declaration",
+          "needle": "Some(T)",
+          "shift": 5,
+          "length": 1,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-result-payload-type",
+      "pre": "",
+      "body": "let x:Result<int,int>=Err(@@false)\nreturn 0",
+      "code": "AI3107",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "payload-declaration",
+          "needle": "Err(E)",
+          "shift": 4,
+          "length": 1,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-missing-payload",
+      "pre": "",
+      "body": "let x:Option<int>=@@Some\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "case-declaration",
+          "needle": "Some(T)",
+          "shift": 0,
+          "length": 4,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-case-arity",
+      "pre": "",
+      "body": "let x:Option<int>=@@Some()\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "case-declaration",
+          "needle": "Some(T)",
+          "shift": 0,
+          "length": 4,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "core-unknown-case",
+      "pre": "",
+      "body": "let x:Option<int>=Option<int>.@@Missing(42)\nreturn 0",
+      "code": "AI3103",
+      "length": 7,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "core-nominal-mismatch",
+      "pre": "type Fake<T>=Some(T)|None\nfn take(p:Option<int>)->int ensures true {return 0}\n",
+      "body": "let x:Fake<int>=Some(42)\nreturn take(@@x)",
+      "code": "AI3107",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "parameter-declaration",
+          "needle": "fn take(p:",
+          "shift": 8,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "core-move-owner-twice",
+      "pre": "",
+      "body": "let x:Option<owned buffer>=Some(buffer(42))\nlet y=x\nreturn match @@x {Some(b)=>bufferLength(b),None=>0}",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "let x:",
+          "shift": 4,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "possible-move",
+          "needle": "let y=x",
+          "shift": 6,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "core-local-reference-escape",
+      "pre": "fn bad()->Option<&int> ensures true {let n=42\n@@return Some(&n)}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let n=42",
+          "shift": 4,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Some(&n)",
+          "shift": 5,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "core-nonexhaustive",
+      "pre": "",
+      "body": "let x:Option<int>=Some(42)\nreturn @@match x {Some(n)=>n}",
+      "code": "AI3060",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "core-pattern-arity",
+      "pre": "",
+      "body": "let x:Option<int>=Some(42)\nreturn match x {@@Some=>0,None=>0}",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "core-pattern-nominal",
+      "pre": "type Other<T>=Some(T)|None\n",
+      "body": "let x:Option<int>=Some(42)\nreturn match x {Other<int>.@@Some(n)=>n,None=>0}",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "core-guard-owner-consumption",
+      "pre": "",
+      "body": "let x:Option<owned buffer>=Some(buffer(42))\nreturn match x {Some(b) when bufferLength(@@b)==42=>0,Some(_)=>0,None=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "Some(b)",
+          "shift": 5,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "storage-use",
+          "needle": "bufferLength(b)",
+          "shift": 13,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "core-shared-write",
+      "pre": "",
+      "body": "let x:Result<int,bool>=Ok(0)\nreturn match &x {Ok(p)=>(@@*p=42),Err(_)=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Ok(p)",
+          "shift": 3,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p=42)",
+          "shift": 2,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "core-generic-capacity",
+      "pre": "type G0<T>={}\ntype G1<T>={}\ntype G2<T>={}\ntype G3<T>={}\ntype G4<T>={}\ntype G5<T>={}\ntype G6<T>={}\ntype G7<T>={}\ntype G8<T>={}\ntype G9<T>={}\ntype G10<T>={}\ntype G11<T>={}\ntype G12<T>={}\ntype G13<T>={}\ntype G14<T>={}\ntype G15<T>={}\ntype G16<T>={}\ntype G17<T>={}\ntype G18<T>={}\ntype G19<T>={}\ntype G20<T>={}\ntype G21<T>={}\ntype G22<T>={}\ntype G23<T>={}\ntype G24<T>={}\ntype G25<T>={}\ntype G26<T>={}\ntype G27<T>={}\ntype G28<T>={}\ntype G29<T>={}\ntype G30<T>={}\ntype G31<T>={}\ntype G32<T>={}\ntype G33<T>={}\ntype G34<T>={}\ntype G35<T>={}\ntype G36<T>={}\ntype G37<T>={}\ntype G38<T>={}\ntype G39<T>={}\ntype G40<T>={}\ntype G41<T>={}\ntype G42<T>={}\ntype G43<T>={}\ntype G44<T>={}\ntype G45<T>={}\ntype G46<T>={}\ntype G47<T>={}\ntype G48<T>={}\ntype G49<T>={}\ntype G50<T>={}\ntype G51<T>={}\ntype G52<T>={}\ntype G53<T>={}\ntype G54<T>={}\ntype G55<T>={}\ntype G56<T>={}\ntype G57<T>={}\ntype G58<T>={}\ntype G59<T>={}\ntype G60<T>={}\ntype G61<T>={}\ntype G62<T>={}\ntype G63<T>={}\ntype G64<T>={}\ntype G65<T>={}\ntype G66<T>={}\ntype G67<T>={}\ntype G68<T>={}\ntype G69<T>={}\ntype G70<T>={}\ntype G71<T>={}\ntype G72<T>={}\ntype G73<T>={}\ntype G74<T>={}\ntype G75<T>={}\ntype G76<T>={}\ntype G77<T>={}\ntype G78<T>={}\ntype G79<T>={}\ntype G80<T>={}\ntype G81<T>={}\ntype G82<T>={}\ntype G83<T>={}\ntype G84<T>={}\ntype G85<T>={}\ntype G86<T>={}\ntype G87<T>={}\ntype G88<T>={}\ntype G89<T>={}\ntype G90<T>={}\ntype G91<T>={}\ntype G92<T>={}\ntype G93<T>={}\ntype G94<T>={}\ntype G95<T>={}\ntype G96<T>={}\ntype G97<T>={}\ntype G98<T>={}\ntype G99<T>={}\ntype G100<T>={}\ntype G101<T>={}\ntype G102<T>={}\ntype G103<T>={}\ntype G104<T>={}\ntype G105<T>={}\ntype G106<T>={}\ntype G107<T>={}\ntype G108<T>={}\ntype G109<T>={}\ntype G110<T>={}\ntype G111<T>={}\ntype G112<T>={}\ntype G113<T>={}\ntype G114<T>={}\ntype G115<T>={}\ntype G116<T>={}\ntype G117<T>={}\ntype G118<T>={}\ntype G119<T>={}\ntype G120<T>={}\ntype G121<T>={}\ntype G122<T>={}\ntype G123<T>={}\ntype G124<T>={}\ntype G125<T>={}\ntype G126<T>={}\ntype G127<T>={}\ntype @@G128<T>={}\n",
+      "body": "return 0",
+      "code": "AI3100",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "core-option-layout-cycle",
+      "pre": "type @@A={next:Option<A>}\n",
+      "body": "return 0",
+      "code": "AI3118",
+      "length": 1,
+      "expectedRelated": []
+    },
+    {
+      "name": "core-result-layout-cycle",
+      "pre": "type @@A={next:Result<A,int>}\n",
+      "body": "return 0",
+      "code": "AI3118",
+      "length": 1,
+      "expectedRelated": []
+    }
+  ]
+}

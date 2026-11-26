@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AISharp.Runtime</RootNamespace>
+    <AssemblyName>AISharp.Runtime</AssemblyName>
+    <PackageId>AISharp.Runtime</PackageId>
+    <Description>AI# runtime library: contracts, effects, policy, provenance, model calls, tool sandboxing, resource ownership, and actor boundaries.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+</Project>

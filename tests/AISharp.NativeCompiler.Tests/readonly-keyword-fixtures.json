@@ -1,0 +1,107 @@
+{
+ "cases": [
+  {
+   "name": "readonly-field-read",
+   "body": "let p=P(3,4)\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={readonly a:int, b:int}\n",
+   "cs": "var p=new P(3,4); return p.a;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-field-copy",
+   "body": "var p=P(3,4)\nvar q=p\nq.b=7\nreturn q.a+q.b",
+   "value": 10,
+   "type": "int",
+   "pre": "type P={readonly a:int, b:int}\n",
+   "cs": "var p=new P(3,4); var q=p; q.b=7; return q.a+q.b;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-local-var",
+   "body": "readonly var x=5\nreturn x",
+   "value": 5,
+   "type": "int",
+   "pre": "",
+   "cs": "int x=5; return x;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-local-let",
+   "body": "readonly let x=6\nreturn x",
+   "value": 6,
+   "type": "int",
+   "pre": "",
+   "cs": "int x=6; return x;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-parameter",
+   "body": "return f(4)",
+   "value": 5,
+   "type": "int",
+   "pre": "fn f(readonly x:int)->int\nensures true\n{return x+1}\n",
+   "cs": "int F(int x)=>x+1; return F(4);",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-field-function",
+   "body": "let p=P(2,5)\nreturn g(p)",
+   "value": 2,
+   "type": "int",
+   "pre": "type P={readonly a:int, b:int}\nfn g(p:P)->int\nensures true\n{return p.a}\n",
+   "cs": "var p=new P(2,5); return p.a;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-nested",
+   "body": "let q=Q(P(8,1))\nreturn q.p.a",
+   "value": 8,
+   "type": "int",
+   "pre": "type P={readonly a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(8,1)); return q.p.a;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  },
+  {
+   "name": "readonly-generic-field",
+   "body": "let b=Box<int>(9)\nreturn b.v",
+   "value": 9,
+   "type": "int",
+   "pre": "type Box<T>={readonly v:T}\n",
+   "cs": "var b=new Box<int>(9); return b.v;",
+   "extra": "public struct P{public readonly int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}} public struct Box<T>{public readonly T v; public Box(T v){this.v=v;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "readonly-field-assign",
+   "body": "var p=P(1,2)\np.@@a=5\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={readonly a:int, b:int}\n"
+  },
+  {
+   "name": "readonly-field-increment",
+   "body": "var p=P(1,2)\np.@@a+=1\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={readonly a:int, b:int}\n"
+  },
+  {
+   "name": "readonly-field-mut-borrow",
+   "body": "var p=P(1,2)\nlet r=&mut p.@@a\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={readonly a:int, b:int}\n"
+  },
+  {
+   "name": "readonly-local-assign",
+   "body": "readonly var x=1\n@@x=2\nreturn x",
+   "code": "AI3105"
+  },
+  {
+   "name": "readonly-parameter-assign",
+   "body": "return f(1)",
+   "code": "AI3105",
+   "pre": "fn f(readonly x:int)->int\nensures true\n{\n@@x=2\nreturn x\n}\n"
+  }
+ ]
+}

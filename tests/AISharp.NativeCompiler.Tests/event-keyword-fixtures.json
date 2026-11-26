@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "event-fire",
+   "body": "let c=new C(0,0)\nc.Tick += Handler(add)\nreturn c.fire(3)",
+   "value": 4,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "event-second",
+   "body": "let c=new C(0,0)\nc.Tick += Handler(add)\nreturn c.fire(5)",
+   "value": 6,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n",
+   "cs": "return 6;"
+  },
+  {
+   "name": "event-empty",
+   "body": "let c=new C(-1,0)\nreturn c.fire(3)",
+   "value": 0,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n",
+   "cs": "return 0;"
+  },
+  {
+   "name": "event-two-objects",
+   "body": "let a=new C(-1,0)\nlet b=new C(-1,0)\na.Tick += Handler(add)\nreturn a.fire(3)+b.fire(3)",
+   "value": 4,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n",
+   "cs": "return 4;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "event-external",
+   "body": "let c=new C(0,0)\nreturn c.@@Tick(3)",
+   "code": "AI3103",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n"
+  },
+  {
+   "name": "event-unbound",
+   "body": "let c=new C(0,0)\nreturn @@Tick(3)",
+   "code": "AI3103",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n"
+  },
+  {
+   "name": "event-bad-subscribe",
+   "body": "let c=new C(0,0)\nc.Tick += @@3\nreturn 0",
+   "code": "AI3107",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n"
+  },
+  {
+   "name": "event-read",
+   "body": "let c=new C(0,0)\nreturn c.@@Tick",
+   "code": "AI3103",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nclass C={event Tick: Handler, v:int}\nfn fire(this: C, x: int)->int\nensures true\n{return Tick(x)}\n"
+  }
+ ]
+}

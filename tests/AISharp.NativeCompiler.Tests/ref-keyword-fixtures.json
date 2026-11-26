@@ -1,0 +1,96 @@
+{
+ "cases": [
+  {
+   "name": "alias-write-updates-original",
+   "body": "var x=5\nlet p=&mut x\n*p=7\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "cs": "int x=5; ref int p=ref x; p=7; return x;"
+  },
+  {
+   "name": "alias-read-preserves-value",
+   "body": "var x=5\nlet p=&x\nreturn *p",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int x=5; ref int p=ref x; return p;"
+  },
+  {
+   "name": "exclusive-parameter-write",
+   "body": "var x=5\nreturn inc(&mut x)",
+   "type": "int",
+   "pre": "fn inc(n:&mut int)->int ensures true {*n+=1\nreturn *n}\n",
+   "value": 6,
+   "cs": "int Inc(ref int n){n++;return n;} int x=5; return Inc(ref x);"
+  },
+  {
+   "name": "shared-parameter-read",
+   "body": "var x=5\nreturn read(&x)",
+   "type": "int",
+   "pre": "fn read(n:&int)->int ensures true {return *n}\n",
+   "value": 5,
+   "cs": "int Read(ref int n)=>n; int x=5; return Read(ref x);"
+  },
+  {
+   "name": "conditional-ref-selects-storage",
+   "body": "var a=1\nvar b=2\nlet u=U.R\nlet p=match u {L=>&mut a,R=>&mut b}\n*p=7\nreturn a*10+b",
+   "type": "int",
+   "pre": "type U=L|R\n",
+   "value": 17,
+   "cs": "int a=1,b=2; bool right=true; ref int p=ref (right?ref b:ref a); p=7; return a*10+b;"
+  },
+  {
+   "name": "legal-scoped-ref-return",
+   "body": "var x=9\nlet p=choose(&x)\nreturn *p",
+   "type": "int",
+   "pre": "fn choose(x:&int)->&int ensures true {return x}\n",
+   "value": 9,
+   "cs": "int x=9; ref int Choose(ref int n)=>ref n; return Choose(ref x);"
+  },
+  {
+   "name": "ref-field-write",
+   "body": "var x=1\nlet h=H(&mut x)\n*h.r=4\nreturn x",
+   "type": "int",
+   "pre": "type H={r:&mut int}\n",
+   "value": 4
+  },
+  {
+   "name": "reference-identity",
+   "body": "var x=5\nlet p=&x\nlet q=&x\nif(*p==*q){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "int x=5; ref int p=ref x; ref int q=ref x; return p==q?1:0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "return-local-by-reference",
+   "body": "return 0",
+   "code": "AI3117",
+   "pre": "fn bad()->&int ensures true {var local=1\n@@return &local}\n"
+  },
+  {
+   "name": "ref-value-argument-mismatch",
+   "body": "var x=1\nreturn takes_int(@@&x)",
+   "code": "AI3107",
+   "pre": "fn takes_int(v:int)->int ensures true {return v}\n"
+  },
+  {
+   "name": "write-through-shared-reference",
+   "body": "var x=1\nlet p=&x\n@@*p=2\nreturn x",
+   "code": "AI3115"
+  },
+  {
+   "name": "exclusive-ref-to-immutable",
+   "body": "let x=1\nlet p=&mut @@x\nreturn *p",
+   "code": "AI3105"
+  },
+  {
+   "name": "shared-ref-to-temporary",
+   "body": "let p=&mut @@3\nreturn *p",
+   "code": "AI3115"
+  }
+ ]
+}

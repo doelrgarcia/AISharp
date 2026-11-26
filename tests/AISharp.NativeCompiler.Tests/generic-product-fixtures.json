@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "aisharp.keyword-fixtures/1",
+  "keyword": "generic-product",
+  "cases": [
+    {
+      "name": "pair-int",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<int,int>(1,2)\nreturn p.a*10+p.b",
+      "value": 12
+    },
+    {
+      "name": "pair-order",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<int,int>(7,8)\nreturn p.b*10+p.a",
+      "value": 87
+    },
+    {
+      "name": "pair-int-string",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<int,string>(1,\"x\")\nreturn p.a",
+      "value": 1
+    },
+    {
+      "name": "pair-string-int",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<string,int>(\"x\",7)\nreturn p.b",
+      "value": 7
+    },
+    {
+      "name": "pair-cross-function",
+      "pre": "type Pair<T,U>={a:T;b:U}\nfn sum(p:Pair<int,int>)->int\nensures true\n{return p.a+p.b}\n",
+      "body": "let p=Pair<int,int>(3,4)\nreturn sum(p)",
+      "value": 7
+    },
+    {
+      "name": "pair-string-length",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<int,string>(1,\"xy\")\nreturn p.b.length",
+      "value": 2
+    },
+    {
+      "name": "triple-int",
+      "pre": "type Triple<T,U,V>={a:T;b:U;c:V}\n",
+      "body": "let t=Triple<int,int,int>(1,2,3)\nreturn t.a*100+t.b*10+t.c",
+      "value": 123
+    },
+    {
+      "name": "triple-cross-function",
+      "pre": "type Triple<T,U,V>={a:T;b:U;c:V}\nfn sum3(t:Triple<int,int,int>)->int\nensures true\n{return t.a+t.b+t.c}\n",
+      "body": "let t=Triple<int,int,int>(1,2,3)\nreturn sum3(t)",
+      "value": 6
+    },
+    {
+      "name": "quad-int",
+      "pre": "type Quad<T,U,V,W>={a:T;b:U;c:V;d:W}\n",
+      "body": "let q=Quad<int,int,int,int>(1,2,3,4)\nreturn q.a*1000+q.b*100+q.c*10+q.d",
+      "value": 1234
+    },
+    {
+      "name": "pair-named-fields",
+      "pre": "type Pair2<T,U>={left:T;right:U}\n",
+      "body": "let p=Pair2<int,int>(5,6)\nreturn p.left*10+p.right",
+      "value": 56
+    },
+    {
+      "name": "pair-typed-cross-function",
+      "pre": "type Pair<T,U>={a:T;b:U}\nfn first(p:Pair<int,string>)->int\nensures true\n{return p.a}\n",
+      "body": "let p=Pair<int,string>(3,\"x\")\nreturn first(p)",
+      "value": 3
+    },
+    {
+      "name": "pair-long-field",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<long,int>(5000000000L,2)\nif(p.a==5000000000L){return p.b}\nreturn 0",
+      "value": 2
+    },
+    {
+      "name": "pair-char-field",
+      "pre": "type Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<char,int>('A',2)\nif(p.a=='A'){return p.b}\nreturn 0",
+      "value": 2
+    },
+    {
+      "name": "pair-product-local",
+      "pre": "type P={v:int}\ntype Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<P,int>(P(3),4)\nreturn p.a.v+p.b",
+      "value": 7
+    },
+    {
+      "name": "pair-product-cross-function",
+      "pre": "type P={v:int}\ntype Pair<T,U>={a:T;b:U}\nfn getv(p:Pair<P,int>)->int\nensures true\n{return p.a.v+p.b}\n",
+      "body": "let p=Pair<P,int>(P(3),4)\nreturn getv(p)",
+      "value": 7
+    },
+    {
+      "name": "pair-product-declaration-order",
+      "pre": "type Pair<T,U>={a:T;b:U}\ntype P={v:int}\n",
+      "body": "let p=Pair<P,int>(P(3),4)\nreturn p.a.v+p.b",
+      "value": 7
+    },
+    {
+      "name": "pair-long-cross-function",
+      "pre": "type Pair<T,U>={a:T;b:U}\nfn geta(p:Pair<long,int>)->long\nensures true\n{return p.a}\n",
+      "body": "let p=Pair<long,int>(5000000000L,2)\nif(geta(p)==5000000000L){return 1}\nreturn 0",
+      "value": 1
+    },
+    {
+      "name": "pair-product-q",
+      "pre": "type Q={w:int}\ntype Pair<T,U>={a:T;b:U}\n",
+      "body": "let p=Pair<Q,int>(Q(3),4)\nreturn p.a.w+p.b",
+      "value": 7
+    },
+    {
+      "name": "pair-product-q-order",
+      "pre": "type Pair<T,U>={a:T;b:U}\ntype Q={w:int}\n",
+      "body": "let p=Pair<Q,int>(Q(5),1)\nreturn p.a.w+p.b",
+      "value": 6
+    },
+    {
+      "name": "pair-product-q-cross",
+      "pre": "type Q={w:int}\ntype Pair<T,U>={a:T;b:U}\nfn getw(p:Pair<Q,int>)->int\nensures true\n{return p.a.w+p.b}\n",
+      "body": "let p=Pair<Q,int>(Q(8),2)\nreturn getw(p)",
+      "value": 10
+    }
+  ]
+}

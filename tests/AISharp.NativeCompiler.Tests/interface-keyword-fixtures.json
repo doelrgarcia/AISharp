@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "interface-dispatch",
+   "body": "let q=new Square(1)\nlet i:I=q\nreturn i.area()",
+   "value": 4,
+   "type": "int",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nabstract fn scale(this: I, k: int)->int;\nclass Square: I={s:int}\noverride fn area(this: Square)->int\nensures true\n{return 4}\noverride fn scale(this: Square, k: int)->int\nensures true\n{return k*k}\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "interface-parameter",
+   "body": "let q=new Square(1)\nlet i:I=q\nreturn i.scale(3)",
+   "value": 9,
+   "type": "int",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nabstract fn scale(this: I, k: int)->int;\nclass Square: I={s:int}\noverride fn area(this: Square)->int\nensures true\n{return 4}\noverride fn scale(this: Square, k: int)->int\nensures true\n{return k*k}\n",
+   "cs": "return 9;"
+  },
+  {
+   "name": "interface-two-members",
+   "body": "let q=new Square(2)\nlet i:I=q\nreturn i.area()+i.scale(2)",
+   "value": 8,
+   "type": "int",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nabstract fn scale(this: I, k: int)->int;\nclass Square: I={s:int}\noverride fn area(this: Square)->int\nensures true\n{return 4}\noverride fn scale(this: Square, k: int)->int\nensures true\n{return k*k}\n",
+   "cs": "return 8;"
+  },
+  {
+   "name": "interface-return",
+   "body": "let i:I=new Square(1)\nreturn i.area()*2",
+   "value": 8,
+   "type": "int",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nabstract fn scale(this: I, k: int)->int;\nclass Square: I={s:int}\noverride fn area(this: Square)->int\nensures true\n{return 4}\noverride fn scale(this: Square, k: int)->int\nensures true\n{return k*k}\n",
+   "cs": "return 8;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "interface-new",
+   "body": "let x=@@new I(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nabstract fn scale(this: I, k: int)->int;\nclass Square: I={s:int}\noverride fn area(this: Square)->int\nensures true\n{return 4}\noverride fn scale(this: Square, k: int)->int\nensures true\n{return k*k}\n"
+  },
+  {
+   "name": "interface-missing-override",
+   "body": "let q=new Square(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "interface I={}\nabstract fn @@area(this: I)->int;\nclass Square: I={s:int}\n"
+  },
+  {
+   "name": "interface-wrong-signature",
+   "body": "let q=new Square(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nclass Square: I={s:int}\noverride fn @@area(this: Square, k: int)->int\nensures true\n{return k}\n"
+  },
+  {
+   "name": "interface-unrelated",
+   "body": "let i:I=@@new Other(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "interface I={}\nabstract fn area(this: I)->int;\nclass Other={o:int}\n"
+  }
+ ]
+}

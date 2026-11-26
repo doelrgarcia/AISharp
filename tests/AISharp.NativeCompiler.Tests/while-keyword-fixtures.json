@@ -1,0 +1,53 @@
+{
+ "cases": [
+  {
+   "name": "zero-iterations",
+   "body": "var i=0\nwhile(false){i++}\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "int i=0; while(false)i++; return i;"
+  },
+  {
+   "name": "count-loop",
+   "body": "var i=0\nwhile(i<5){i++}\nreturn i",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int i=0; while(i<5)i++; return i;"
+  },
+  {
+   "name": "condition-reevaluated",
+   "body": "var i=0\nvar n=0\nwhile(i<3){i++\nif(i==2){n+=10}else{n+=1}}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 12,
+   "cs": "int i=0,n=0; while(i<3){i++; if(i==2)n+=10; else n+=1;} return n;"
+  },
+  {
+   "name": "continue-rechecks",
+   "body": "var i=0\nvar n=0\nwhile(i<4){i++\nif(i==2){continue}\nn++}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "int i=0,n=0; while(i<4){i++; if(i==2)continue; n++;} return n;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "int-condition",
+   "body": "var i=0\nwhile(@@1){i++}\nreturn i",
+   "code": "AI3101"
+  },
+  {
+   "name": "loop-assigned-read",
+   "body": "var x:int\nvar i=0\nwhile(i<1){x=1\ni++}\nreturn @@x",
+   "code": "AI3102"
+  },
+  {
+   "name": "bool-literal-loop-unreachable-local",
+   "body": "var x:int\nwhile(false){x=1}\nreturn @@x",
+   "code": "AI3102"
+  }
+ ]
+}

@@ -1,0 +1,183 @@
+{
+ "cases": [
+  {
+   "name": "identity-int",
+   "body": "if(typeof(int)==typeof(int)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(int)==typeof(int)?1:0;"
+  },
+  {
+   "name": "difference-int-long",
+   "body": "if(typeof(int)==typeof(long)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "return typeof(int)==typeof(long)?1:0;"
+  },
+  {
+   "name": "difference-int-uint",
+   "body": "if(typeof(int)!=typeof(uint)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(int)!=typeof(uint)?1:0;"
+  },
+  {
+   "name": "void-identity",
+   "body": "if(typeof(void)==typeof(void)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(void)==typeof(void)?1:0;"
+  },
+  {
+   "name": "void-differs-int",
+   "body": "if(typeof(void)==typeof(int)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "return typeof(void)==typeof(int)?1:0;"
+  },
+  {
+   "name": "bool-identity",
+   "body": "if(typeof(bool)==typeof(bool)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(bool)==typeof(bool)?1:0;"
+  },
+  {
+   "name": "bool-differs-byte",
+   "body": "if(typeof(bool)!=typeof(byte)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(bool)!=typeof(byte)?1:0;"
+  },
+  {
+   "name": "narrow-identities",
+   "body": "if(typeof(byte)==typeof(byte) && typeof(sbyte)!=typeof(byte) && typeof(char)!=typeof(ushort)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(byte)==typeof(byte)&&typeof(sbyte)!=typeof(byte)&&typeof(char)!=typeof(ushort)?1:0;"
+  },
+  {
+   "name": "float-double-differ",
+   "body": "if(typeof(float)!=typeof(double)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(float)!=typeof(double)?1:0;"
+  },
+  {
+   "name": "nint-differs-long",
+   "body": "if(typeof(nint)!=typeof(long)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(nint)!=typeof(long)?1:0;"
+  },
+  {
+   "name": "nuint-differs-ulong",
+   "body": "if(typeof(nuint)!=typeof(ulong)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(nuint)!=typeof(ulong)?1:0;"
+  },
+  {
+   "name": "nint-differs-nuint",
+   "body": "if(typeof(nint)!=typeof(nuint)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return typeof(nint)!=typeof(nuint)?1:0;"
+  },
+  {
+   "name": "product-identity",
+   "body": "if(typeof(Holder)==typeof(Holder)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "type Holder={a:int}\n",
+   "value": 1,
+   "cs": "return typeof(Holder)==typeof(Holder)?1:0;",
+   "extra": "public struct Holder{public int a;}"
+  },
+  {
+   "name": "product-differs-primitive",
+   "body": "if(typeof(Holder)!=typeof(int)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "type Holder={a:int}\n",
+   "value": 1,
+   "cs": "return typeof(Holder)!=typeof(int)?1:0;",
+   "extra": "public struct Holder{public int a;}"
+  },
+  {
+   "name": "token-binding",
+   "body": "let t=typeof(int)\nif(t==typeof(int)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "var t=typeof(int); return t==typeof(int)?1:0;"
+  },
+  {
+   "name": "token-inequality",
+   "body": "let t=typeof(long)\nif(t!=typeof(int)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "var t=typeof(long); return t!=typeof(int)?1:0;"
+  },
+  {
+   "name": "negated-equality",
+   "body": "if(!(typeof(int)==typeof(long))){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "return !(typeof(int)==typeof(long))?1:0;"
+  },
+  {
+   "name": "union-identity",
+   "body": "if(typeof(Choice)==typeof(Choice)){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "type Choice=A(int)|B\n",
+   "value": 1,
+   "cs": "return typeof(Choice)==typeof(Choice)?1:0;",
+   "extra": "public struct Choice{}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "typeof-reference-type",
+   "body": "return (int)@@typeof(&int)",
+   "code": "AI3107"
+  },
+  {
+   "name": "typeof-unknown-type",
+   "body": "return (int)typeof(@@UnknownType)",
+   "code": "AI3100"
+  },
+  {
+   "name": "typeof-arithmetic",
+   "body": "return (int)(typeof(int)@@+1)",
+   "code": "AI3107"
+  },
+  {
+   "name": "typeof-cast-to-int",
+   "body": "return (@@int)typeof(int)",
+   "code": "AI3107"
+  },
+  {
+   "name": "typeof-ordered-compare",
+   "body": "if(typeof(int)@@<typeof(long)){return 1}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "typeof-condition",
+   "body": "if(@@typeof(int)){return 1}\nreturn 0",
+   "code": "AI3101"
+  }
+ ]
+}

@@ -1,0 +1,128 @@
+{
+ "cases": [
+  {
+   "name": "required-set",
+   "body": "let p=P { a=5 }\nreturn p.a*10+p.b",
+   "value": 50,
+   "type": "int",
+   "cs": "var p=new P{a=5}; return p.a*10+p.b;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type P={required a:int, b:int}\n"
+  },
+  {
+   "name": "required-named-both",
+   "body": "let p=P { a=5, b=6 }\nreturn p.a*10+p.b",
+   "value": 56,
+   "type": "int",
+   "cs": "var p=new P{a=5,b=6}; return p.a*10+p.b;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type P={required a:int, b:int}\n"
+  },
+  {
+   "name": "optional-zero",
+   "body": "let q=Q {}\nif(q.b){return 1}\nreturn q.a",
+   "value": 0,
+   "type": "int",
+   "cs": "var q=new Q{}; if(q.b){return 1;} return q.a;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type Q={a:int, b:bool}\n"
+  },
+  {
+   "name": "optional-partial",
+   "body": "let q=Q { b=true }\nif(q.b){return q.a*10+1}\nreturn q.a*10",
+   "value": 1,
+   "type": "int",
+   "cs": "var q=new Q{b=true}; if(q.b){return q.a*10+1;} return q.a*10;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type Q={a:int, b:bool}\n"
+  },
+  {
+   "name": "new-initializer",
+   "body": "let p=new P { a=7 }\nreturn p.a",
+   "value": 7,
+   "type": "int",
+   "cs": "var p=new P{a=7}; return p.a;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type P={required a:int, b:int}\n"
+  },
+  {
+   "name": "required-init",
+   "body": "let p=P { a=3 }\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "cs": "var p=new Pi{a=3}; return p.a;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type P={required init a:int, b:int}\n"
+  },
+  {
+   "name": "partial-required",
+   "body": "let p=P { a=4 }\nreturn p.a*10+p.b",
+   "value": 40,
+   "type": "int",
+   "cs": "var p=new P{a=4}; return p.a*10+p.b;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "partial type P={required a:int}\npartial type P={b:int}\n"
+  },
+  {
+   "name": "required-enum",
+   "body": "let p=P { c=Color.Red }\nif(p.c==Color.Red){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "var p=new PE{c=Color.Red}; if(p.c==Color.Red){return 1;} return 0;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "enum Color { Red, Green }\ntype P={required c:Color, b:int}\n"
+  },
+  {
+   "name": "required-readonly",
+   "body": "let p=P { a=6 }\nreturn p.a",
+   "value": 6,
+   "type": "int",
+   "cs": "int a=6; return a;",
+   "extra": "public class P{public required int a; public int b;} public class Q{public int a; public bool b;} public class Pi{public required int a{get;init;} public int b;} public enum Color{Red,Green} public class PE{public required Color c; public int b;}",
+   "pre": "type P={required readonly a:int, b:int}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "required-missing",
+   "body": "let p=P { b=1 }\nreturn p.b",
+   "code": "AI3107",
+   "pre": "type P={required @@a:int, b:int}\n"
+  },
+  {
+   "name": "required-missing-new",
+   "body": "let p=new P { b=1 }\nreturn p.b",
+   "code": "AI3107",
+   "pre": "type P={required @@a:int, b:int}\n"
+  },
+  {
+   "name": "initializer-unknown",
+   "body": "let p=P { @@c=1 }\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={required a:int, b:int}\n"
+  },
+  {
+   "name": "initializer-duplicate",
+   "body": "let p=P { a=1, @@a=2 }\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={required a:int, b:int}\n"
+  },
+  {
+   "name": "initializer-omitted-aggregate",
+   "body": "let p=P { a=1 }\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type R={x:int}\ntype P={a:int, @@q:R}\n"
+  },
+  {
+   "name": "initializer-non-product",
+   "body": "let v=1\nlet p=v @@{ a=1 }\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "required-conflict",
+   "body": "let p=P { a=1 }\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={required required @@a:int, b:int}\n"
+  }
+ ]
+}

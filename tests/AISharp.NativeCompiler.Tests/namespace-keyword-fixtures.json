@@ -1,0 +1,94 @@
+{
+ "cases": [
+  {
+   "name": "ns-basic",
+   "body": "let p=P(1,2)\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "pre": "namespace Demo;\ntype P={a:int, b:int}\n",
+   "cs": "return 12;"
+  },
+  {
+   "name": "ns-field",
+   "body": "let q=Q(P(3,4))\nreturn q.p.a+q.p.b",
+   "value": 7,
+   "type": "int",
+   "pre": "namespace Demo;\ntype P={a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "ns-function",
+   "body": "return sum(P(2,3))",
+   "value": 5,
+   "type": "int",
+   "pre": "namespace Demo;\ntype P={a:int, b:int}\nfn sum(p:P)->int\nensures true\n{return p.a+p.b}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "ns-generic",
+   "body": "let b=Box<int>(5)\nreturn b.value",
+   "value": 5,
+   "type": "int",
+   "pre": "namespace Demo;\ntype Box<T>={value:T}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "ns-enum",
+   "body": "if(E.A==E.A){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "namespace Demo;\nenum E { A, B }\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "ns-alias",
+   "body": "let x:A=4\nreturn x",
+   "value": 4,
+   "type": "int",
+   "pre": "namespace Demo;\nalias A=int\n",
+   "cs": "return 4;"
+  },
+  {
+   "name": "ns-partial",
+   "body": "let p=P(2,3)\nreturn p.a*10+p.b",
+   "value": 23,
+   "type": "int",
+   "pre": "namespace Demo;\npartial type P={a:int}\npartial type P={b:int}\n",
+   "cs": "return 23;"
+  },
+  {
+   "name": "ns-qualified-type",
+   "body": "let p=P(1,2)\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "pre": "namespace Demo;\ntype P={a:int, b:int}\nfn make()->Demo.P\nensures true\n{return P(3,4)}\n",
+   "cs": "return 12;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "ns-nested",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "namespace Demo @@{\ntype P={a:int}\n}\n"
+  },
+  {
+   "name": "ns-duplicate",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "namespace A;\n@@namespace B;\ntype P={a:int}\n"
+  },
+  {
+   "name": "ns-missing-name",
+   "body": "return 0",
+   "code": "AI3106",
+   "pre": "namespace @@;\ntype P={a:int}\n"
+  },
+  {
+   "name": "ns-global-no-fallback",
+   "body": "let p=global::@@P(1,2)\nreturn p.a",
+   "code": "AI3103",
+   "pre": "namespace Demo;\ntype P={a:int, b:int}\n"
+  }
+ ]
+}

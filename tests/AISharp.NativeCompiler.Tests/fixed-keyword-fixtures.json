@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "fixed-buffer-read",
+   "body": "let f=F(1,2,3,4)\nreturn f.data[0]+f.data[3]",
+   "value": 5,
+   "type": "int",
+   "pre": "type F={fixed data: int[4]}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "fixed-buffer-sum",
+   "body": "let f=F(1,2,3,4)\nreturn f.data[0]+f.data[1]+f.data[2]+f.data[3]",
+   "value": 10,
+   "type": "int",
+   "pre": "type F={fixed data: int[4]}\n",
+   "cs": "return 10;"
+  },
+  {
+   "name": "fixed-block-write",
+   "body": "var b=buffer(8)\nfixed(b)\n{\nbufferWrite(&mut b,0,42)\nreturn bufferPeek(&b,0)\n}",
+   "value": 42,
+   "type": "int",
+   "pre": "",
+   "cs": "return 42;"
+  },
+  {
+   "name": "fixed-block-second",
+   "body": "var b=buffer(8)\nfixed(b)\n{\nbufferWrite(&mut b,0,7)\nreturn bufferPeek(&b,0)\n}",
+   "value": 7,
+   "type": "int",
+   "pre": "",
+   "cs": "return 7;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "fixed-oob",
+   "body": "let f=F(1,2,3,4)\nreturn f.data[@@4]",
+   "code": "AI3107",
+   "pre": "type F={fixed data: int[4]}\n"
+  },
+  {
+   "name": "fixed-arity",
+   "body": "let f=@@F(1,2)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type F={fixed data: int[4]}\n"
+  },
+  {
+   "name": "fixed-nonconstant",
+   "body": "let f=F(1,2,3,4)\nlet i=0\nreturn f.data[@@i]",
+   "code": "AI3107",
+   "pre": "type F={fixed data: int[4]}\n"
+  },
+  {
+   "name": "fixed-oob2",
+   "body": "let f=F(1,2,3,4)\nreturn f.data[@@5]",
+   "code": "AI3107",
+   "pre": "type F={fixed data: int[4]}\n"
+  }
+ ]
+}

@@ -1,0 +1,80 @@
+{
+ "cases": [
+  {
+   "name": "catch-return",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>0}",
+   "value": 13,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 3} catch(e) {return e+10}\n}\n",
+   "cs": "return 13;"
+  },
+  {
+   "name": "catch-bind",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>0}",
+   "value": 3,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 3} catch(e) {return e}\n}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "catch-nobind",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>0}",
+   "value": 9,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 4} catch {return 9}\n}\n",
+   "cs": "return 9;"
+  },
+  {
+   "name": "catch-body-normal",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>0}",
+   "value": 1,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{var x=0\ntry {x=1} catch(e) {x=e}\nreturn x}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "catch-finally-order",
+   "body": "var x=0\nlet r=f(&mut x)\nreturn match r {Ok(v)=>v,Err(e)=>x+e}",
+   "value": 11,
+   "type": "int",
+   "pre": "fn f(x:&mut int)->int fails int\nensures true\n{try {fail 3} catch(e) {*x=*x+1} finally {*x=*x+10}\nreturn *x}\n",
+   "cs": "return 11;"
+  },
+  {
+   "name": "catch-rethrow",
+   "body": "return match f() {Ok(v)=>v,Err(e)=>e}",
+   "value": 4,
+   "type": "int",
+   "pre": "fn f()->int fails int\nensures true\n{try {fail 3} catch(e) {fail e+1}\n}\n",
+   "cs": "return 4;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "catch-nested-try",
+   "body": "try {@@try {return 0} finally {return 1}} catch(e) {return 2}",
+   "code": "AI3107"
+  },
+  {
+   "name": "catch-body-local",
+   "body": "try {var @@x=1\nx=x+1} catch(e) {return 0}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "catch-handler-local",
+   "body": "try {fail 1} catch(e) {var @@y=2\nreturn y}",
+   "code": "AI3107"
+  },
+  {
+   "name": "catch-propagation",
+   "body": "try {return p()@@?} catch(e) {return 0}",
+   "code": "AI3107",
+   "pre": "fn p()->int fails int\nensures true\n{fail 1}\n"
+  },
+  {
+   "name": "finally-fail",
+   "body": "try {return 0} finally {@@fail 1}",
+   "code": "AI3107"
+  }
+ ]
+}

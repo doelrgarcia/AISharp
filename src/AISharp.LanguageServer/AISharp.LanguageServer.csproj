@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AISharp.LanguageServer</RootNamespace>
+    <AssemblyName>AISharp.LanguageServer</AssemblyName>
+    <PackageId>AISharp.LanguageServer</PackageId>
+    <Description>AI# language server: transport-independent document management, diagnostics, symbols, and editor intelligence.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AISharp.Compiler\AISharp.Compiler.csproj" />
+  </ItemGroup>
+</Project>

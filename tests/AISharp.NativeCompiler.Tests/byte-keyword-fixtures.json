@@ -1,0 +1,281 @@
+{
+ "cases": [
+  {
+   "name": "spec-minimum",
+   "body": "let v:byte=0\nreturn (int)v",
+   "value": 0,
+   "cs": "byte v=0; return v;"
+  },
+  {
+   "name": "spec-maximum",
+   "body": "let v:byte=255\nreturn (int)v",
+   "value": 255,
+   "cs": "byte v=255; return v;"
+  },
+  {
+   "name": "alias-local",
+   "body": "let v:u8=255\nlet w:byte=v\nreturn (int)w",
+   "value": 255,
+   "cs": "byte v=255; byte w=v; return w;"
+  },
+  {
+   "name": "alias-parameter",
+   "body": "return echo(255)",
+   "pre": "fn echo(v:u8)->int ensures true {return (int)v}\n",
+   "value": 255,
+   "cs": "return Echo(255); int Echo(byte v)=>v;"
+  },
+  {
+   "name": "alias-generic",
+   "body": "let b:Box<u8>=Box<byte>(255)\nreturn (int)b.value",
+   "pre": "type Box<T>={value:T}\n",
+   "value": 255
+  },
+  {
+   "name": "escaped-nominal",
+   "body": "let v:@byte=@byte(42)\nreturn v.value",
+   "pre": "type @byte={value:int}\n",
+   "value": 42
+  },
+  {
+   "name": "promotion-int",
+   "body": "var v:byte=255\nreturn v+1",
+   "value": 256,
+   "cs": "byte v=255; return v+1;"
+  },
+  {
+   "name": "promotion-long",
+   "body": "var v:byte=0\nlet l:long=v\nreturn (int)l",
+   "value": 0,
+   "cs": "byte v=0; long l=v; return (int)l;"
+  },
+  {
+   "name": "promotion-mixed",
+   "body": "var a:byte=0\nvar b:byte=255\nreturn a+b",
+   "value": 255,
+   "cs": "byte a=0,b=255; return a+b;"
+  },
+  {
+   "name": "promotion-arithmetic",
+   "body": "var v:byte=0\nreturn v*3",
+   "value": 0,
+   "cs": "byte v=0; return v*3;"
+  },
+  {
+   "name": "comparison",
+   "body": "var v:byte=0\nif(v<255 && v==0){return 1}\nreturn 0",
+   "value": 1,
+   "cs": "byte v=0; return v<255&&v==0?1:0;"
+  },
+  {
+   "name": "cast-fits",
+   "body": "var n:int=0\nlet v:byte=(byte)n\nreturn (int)v",
+   "value": 0,
+   "cs": "int n=0; byte v=(byte)n; return v;"
+  },
+  {
+   "name": "cast-checked-fault",
+   "body": "var n:int=256\nreturn (int)(byte)n",
+   "cs": "int n=256; return (byte)n;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "cast-unchecked-wrap",
+   "body": "var n:int=-1\nreturn (int)unchecked((byte)n)",
+   "value": 255,
+   "cs": "int n=-1; return unchecked((byte)n);"
+  },
+  {
+   "name": "constant-cast",
+   "body": "const v:byte=(byte)255\nreturn (int)v",
+   "value": 255,
+   "cs": "const byte v=(byte)255; return v;"
+  },
+  {
+   "name": "constant-unchecked-wrap",
+   "body": "const v:byte=unchecked((byte)256)\nreturn (int)v",
+   "value": 0,
+   "cs": "const byte v=unchecked((byte)256); return v;"
+  },
+  {
+   "name": "update",
+   "body": "var v:byte=254\nv++\nreturn (int)v",
+   "value": 255,
+   "cs": "byte v=254; v++; return v;"
+  },
+  {
+   "name": "update-fault",
+   "body": "var v:byte=255\nv++\nreturn (int)v",
+   "cs": "byte v=255; v++; return v;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "update-wrap",
+   "body": "var v:byte=255\nunchecked{v++}\nreturn (int)v",
+   "value": 0,
+   "cs": "byte v=255; unchecked{v++;} return v;"
+  },
+  {
+   "name": "compound",
+   "body": "var v:byte=1\nv+=2\nreturn (int)v",
+   "value": 3,
+   "cs": "byte v=1; v+=2; return v;"
+  },
+  {
+   "name": "compound-fault",
+   "body": "var v:byte=255\nv+=1\nreturn (int)v",
+   "cs": "byte v=255; v+=1; return v;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "compound-wrap",
+   "body": "var v:byte=255\nunchecked{v+=1}\nreturn (int)v",
+   "value": 0,
+   "cs": "byte v=255; unchecked{v+=1;} return v;"
+  },
+  {
+   "name": "field-storage",
+   "body": "let h=Holder(255)\nreturn (int)h.value",
+   "pre": "type Holder={value:byte}\n",
+   "value": 255,
+   "cs": "return new Holder{value=255}.value;",
+   "extra": "class Holder{public byte value;}"
+  },
+  {
+   "name": "generic-storage",
+   "body": "let b=Box<byte>(255)\nreturn (int)b.value",
+   "pre": "type Box<T>={value:T}\n",
+   "value": 255,
+   "cs": "return new Box<byte>{value=255}.value;",
+   "extra": "class Box<T>{public T value;}"
+  },
+  {
+   "name": "reference-read",
+   "body": "var v:byte=255\nlet p=&v\nreturn (int)*p",
+   "value": 255,
+   "cs": "byte v=255; ref byte p=ref v; return p;"
+  },
+  {
+   "name": "reference-store",
+   "body": "var v:byte=0\nlet p=&mut v\n*p=255\nreturn (int)v",
+   "value": 255,
+   "cs": "byte v=0; ref byte p=ref v; p=255; return v;"
+  },
+  {
+   "name": "function-result-abi",
+   "body": "return idv(255)",
+   "pre": "fn idv(v:byte)->byte ensures true {return v}\n",
+   "value": 255,
+   "cs": "return Idv(255); byte Idv(byte v)=>v;"
+  },
+  {
+   "name": "widen-to-ushort",
+   "body": "var v:byte=255\nlet w:ushort=v\nreturn (int)w",
+   "value": 255,
+   "cs": "byte b=255; ushort u=b; return u;"
+  },
+  {
+   "name": "widen-to-short",
+   "body": "var v:byte=200\nlet w:short=v\nreturn (int)w",
+   "value": 200,
+   "cs": "byte b=200; short h=b; return h;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "constant-overflow",
+   "body": "let v:byte=@@256\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-int",
+   "body": "var n:int=1\nlet v:byte=@@n\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-long",
+   "body": "var l:long=1L\nlet v:byte=@@l\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-char",
+   "body": "var c:char='A'\nlet v:byte=@@c\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-sbyte",
+   "body": "var s:sbyte=1\nlet v:byte=@@s\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-short",
+   "body": "var h:short=1\nlet v:byte=@@h\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-ushort",
+   "body": "var u:ushort=1\nlet v:byte=@@u\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-negative",
+   "body": "let v:byte=@@-1\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let v:byte=@@true\nreturn (int)v",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-string",
+   "body": "let v:byte=@@\"bad\"\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "unassigned",
+   "body": "var v:byte\nreturn (int)@@v",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let v:byte=1\n@@v=2\nreturn (int)v",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let v:byte=1\nlet @@v:byte=2\nreturn (int)v",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let v:byte=1}\nreturn (int)@@v",
+   "code": "AI3103"
+  },
+  {
+   "name": "condition",
+   "body": "var v:byte=1\nif(@@v){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "operator-bool",
+   "body": "var v:byte=1\nreturn v@@+true",
+   "code": "AI3107"
+  },
+  {
+   "name": "cast-from-bool",
+   "body": "return (int)(@@byte)true",
+   "code": "AI3107"
+  },
+  {
+   "name": "compound-int-variable",
+   "body": "var n:int=1\nvar v:byte=1\nv@@+=n\nreturn (int)v",
+   "code": "AI3107"
+  }
+ ]
+}

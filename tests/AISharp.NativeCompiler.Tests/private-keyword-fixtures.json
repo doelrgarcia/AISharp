@@ -1,0 +1,105 @@
+{
+ "cases": [
+  {
+   "name": "private-public-read",
+   "body": "let p=P(1,2)\nreturn p.b",
+   "value": 2,
+   "type": "int",
+   "cs": "var p=new P(1,2); return p.b;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type P={private a:int, b:int}\n"
+  },
+  {
+   "name": "private-construction",
+   "body": "let p=P(9)\nreturn 7",
+   "value": 7,
+   "type": "int",
+   "cs": "int x=9; return 7;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type P={private a:int}\n"
+  },
+  {
+   "name": "private-construction-return",
+   "body": "let p=make()\nreturn 7",
+   "value": 7,
+   "type": "int",
+   "cs": "int Make()=>5; int p=Make(); return 7;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type P={private a:int}\nfn make()->P\nensures true\n{return P(5)}\n"
+  },
+  {
+   "name": "private-with-public",
+   "body": "let p=P(1,2)\nlet q=p with {b=5}\nreturn q.b",
+   "value": 5,
+   "type": "int",
+   "cs": "var p=new P(1,2); var q=new P(1,5); return q.b;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type P={private a:int, b:int}\n"
+  },
+  {
+   "name": "private-initializer",
+   "body": "let p=P { a=3 }\nreturn 7",
+   "value": 7,
+   "type": "int",
+   "cs": "int x=3; return 7;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type P={private a:int}\n"
+  },
+  {
+   "name": "public-field",
+   "body": "let p=Q(4)\nreturn p.a",
+   "value": 4,
+   "type": "int",
+   "cs": "var q=new Q(4); return q.a;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type Q={public a:int}\n"
+  },
+  {
+   "name": "private-mixed-public",
+   "body": "let p=P(1,2)\nreturn p.b*10+p.b",
+   "value": 22,
+   "type": "int",
+   "cs": "var p=new P(1,2); return p.b*10+p.b;",
+   "extra": "public class P{private int a; public int b; public P(int a,int b){this.a=a;this.b=b;}} public class Q{public int a; public Q(int a){this.a=a;}}",
+   "pre": "type P={private a:int, public b:int}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "private-read-outside",
+   "body": "let p=P(1)\nreturn p.@@a",
+   "code": "AI3107",
+   "pre": "type P={private a:int}\n"
+  },
+  {
+   "name": "private-write-outside",
+   "body": "var p=P(1)\np.@@a=2\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={private a:int}\n"
+  },
+  {
+   "name": "private-borrow-outside",
+   "body": "var p=P(1)\nlet r=&mut p.@@a\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={private a:int}\n"
+  },
+  {
+   "name": "private-with",
+   "body": "let p=P(1)\nlet q=p with {@@a=2}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={private a:int}\n"
+  },
+  {
+   "name": "private-public-conflict",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={private public @@a:int}\n"
+  },
+  {
+   "name": "private-duplicate",
+   "body": "let p=P(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={private private @@a:int}\n"
+  }
+ ]
+}

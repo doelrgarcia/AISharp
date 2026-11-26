@@ -1,0 +1,11 @@
+AISharp (AI#)
+Copyright © 2026 Soligent
+
+First-party source is provided under Apache License 2.0 with the rights
+holder's authorization. Existing Soligent attribution is preserved.
+
+This source preview updates repository/package metadata and first-party SBOM
+license identifiers, includes matching license tests, and makes the selected
+native verification harness accept an explicit isolated work directory.
+Original development history and private operational material are excluded.
+Third-party prerequisites retain their own licenses; see THIRD_PARTY_NOTICES.md.

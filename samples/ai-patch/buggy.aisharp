@@ -1,0 +1,11 @@
+module orders.discount
+
+intent "Compute a customer discount; current implementation always returns zero for VIP customers"
+
+fn discountFor(customer: string) -> int
+    requires customer != ""
+    ensures true
+{
+    let discount = 0
+    return discount
+}

@@ -1,0 +1,17 @@
+module hello.greet
+
+intent "Say hello: minimal AI# sample for build harness validation"
+
+fn greet(name: string) -> string
+    requires name != ""
+    ensures true
+{
+    let msg = "hello"
+    return msg
+}
+
+fn add(a: int, b: int) -> int
+    ensures true
+{
+    return a
+}

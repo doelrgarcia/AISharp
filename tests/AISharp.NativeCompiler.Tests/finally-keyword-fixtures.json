@@ -1,0 +1,72 @@
+{
+ "cases": [
+  {
+   "name": "finally-normal",
+   "body": "var n=0\ntry {n=n+1} finally {n=n+10}\nreturn n",
+   "value": 11,
+   "type": "int",
+   "pre": "",
+   "cs": "int n=0; try{n=n+1;}finally{n=n+10;} return n;"
+  },
+  {
+   "name": "finally-return",
+   "body": "var x=0\nlet r=f(&mut x)\nreturn r*10+x",
+   "value": 51,
+   "type": "int",
+   "pre": "fn f(x:&mut int)->int\nensures true\n{try {return 5} finally {*x=1}\n}\n",
+   "cs": "return 51;"
+  },
+  {
+   "name": "finally-break",
+   "body": "var i=0\nwhile(true)\n{\ntry {break} finally {i=1}\n}\nreturn i",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "finally-continue",
+   "body": "var i=0\nvar n=0\nwhile(i<3)\n{\ni=i+1\ntry {if(i==2){continue}} finally {n=n+1}\n}\nreturn n",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "return 3;"
+  },
+  {
+   "name": "finally-fail",
+   "body": "var x=0\nlet r=f(&mut x)\nreturn match r {Err(e)=>x*10+e,Ok(v)=>0}",
+   "value": 17,
+   "type": "int",
+   "pre": "fn f(x:&mut int)->int fails int\nensures true\n{try {fail 7} finally {*x=1}\n}\n",
+   "cs": "return 17;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "finally-fail-rejected",
+   "body": "var x=0\ntry {x=1} finally {@@fail 1}\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "finally-propagation",
+   "body": "var x=0\ntry { if(p()@@? > 0){x=1} } finally {x=2}\nreturn x",
+   "code": "AI3107",
+   "pre": "fn p()->int fails int\nensures true\n{fail 1}\n"
+  },
+  {
+   "name": "finally-return-rejected",
+   "body": "var x=0\ntry {x=1} finally {@@return 2}\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "nested-try",
+   "body": "var x=0\ntry {@@try {x=1} finally {x=2}} finally {x=3}\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "try-without-clause",
+   "body": "var x=0\n@@try {x=1}\nreturn x",
+   "code": "AI3107"
+  }
+ ]
+}

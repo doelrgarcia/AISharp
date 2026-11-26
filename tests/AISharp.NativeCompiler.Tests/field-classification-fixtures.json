@@ -1,0 +1,74 @@
+{
+ "cases": [
+  {
+   "name": "int-field-same-name",
+   "types": "type T={ a:owned buffer }\ntype S={ a:int }\n",
+   "body": " let s=S(7)\n let n=s.a\n return n",
+   "value": 7,
+   "allocations": 0,
+   "releases": 0
+  },
+  {
+   "name": "owned-field-same-name",
+   "types": "type T={ a:int }\ntype S={ a:owned buffer }\n",
+   "body": " let t=T(7)\n let s=S(buffer(2))\n let n=t.a+bufferSize(&s.a)\n return n",
+   "value": 9,
+   "allocations": 1,
+   "releases": 1
+  },
+  {
+   "name": "disjoint-scope-receivers",
+   "types": "type T={ a:owned buffer, b:owned buffer }\ntype S={ a:int }\n",
+   "body": " var total:int=0\n {\n let p=S(7)\n total=total+p.a\n }\n {\n let p=T(buffer(2),buffer(3))\n total=total+bufferSize(&p.a)\n }\n return total",
+   "value": 9,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "parameter-receiver",
+   "types": "type T={ a:owned buffer, b:owned buffer }\nfn take(p:T)->int ensures true {let n=bufferSize(&p.a)\nreturn n}\n",
+   "body": " let p=T(buffer(2),buffer(3))\n let n=take(p)\n return n",
+   "value": 2,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "same-name-both-owned",
+   "types": "type T={ a:owned buffer }\ntype S={ a:owned buffer }\n",
+   "body": " let t=T(buffer(2))\n let s=S(buffer(3))\n let n=bufferSize(&t.a)+bufferSize(&s.a)\n return n",
+   "value": 5,
+   "allocations": 2,
+   "releases": 2
+  },
+  {
+   "name": "generic-product-fields",
+   "types": "type Box<T>={ value:T, extra:owned buffer }\n",
+   "body": " let b=Box<int>(7,buffer(2))\n let n=b.value+bufferSize(&b.extra)\n return n",
+   "value": 9,
+   "allocations": 1,
+   "releases": 1
+  }
+ ],
+ "negative": [
+  {
+   "name": "scalar-field-as-buffer",
+   "types": "type S={ a:int }\n",
+   "body": " let s=S(7)\n let n=bufferSize(&s.a)\n return n",
+   "code": "AI3115",
+   "stage1Code": 15,
+   "marker": "&s.a",
+   "token": "&",
+   "length": 1
+  },
+  {
+   "name": "overlapping-shadow",
+   "types": "type T={ a:owned buffer }\n",
+   "body": " let p=T(buffer(2))\n {\n let p=T(buffer(3))\n let n=bufferSize(&p.a)\n }\n let m=bufferSize(&p.a)\n return m",
+   "code": "AI3106",
+   "stage1Code": 6,
+   "marker": " let p=T(buffer(3))",
+   "token": "p",
+   "length": 1
+  }
+ ]
+}

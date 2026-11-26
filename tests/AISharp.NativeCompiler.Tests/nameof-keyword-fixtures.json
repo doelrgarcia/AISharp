@@ -1,0 +1,82 @@
+{
+ "cases": [
+  {
+   "name": "nameof-local",
+   "body": "let x=7\nif(nameof(x)==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "nameof-function",
+   "body": "return f()",
+   "value": 1,
+   "type": "int",
+   "pre": "fn f()->int\nensures true\n{if(nameof(f)==\"f\"){return 1}\nreturn 0}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "nameof-type",
+   "body": "let p=P(2)\nif(nameof(P)==\"P\"){return p.a}\nreturn 0",
+   "value": 2,
+   "type": "int",
+   "pre": "type P={a:int}\n",
+   "cs": "return 2;"
+  },
+  {
+   "name": "nameof-generic",
+   "body": "let b=Box<int>(5)\nif(nameof(Box)==\"Box\"){return b.value}\nreturn 0",
+   "value": 5,
+   "type": "int",
+   "pre": "type Box<T>={value:T}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "nameof-generic-unbound",
+   "body": "if(nameof(Box<>)==\"Box\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type Box<T>={value:T}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "nameof-member",
+   "body": "let p=P(3)\nif(nameof(P.a)==\"a\"){return p.a}\nreturn 0",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={a:int}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "nameof-string",
+   "body": "let x=1\nif(nameof(x)==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "nameof-unknown",
+   "body": "if(nameof(@@missing)==\"missing\"){return 1}\nreturn 0",
+   "code": "AI3103"
+  },
+  {
+   "name": "nameof-literal",
+   "body": "return nameof(@@1)",
+   "code": "AI3106"
+  },
+  {
+   "name": "nameof-missing-arg",
+   "body": "return nameof(@@)",
+   "code": "AI3106"
+  },
+  {
+   "name": "nameof-expression",
+   "body": "let x=1\nreturn nameof(x@@+1)",
+   "code": "AI3100"
+  }
+ ]
+}

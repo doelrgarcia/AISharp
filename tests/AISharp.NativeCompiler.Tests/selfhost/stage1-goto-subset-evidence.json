@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "goto-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "forward-skip",
+    "in-order-assignments",
+    "backward-loop",
+    "goto-from-nested-block",
+    "assigned-before-jump",
+    "label-fallthrough-and-goto",
+    "multiple-labels",
+    "label-in-if-branch-backward",
+    "goto-skip-nested",
+    "label-after-declaration",
+    "skip-unreachable-return",
+    "forward-label-earlier-goto"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 12,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 12,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 12,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 12,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

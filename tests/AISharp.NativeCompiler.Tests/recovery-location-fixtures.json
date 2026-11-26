@@ -1,0 +1,40 @@
+{
+ "cases": [
+  {
+   "name": "single",
+   "source": "module Recovery\nintent \"diagnostic location\" \nfaults unwind\ntype IoError=Timeout|Unavailable\nrecovery policy one:\n    attempts 1\n    deadline 1000ms\n    retry on Timeout\n    replay safe\nfn work(n:int)->Result<int, IoError> recovers one {\n    let bad:int=true\n    let b=buffer(n)\n    return Ok(bufferSize(&b)+1)\n}\nfn main()->int ensures true {\n    let r=work(3)\n    return match r {Ok(v)=>v,Err(f)=>99}\n}\n",
+   "anchor": "let bad:int=",
+   "token": "true",
+   "length": 4
+  },
+  {
+   "name": "multiple",
+   "source": "module Recovery\nintent \"diagnostic location\" \nfaults unwind\ntype IoError=Timeout|Unavailable\nrecovery policy one:\n    attempts 1\n    deadline 1000ms\n    retry on Timeout\n    replay safe\nfn first(n:int)->Result<int, IoError> recovers one {\n    let b=buffer(n)\n    return Ok(bufferSize(&b))\n}\nfn second(n:int)->Result<int, IoError> recovers one {\n    let b=buffer(n)\n    let bad:int=true\n    return Ok(bufferSize(&b))\n}\nfn main()->int ensures true {\n    let r=first(2)\n    let s=second(3)\n    return match r {Ok(v)=>v,Err(f)=>99}\n}\n",
+   "anchor": "let bad:int=",
+   "token": "true",
+   "length": 4
+  },
+  {
+   "name": "after-declarations",
+   "source": "module Recovery\nintent \"diagnostic location\" \nfaults unwind\ntype IoError=Timeout|Unavailable\nrecovery policy one:\n    attempts 1\n    deadline 1000ms\n    retry on Timeout\n    replay safe\nfn work(n:int)->Result<int, IoError> recovers one {\n    let b=buffer(n)\n    return Ok(bufferSize(&b))\n}\nfn main()->int ensures true {\n    let r=work(3)\n    let bad:int=true\n    return match r {Ok(v)=>v,Err(f)=>99}\n}\n",
+   "anchor": "let bad:int=",
+   "token": "true",
+   "length": 4
+  },
+  {
+   "name": "unicode-column",
+   "source": "module Recovery\nintent \"diagnostic location\" \nfaults unwind\ntype IoError=Timeout|Unavailable\nrecovery policy one:\n    attempts 1\n    deadline 1000ms\n    retry on Timeout\n    replay safe\nfn work(n:int)->Result<int, IoError> recovers one {\n    /* emoji \ud83d\ude00 */ let bad:int=true\n    let b=buffer(n)\n    return Ok(bufferSize(&b))\n}\nfn main()->int ensures true {\n    let r=work(3)\n    return match r {Ok(v)=>v,Err(f)=>99}\n}\n",
+   "anchor": "let bad:int=",
+   "token": "true",
+   "length": 4
+  },
+  {
+   "name": "related-moved-field",
+   "source": "module Recovery\nintent \"related locations\"\nfaults unwind\ntype IoError=Timeout|Unavailable\ntype T={ a:owned buffer, b:owned buffer }\nrecovery policy one:\n    attempts 1\n    deadline 1000ms\n    retry on Timeout\n    replay safe\nfn work()->Result<int, IoError> recovers one {\n    let p=T(buffer(2),buffer(3))\n    let x=p.a\n    return Ok(bufferSize(&p.a))\n}\nfn main()->int ensures true {\n    let r=work()\n    return match r {Ok(v)=>v,Err(f)=>99}\n}\n",
+   "anchor": "return Ok(bufferSize(",
+   "token": "&p.a",
+   "length": 1,
+   "related": true
+  }
+ ]
+}

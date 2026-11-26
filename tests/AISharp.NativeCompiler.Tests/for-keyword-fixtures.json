@@ -1,0 +1,53 @@
+{
+ "cases": [
+  {
+   "name": "sum-one-to-five",
+   "body": "var sum=0\nfor(var i=1;i<=5;i++){sum+=i}\nreturn sum",
+   "type": "int",
+   "pre": "",
+   "value": 15,
+   "cs": "int sum=0; for(int i=1;i<=5;i++)sum+=i; return sum;"
+  },
+  {
+   "name": "zero-iterations",
+   "body": "var n=0\nfor(var i=0;i<0;i++){n++}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "int n=0; for(int i=0;i<0;i++)n++; return n;"
+  },
+  {
+   "name": "break-inner-only",
+   "body": "var total=0\nfor(var i=0;i<3;i++){for(var j=0;j<5;j++){if(j==2){break}\ntotal++}}\nreturn total",
+   "type": "int",
+   "pre": "",
+   "value": 6,
+   "cs": "int total=0; for(int i=0;i<3;i++){for(int j=0;j<5;j++){if(j==2)break; total++;}} return total;"
+  },
+  {
+   "name": "continue-skips",
+   "body": "var n=0\nfor(var i=1;i<=5;i++){if(i==3){continue}\nn++}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "int n=0; for(int i=1;i<=5;i++){if(i==3)continue; n++;} return n;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "int-condition",
+   "body": "for(var i=0;@@1;i++){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "loop-local-after",
+   "body": "for(var i=0;i<1;i++){}\nreturn @@i",
+   "code": "AI3103"
+  },
+  {
+   "name": "read-before-assignment",
+   "body": "var x:int\nfor(var i=0;i<1;i++){if(i==0){x=1}}\nreturn @@x",
+   "code": "AI3102"
+  }
+ ]
+}

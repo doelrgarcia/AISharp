@@ -1,0 +1,287 @@
+{
+  "status": "WIP active payload acceptance remains INCOMPLETE",
+  "cases": [
+    {
+      "name": "empty",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Empty\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "owner-call",
+      "pre": "type E=Data(owned buffer)|Empty\nfn consume(e:E)->int ensures true {return 42}\n",
+      "body": "return consume(Data(buffer(3)))",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "scalar-match",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nreturn match x { Data(value)=>value,Empty=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "owner-match",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x { Data(value)=>bufferLength(value),Empty=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "owner-guard",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x { Data(value) when bufferSize(&value)>0=>bufferLength(value),Data(value)=>0,Empty=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "owner-false-guard",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x { Data(value) when bufferSize(&value)==0=>0,Data(value)=>bufferLength(value),Empty=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "two-owners",
+      "pre": "type E=Data(owned buffer,owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42),buffer(2))\nreturn match x { Data(first,_)=>bufferLength(first),Empty=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "generic-nested",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:Result<Option<int>,int>=Ok(Some(42))\nreturn match x { Ok(value)=>match value {Some(v)=>v,None=>0},Err(_)=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "reference-some",
+      "pre": "type Option<T>=Some(T)|None\nfn wrap(v:&int)->Option<&int> ensures true { return Some(v) }\n",
+      "body": "let value=42\nreturn match wrap(&value) {Some(p)=>*p,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "reference-none",
+      "pre": "type Option<T>=Some(T)|None\nfn empty()->Option<&int> ensures true { return None }\n",
+      "body": "return match empty() {Some(p)=>*p,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "reference-two-cases",
+      "pre": "type E=A(&int)|B(&int)\nfn wrap(v:&int)->E ensures true {return A(v)}\n",
+      "body": "let value=42\nreturn match wrap(&value) {A(p)=>*p,B(p)=>*p}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "reference-call-empty",
+      "pre": "type Option<T>=Some(T)|None\nfn use(v:Option<&int>)->int ensures true {return match v {Some(p)=>*p,None=>42}}\n",
+      "body": "let x:Option<&int>=None\nreturn use(x)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "qualified-constructor",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x=E.Data(42)\nreturn match x { E.Data(v)=>v,E.Empty=>0 }",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "unit-payload",
+      "pre": "type E=Data(unit)|Empty\nfn nothing()->unit ensures true {}\n",
+      "body": "let x:E=Data(nothing())\nmatch x {Data(v)=>v,Empty=>nothing()}\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "nested-owner-remainder",
+      "pre": "type P={first:owned buffer,second:owned buffer}\ntype E=Data(P)|Empty\n",
+      "body": "let x:E=Data(P(buffer(42),buffer(3)))\nreturn match x {Data(p)=>bufferLength(p.first),Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "caller-none-forward",
+      "pre": "type Option<T>=Some(T)|None\nfn relay(x:Option<&int>)->Option<&int> ensures true {return x}\n",
+      "body": "let x:Option<&int>=None\nreturn match relay(x) {Some(p)=>*p,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "caller-some-forward",
+      "pre": "type Option<T>=Some(T)|None\nfn relay(x:Option<&int>)->Option<&int> ensures true {return x}\n",
+      "body": "let n=42\nlet x:Option<&int>=Some(&n)\nreturn match relay(x) {Some(p)=>*p,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "caller-nested-none-forward",
+      "pre": "type Option<T>=Some(T)|None\nfn relay(x:Option<Option<&int>>)->Option<Option<&int>> ensures true {return x}\n",
+      "body": "let inner:Option<&int>=None\nlet x:Option<Option<&int>>=Some(inner)\nreturn match relay(x) {Some(y)=>match y {Some(p)=>*p,None=>42},None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-pattern-value",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nreturn match x {Data(@_)=>@_,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-pattern-owner-guard",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x {Data(@_) when bufferSize(&@_)==42=>bufferLength(@_),Data(_)=>0,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-pattern-with-wildcard",
+      "pre": "type E=Data(int,owned buffer)|Empty\n",
+      "body": "let x:E=Data(42,buffer(1))\nreturn match x {Data(@_,_)=>@_,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "construction-evaluation-once-order-and-unit",
+      "pre": "type E=Data(int,int,unit)|Empty\nfn arg(n:&mut int)->int ensures true {*n+=1\nreturn *n}\nfn tick(n:&mut int)->unit ensures true {*n+=10}\n",
+      "body": "var n=0\nlet x:E=Data(arg(&mut n),arg(&mut n),tick(&mut n))\nreturn match x {Data(a,b,_)=>a*100+b*10+n,Empty=>0}",
+      "value": 132,
+      "error": null,
+      "type": "int"
+    }
+  ],
+  "negative": [
+    {
+      "name": "local-reference-escape",
+      "pre": "type Option<T>=Some(T)|None\nfn bad()->Option<&int> ensures true {let value=42\n@@return Some(&value)}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true
+    },
+    {
+      "name": "guard-consumption",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x {Data(b) when bufferLength(@@b)>0=>42,Data(_)=>0,Empty=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "guard-nested-consumption",
+      "pre": "type P={owner:owned buffer}\ntype E=Data(P)|Empty\n",
+      "body": "let x:E=Data(P(buffer(42)))\nreturn match x {Data(p) when bufferLength(p.@@owner)>0=>42,Data(_)=>0,Empty=>0}",
+      "code": "AI3115",
+      "length": 5,
+      "crlf": true
+    },
+    {
+      "name": "guard-exclusive-write",
+      "pre": "type E=Data(&mut int)|Empty\n",
+      "body": "var value=42\nlet x:E=Data(&mut value)\nreturn match x {Data(p) when (*@@p=0)==0=>42,Data(_)=>0,Empty=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "missing-payload-value",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=@@Data\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true
+    },
+    {
+      "name": "wrong-payload-arity",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=@@Data()\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true
+    },
+    {
+      "name": "wrong-payload-type",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(@@true)\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true
+    },
+    {
+      "name": "caller-none-local-escape",
+      "pre": "type Option<T>=Some(T)|None\nfn bad(arg:Option<&int>)->Option<&int> ensures true {let value=42\n@@return Some(&value)}\n",
+      "body": "let x:Option<&int>=None\nreturn match bad(x) {Some(p)=>*p,None=>42}",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true
+    },
+    {
+      "name": "escaped-pattern-duplicate",
+      "pre": "type E=Data(int,int)|Empty\n",
+      "body": "let x:E=Data(1,2)\nreturn match x {Data(@_,@@@_)=>0,Empty=>0}",
+      "code": "AI3106",
+      "length": 2,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "escaped-pattern-guard-consumption",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x {Data(@_) when bufferLength(@@@_)==42=>0,Data(_)=>0,Empty=>0}",
+      "code": "AI3115",
+      "length": 2,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "Data(@_)",
+          "shift": 5,
+          "length": 2
+        },
+        {
+          "kind": "storage-use",
+          "needle": "bufferLength(@_)",
+          "shift": 13,
+          "length": 2
+        }
+      ]
+    },
+    {
+      "name": "escaped-pattern-scope",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nlet n=match x {Data(@_)=>@_,Empty=>0}\nreturn @@@_",
+      "code": "AI3103",
+      "length": 2,
+      "crlf": true,
+      "expectedRelated": []
+    }
+  ]
+}

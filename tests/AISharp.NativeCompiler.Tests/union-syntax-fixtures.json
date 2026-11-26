@@ -1,0 +1,93 @@
+{
+  "cases": [
+    {
+      "name": "union-semicolon-newline-separators",
+      "pre": "type S=A|B;\ntype T=C\nfn pick(s:S)->int\nensures true\n{return match s {A=>42;\nB=>0}}\n",
+      "body": "return pick(A)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-newline-arms",
+      "pre": "type S=A|B\n",
+      "body": "let s:S=A\nreturn match s {\nA=>42\nB=>0\n}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-condition-expression-contexts",
+      "pre": "type S=A|B\n",
+      "body": "let s:S=A\nvar n=0\nif(match s {A=>true,B=>false}){n=40}\nwhile(match s {A=>n<41,B=>false}){n++}\nfor(;match s {A=>n<42,B=>false};n++){}\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-original-tag-after-guard-mutation",
+      "pre": "type S=A|B\n",
+      "body": "var s:S=A\nreturn match s {A when ((s=B)==A)=>0,A=>42,B=>7}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-shared-wildcard-only-group",
+      "pre": "type S=A|B|C\n",
+      "body": "let s:S=C\nreturn match s {_=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-constant-false-guard",
+      "pre": "type S=A|B\n",
+      "body": "var n=0\nlet s:S=A\nreturn match s {A when false=>(n=9),A=>42,B=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-equality-result-argument",
+      "pre": "type S=A|B\nfn pass(s:S)->S\nensures true\n{return s}\n",
+      "body": "let s:S=A\nlet other:S=match s {A=>B,B=>A}\nif(pass(match s {A=>B,B=>A})==other && s!=other){return 42}\nreturn 0",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-wildcard-case",
+      "pre": "type T=@_|B\n",
+      "body": "let t:T=@_\nreturn match t {@_=>42,B=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-temporary-owned-field",
+      "pre": "type S=A|B\ntype P={a:owned buffer,b:owned buffer}\n",
+      "body": "let s:S=A\nreturn bufferLength((match s {A=>P(buffer(42),buffer(2)),B=>P(buffer(1),buffer(1))}).a)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-assignment-value-context",
+      "pre": "type S=A|B\n",
+      "body": "let s:S=A\nvar t:S=B\nt=match s {A=>A,B=>B}\nif(t==A){return 42}\nreturn 0",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "match-guarded-common-exclusive-origin",
+      "pre": "type S=A|B\nfn choose(s:S,flag:bool)->int\nensures true\n{var n=0\nlet r=match s {A when flag=>&mut n,_=>&mut n}\n*r=42\nreturn n}\n",
+      "body": "return choose(A,true)+choose(A,false)+choose(B,false)-84",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    }
+  ],
+  "negative": []
+}

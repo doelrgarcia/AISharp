@@ -1,0 +1,99 @@
+{
+ "cases": [
+  {
+   "name": "guard-true-selects-arm",
+   "body": "let x:E=Data(5)\nreturn match x {Data(p) when p>0=>p,Data(_)=>0,Empty=>0}",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\n",
+   "value": 5,
+   "cs": "E x=new Data(5); return x switch {Data d when d.p>0=>d.p,Data d=>0,Empty=>0};",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  },
+  {
+   "name": "guard-false-falls-through",
+   "body": "let x:E=Data(0)\nreturn match x {Data(p) when p>0=>p,Data(_)=>7,Empty=>0}",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\n",
+   "value": 7,
+   "cs": "E x=new Data(0); return x switch {Data d when d.p>0=>d.p,Data d=>7,Empty=>0};",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  },
+  {
+   "name": "guard-runs-only-on-match",
+   "body": "var c=0\nlet x:E=Data(5)\nreturn match x {Data(p) when bump(&mut c)>0=>p,Data(_)=>0,Empty=>0}+c*100",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\nfn bump(c:&mut int)->int ensures true {*c+=1\nreturn *c}\n",
+   "value": 105,
+   "cs": "int c=0; int Bump(){c++;return c;} E x=new Data(5); return (x switch {Data d when Bump()>0=>d.p,Data d=>0,Empty=>0})+c*100;",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  },
+  {
+   "name": "guarded-arm-order",
+   "body": "let x:E=Data(5)\nreturn match x {Data(p) when p>10=>1,Data(p) when p>0=>2,Data(_)=>3,Empty=>0}",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\n",
+   "value": 2,
+   "cs": "E x=new Data(5); return x switch {Data d when d.p>10=>1,Data d when d.p>0=>2,Data d=>3,Empty=>0};",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  },
+  {
+   "name": "guard-call-bool",
+   "body": "let x:E=Data(1)\nreturn match x {Data(p) when nice()=>p,Data(_)=>0,Empty=>0}",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\nfn nice()->bool ensures true {return true}\n",
+   "value": 1,
+   "cs": "bool Nice()=>true; E x=new Data(1); return x switch {Data d when Nice()=>d.p,Data d=>0,Empty=>0};",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  },
+  {
+   "name": "guard-arithmetic-condition",
+   "body": "let x:E=Data(4)\nreturn match x {Data(p) when p%2==0=>p*2,Data(q)=>q,Empty=>0}",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\n",
+   "value": 8,
+   "cs": "E x=new Data(4); return x switch {Data d when d.p%2==0=>d.p*2,Data d=>d.p,Empty=>0};",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  },
+  {
+   "name": "guard-outer-binding",
+   "body": "let x:E=Data(5)\nvar y=1\nreturn match x {Data(p) when y>0=>p,Data(_)=>0,Empty=>0}",
+   "type": "int",
+   "pre": "type E=Data(int)|Empty\n",
+   "value": 5,
+   "cs": "E x=new Data(5); int y=1; return x switch {Data d when y>0=>d.p,Data d=>0,Empty=>0};",
+   "extra": "class E{} class Data:E{public int p;public Data(int p){this.p=p;}} class Empty:E{}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "nonbool-guard",
+   "body": "let x:E=Data(5)\nreturn match x {Data(p) when p@@+1=>p,Data(_)=>0,Empty=>0}",
+   "code": "AI3101",
+   "pre": "type E=Data(int)|Empty\n"
+  },
+  {
+   "name": "missing-fallback",
+   "body": "let x:E=Data(5)\nreturn @@match x {Data(p) when p>0=>p,Empty=>0}",
+   "code": "AI3060",
+   "pre": "type E=Data(int)|Empty\n"
+  },
+  {
+   "name": "undefined-guard-name",
+   "body": "let x:E=Data(5)\nreturn match x {Data(p) when @@missing>0=>p,Data(_)=>0,Empty=>0}",
+   "code": "AI3103",
+   "pre": "type E=Data(int)|Empty\n"
+  },
+  {
+   "name": "unit-guard",
+   "body": "let x:E=Data(5)\nreturn match x {Data(p) when @@noop()=>p,Data(_)=>0,Empty=>0}",
+   "code": "AI3101",
+   "pre": "type E=Data(int)|Empty\nfn noop()->void ensures true {return}\n"
+  },
+  {
+   "name": "guard-scope-escape",
+   "body": "return 0",
+   "code": "AI3117",
+   "pre": "type E=Data(int)|Empty\nfn bad(x:&E)->&int ensures true {var fallback=1\n@@return match x {Data(p)=>p,Empty=>&fallback}}\n"
+  }
+ ]
+}

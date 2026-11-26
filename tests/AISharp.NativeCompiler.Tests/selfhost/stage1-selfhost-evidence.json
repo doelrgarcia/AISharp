@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/8",
+  "milestone": "stage1-selfhost-fixed-point",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "lexerSourceSha256": "c9ac00c6ecc521574704ba1abd7fd146a4a7709f58b13452b79d0ec12ad868a8",
+  "checks": [
+    {
+      "host": "32",
+      "stage1Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "stage2Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "fixedPoint": true,
+      "stage1Artifact": "e7583241bb7ea95acac1a24867a062932cb3b7b378c997d2cb812d1c14766598",
+      "stage2Artifact": "8517a6df1a763226f940515c913d8f712cc477b6aa86d18469fe82319309585f",
+      "lexerTokensMatched": true
+    },
+    {
+      "host": "64",
+      "stage1Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "stage2Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "fixedPoint": true,
+      "stage1Artifact": "42ab5bdd8c907cb6eac37d7cd36dc9b617cbcdedb110dfd8e1464fd2e639030f",
+      "stage2Artifact": "041ea0637002650e1ea1a362d1daf11c9146ce617f6bb632c03885feebffc7cf",
+      "lexerTokensMatched": true
+    },
+    {
+      "host": "32d",
+      "stage1Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "stage2Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "fixedPoint": true,
+      "stage1Artifact": "557c328912dfeb58f458e9d27da9acd1d7f7ee8169594cc2cc5072a1abbd9896",
+      "stage2Artifact": "f71e3023130c2e0ff2bfc5bdf55a7f15e508fcf0631f64e456c5a1dd1b632fc5",
+      "lexerTokensMatched": true
+    },
+    {
+      "host": "64d",
+      "stage1Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "stage2Sha256": "05b1e6bbf8007ecd9c2affc73a00a5f15de33d1649a746dfa92b86a6ff6c1fea",
+      "fixedPoint": true,
+      "stage1Artifact": "ac0380d7153c55108245af9e2cc1f577b775e5c2d798fe723caeae7ee3ad44e4",
+      "stage2Artifact": "da375cd8422b672708ceb34c27fb88f9d4fb049c04207c615bfd57127b77674a",
+      "lexerTokensMatched": true
+    }
+  ],
+  "ok": true
+}

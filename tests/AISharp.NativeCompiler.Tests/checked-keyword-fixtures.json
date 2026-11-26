@@ -1,0 +1,53 @@
+{
+ "cases": [
+  {
+   "name": "add-fault",
+   "body": "var v:int=2147483647\nreturn checked(v+1)",
+   "type": "int",
+   "pre": "",
+   "error": "System.OverflowException",
+   "cs": "int v=int.MaxValue; return checked(v+1);"
+  },
+  {
+   "name": "boundary-add",
+   "body": "var v:int=2147483647\nreturn checked(v+0)",
+   "type": "int",
+   "pre": "",
+   "value": 2147483647,
+   "cs": "int v=int.MaxValue; return checked(v+0);"
+  },
+  {
+   "name": "negate-fault",
+   "body": "var v:int=-2147483648\nreturn checked(-v)",
+   "type": "int",
+   "pre": "",
+   "error": "System.OverflowException",
+   "cs": "int v=int.MinValue; return checked(-v);"
+  },
+  {
+   "name": "cast-fault",
+   "body": "var l:long=2147483648L\nreturn checked((int)l)",
+   "type": "int",
+   "pre": "",
+   "error": "System.OverflowException",
+   "cs": "long l=2147483648L; return checked((int)l);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "constant-overflow",
+   "body": "const v:int=checked(2147483647@@+1)\nreturn 0",
+   "code": "AI3111"
+  },
+  {
+   "name": "nonnumeric-arithmetic",
+   "body": "return checked(true@@+1)",
+   "code": "AI3107"
+  },
+  {
+   "name": "nonnumeric-cast",
+   "body": "return checked((@@int)true)",
+   "code": "AI3107"
+  }
+ ]
+}

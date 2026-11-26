@@ -1,0 +1,316 @@
+{
+ "cases": [
+  {
+   "name": "literal-value",
+   "body": "let d=5m\nreturn (int)d",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=5m; return (int)d;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 5
+  },
+  {
+   "name": "literal-scale-equality",
+   "body": "let d=1.50m\nif(d==1.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=1.50m; return d==1.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "constant-folded-add",
+   "body": "if(1.5m+2.5m==4.0m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return 1.5m+2.5m==4.0m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "constant-folded-mul",
+   "body": "if(2.50m*2m==5.00m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return 2.50m*2m==5.00m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "constant-folded-div",
+   "body": "if(10m/4m==2.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return 10m/4m==2.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "runtime-add",
+   "body": "let a=1.5m\nlet b=2m\nif(a+b==3.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=1.5m,b=2m; return a+b==3.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "runtime-sub",
+   "body": "let a=1.0m\nlet b=0.9m\nif(a-b==0.1m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=1.0m,b=0.9m; return a-b==0.1m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "runtime-mul",
+   "body": "let a=1.25m\nlet b=4m\nif(a*b==5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=1.25m,b=4m; return a*b==5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "runtime-div",
+   "body": "let a=1m\nlet b=3m\nif(a/b==0.3333333333333333333333333333m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=1m,b=3m; return a/b==0.3333333333333333333333333333m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "division-exact",
+   "body": "let a=10m\nlet b=4m\nif(a/b==2.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=10m,b=4m; return a/b==2.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "min-max",
+   "body": "if(decimal.MinValue<decimal.MaxValue){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return decimal.MinValue<decimal.MaxValue ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "max-mantissa",
+   "body": "if(decimal.MaxValue==79228162514264337593543950335m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return decimal.MaxValue==79228162514264337593543950335m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "min-mantissa",
+   "body": "if(decimal.MinValue==-79228162514264337593543950335m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return decimal.MinValue==-79228162514264337593543950335m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "sizeof",
+   "body": "return sizeof(decimal)",
+   "type": "int",
+   "pre": "",
+   "cs": "return sizeof(decimal);",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 16
+  },
+  {
+   "name": "unary-neg",
+   "body": "let d=2.5m\nif(-d==-2.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=2.5m; return -d==-2.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "comparison-relational",
+   "body": "if(1m<2m && 2m>1m && 1m<=1.0m && 2m>=2.00m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "return 1m<2m && 2m>1m && 1m<=1.0m && 2m>=2.00m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "convert-int",
+   "body": "let d:decimal=5\nreturn (int)d",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=5; return (int)d;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 5
+  },
+  {
+   "name": "convert-truncate",
+   "body": "return (int)5.9m",
+   "type": "int",
+   "pre": "",
+   "cs": "return (int)5.9m;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 5
+  },
+  {
+   "name": "convert-long",
+   "body": "let d=7m\nreturn (int)((long)d)",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=7m; return (int)((long)d);",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 7
+  },
+  {
+   "name": "convert-from-long",
+   "body": "let x=7L\nlet d=(decimal)x\nreturn (int)d",
+   "type": "int",
+   "pre": "",
+   "cs": "long x=7L; decimal d=(decimal)x; return (int)d;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 7
+  },
+  {
+   "name": "convert-double",
+   "body": "let d=(decimal)2.5\nif(d==2.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=(decimal)2.5; return d==2.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "convert-float",
+   "body": "let d=(decimal)1.5f\nif(d==1.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=(decimal)1.5f; return d==1.5m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "to-double",
+   "body": "let d=1.25m\nlet x=(double)d\nif(x==1.25){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=1.25m; double x=(double)d; return x==1.25 ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "to-float",
+   "body": "let d=0.5m\nlet x=(float)d\nif(x==0.5f){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=0.5m; float x=(float)d; return x==0.5f ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "product-field",
+   "body": "let p=P(6m)\nif(p.d==6m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "type P={d:decimal}\n",
+   "cs": "var p=new P(6m); return p.d==6m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "function-parameter",
+   "body": "if(g(2.5m)==3.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "fn g(x:decimal)->decimal\nensures true\n{return x+1m}\n",
+   "cs": "return G(2.5m)==3.5m ? 1 : 0; decimal G(decimal x)=>x+1m;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "function-return",
+   "body": "let d=h()\nif(d==4.5m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "fn h()->decimal\nensures true\n{return 4.5m}\n",
+   "cs": "decimal d=H(); return d==4.5m ? 1 : 0; decimal H()=>4.5m;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "zero-literal-scale",
+   "body": "let d=0.00m\nif(d==0m){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal d=0.00m; return d==0m ? 1 : 0;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "value": 1
+  },
+  {
+   "name": "runtime-overflow",
+   "body": "let a=decimal.MaxValue\nlet b=1m\nlet c=a+b\nreturn (int)c",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=decimal.MaxValue; decimal b=1m; decimal c=a+b; return (int)c;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "runtime-divide-zero",
+   "body": "let a=1m\nlet b=0m\nlet c=a/b\nreturn (int)c",
+   "type": "int",
+   "pre": "",
+   "cs": "decimal a=1m; decimal b=0m; decimal c=a/b; return (int)c;",
+   "extra": "public struct P{public decimal d; public P(decimal d){this.d=d;}}",
+   "error": "System.DivideByZeroException"
+  }
+ ],
+ "negative": [
+  {
+   "name": "mixed-double-implicit",
+   "body": "let d=1m@@+2.5\nreturn (int)d",
+   "code": "AI3107"
+  },
+  {
+   "name": "mixed-double-assign",
+   "body": "let d:decimal=@@1.5\nreturn (int)d",
+   "code": "AI3107"
+  },
+  {
+   "name": "unsupported-modulo",
+   "body": "let a=5m\nlet b=2m\nlet c=a@@%b\nreturn (int)c",
+   "code": "AI3107"
+  },
+  {
+   "name": "constant-overflow-add",
+   "body": "let d=79228162514264337593543950335m@@+1m\nreturn (int)d",
+   "code": "AI3111"
+  },
+  {
+   "name": "constant-overflow-mul",
+   "body": "let d=79228162514264337593543950335m@@*2m\nreturn (int)d",
+   "code": "AI3111"
+  },
+  {
+   "name": "cast-overflow",
+   "body": "return (@@int)79228162514264337593543950335m",
+   "code": "AI3111"
+  },
+  {
+   "name": "literal-out-of-range",
+   "body": "let d=@@79228162514264337593543950336m\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-exponent",
+   "body": "let d=@@1.5e3m\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

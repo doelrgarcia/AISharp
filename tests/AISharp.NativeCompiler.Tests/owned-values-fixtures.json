@@ -1,0 +1,200 @@
+{
+  "cases": [
+    {
+      "name": "owner-length",
+      "body": "let b: owned buffer=buffer(17)\nreturn bufferLength(b)",
+      "value": 17
+    },
+    {
+      "name": "owner-empty",
+      "body": "let b=buffer(0)\nreturn bufferLength(b)",
+      "value": 0
+    },
+    {
+      "name": "owner-move",
+      "body": "let a=buffer(9)\nlet b=a\nreturn bufferLength(b)",
+      "value": 9
+    },
+    {
+      "name": "owner-set-get",
+      "body": "var b=buffer(3)\nb=bufferSet(b,2,255)\nreturn bufferGet(b,2)",
+      "value": 255
+    },
+    {
+      "name": "owner-zero-initialized",
+      "body": "return bufferGet(buffer(5),4)",
+      "value": 0
+    },
+    {
+      "name": "owner-replacement",
+      "body": "var b=buffer(3)\nb=buffer(7)\nreturn bufferLength(b)",
+      "value": 7
+    },
+    {
+      "name": "owner-unused-temporary",
+      "body": "buffer(8)\nreturn 1",
+      "value": 1
+    },
+    {
+      "name": "owner-unused-local",
+      "body": "let b=buffer(8)\nreturn 2",
+      "value": 2
+    },
+    {
+      "name": "owner-call-return",
+      "pre": "fn relay(b: owned buffer) -> owned buffer\nensures true\n{return b}\n",
+      "body": "return bufferLength(relay(buffer(12)))",
+      "value": 12
+    },
+    {
+      "name": "owner-unit-cleanup",
+      "pre": "fn consume(b: owned buffer) -> unit\nensures true\n{}\n",
+      "body": "consume(buffer(13))\nreturn 3",
+      "value": 3
+    },
+    {
+      "name": "owner-return-unit-call",
+      "pre": "fn consume(b: owned buffer) -> unit\nensures true\n{}\nfn relay(b: owned buffer) -> unit\nensures true\n{return consume(b)}\n",
+      "body": "relay(buffer(13))\nreturn 3",
+      "value": 3
+    },
+    {
+      "name": "owner-conditional-move",
+      "pre": "fn choose(b: bool) -> int\nensures true\n{let owner=buffer(9)\nif(b){return bufferLength(owner)}\nreturn 4}\n",
+      "body": "return choose(true)+choose(false)",
+      "value": 13
+    },
+    {
+      "name": "owner-conditional-drop",
+      "pre": "fn choose(b: bool) -> int\nensures true\n{let owner=buffer(9)\nif(b){bufferLength(owner)}\nreturn 4}\n",
+      "body": "return choose(true)+choose(false)",
+      "value": 8
+    },
+    {
+      "name": "owner-loop-reinitialize",
+      "body": "var b=buffer(1)\nfor(var i=0;i<3;i++){let n=bufferLength(b)\nb=buffer(n+1)}\nreturn bufferLength(b)",
+      "value": 4
+    },
+    {
+      "name": "owner-loop-control-cleanup",
+      "body": "var sum=0\nfor(var i=0;i<5;i++){let b=buffer(i)\nif(i==1){continue}\nif(i==4){break}\nsum+=bufferLength(b)}\nreturn sum",
+      "value": 5
+    },
+    {
+      "name": "owner-early-return",
+      "pre": "fn size(n: int) -> int\nensures true\n{let a=buffer(n)\n{let b=buffer(2)\nif(n==3){return bufferLength(a)}}\nreturn 0}\n",
+      "body": "return size(3)+size(5)",
+      "value": 3
+    },
+    {
+      "name": "owner-short-circuit-skips",
+      "body": "let b=buffer(3)\nlet skipped=false && (bufferLength(b)==3)\nreturn bufferLength(b)",
+      "value": 3
+    },
+    {
+      "name": "owner-negative-size",
+      "body": "return bufferLength(buffer(-1))",
+      "error": "System.ArgumentOutOfRangeException"
+    },
+    {
+      "name": "owner-capacity",
+      "body": "return bufferLength(buffer(67108865))",
+      "error": "AISharp.AllocationLimitException"
+    },
+    {
+      "name": "owner-bounds",
+      "body": "return bufferGet(buffer(2),2)",
+      "error": "System.IndexOutOfRangeException"
+    },
+    {
+      "name": "owner-negative-index",
+      "body": "return bufferGet(buffer(2),-1)",
+      "error": "System.IndexOutOfRangeException"
+    },
+    {
+      "name": "owner-byte-range",
+      "body": "return bufferLength(bufferSet(buffer(2),0,256))",
+      "error": "System.ArgumentOutOfRangeException"
+    },
+    {
+      "name": "owner-prelude-shadow",
+      "pre": "fn buffer(n: int) -> int\nensures true\n{return n+1}\n",
+      "body": "return buffer(4)",
+      "value": 5
+    },
+    {
+      "name": "owner-maximum-size",
+      "body": "return bufferLength(buffer(67108864))",
+      "value": 67108864
+    },
+    {
+      "name": "owner-empty-index",
+      "body": "return bufferGet(buffer(0),0)",
+      "error": "System.IndexOutOfRangeException"
+    }
+  ],
+  "negative": [
+    {
+      "name": "owner-use-after-move",
+      "body": "let a=buffer(1)\nlet b=a\nreturn bufferLength(@@a)",
+      "code": "AI3102",
+      "length": 1
+    },
+    {
+      "name": "owner-double-argument",
+      "pre": "fn take(a: owned buffer,b: owned buffer) -> int\nensures true\n{return 1}\n",
+      "body": "let b=buffer(1)\nreturn take(b,@@b)",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "owner-loop-move",
+      "body": "let b=buffer(1)\nfor(var i=0;i<2;i++){bufferLength(@@b)}\nreturn 0",
+      "code": "AI3102",
+      "length": 1
+    },
+    {
+      "name": "owner-copy-comparison",
+      "body": "let a=buffer(1)\nlet b=buffer(1)\nreturn a@@==b",
+      "code": "AI3107",
+      "length": 2
+    },
+    {
+      "name": "owner-numeric-coercion",
+      "body": "let b: int=@@buffer(1)\nreturn b",
+      "code": "AI3107",
+      "length": 6
+    },
+    {
+      "name": "owner-borrow-prevents-move",
+      "body": "let b=buffer(1)\nlet p=&b\nbufferLength(@@b)\nreturn bufferSize(p)",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "owner-mutation-let",
+      "body": "let b=buffer(1)\n@@b=buffer(2)\nreturn 0",
+      "code": "AI3105",
+      "length": 1
+    },
+    {
+      "name": "owner-nonconstant",
+      "body": "const b=@@buffer(1)\nreturn 0",
+      "code": "AI3113",
+      "length": 6
+    },
+    {
+      "name": "owner-assignment-does-not-copy",
+      "body": "var a=buffer(1)\nlet @@b=a=buffer(2)\nreturn 0",
+      "code": "AI3107",
+      "length": 1
+    },
+    {
+      "name": "owner-unassigned",
+      "body": "var b: owned buffer\nreturn bufferLength(@@b)",
+      "code": "AI3102",
+      "length": 1
+    }
+  ]
+}

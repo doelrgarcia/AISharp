@@ -1,0 +1,54 @@
+{
+ "cases": [
+  {
+   "name": "managed-dispatch",
+   "body": "let p=Op(add)\nlet q=Op(sub)\nreturn p(5,2)*10+q(5,2)",
+   "value": 73,
+   "type": "int",
+   "pre": "managed fn Op(a: int, b: int)->int;\nfn add(a: int, b: int)->int\nensures true\n{return a+b}\nfn sub(a: int, b: int)->int\nensures true\n{return a-b}\n",
+   "cs": "return 73;"
+  },
+  {
+   "name": "managed-add",
+   "body": "let p=Op(add)\nreturn p(4,3)",
+   "value": 7,
+   "type": "int",
+   "pre": "managed fn Op(a: int, b: int)->int;\nfn add(a: int, b: int)->int\nensures true\n{return a+b}\nfn sub(a: int, b: int)->int\nensures true\n{return a-b}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "managed-sub",
+   "body": "let p=Op(sub)\nreturn p(9,2)",
+   "value": 7,
+   "type": "int",
+   "pre": "managed fn Op(a: int, b: int)->int;\nfn add(a: int, b: int)->int\nensures true\n{return a+b}\nfn sub(a: int, b: int)->int\nensures true\n{return a-b}\n",
+   "cs": "return 7;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "managed-bad-signature",
+   "body": "let p=Op(@@two)\nreturn 0",
+   "code": "AI3107",
+   "pre": "managed fn Op(a: int)->int;\nfn two(a: int, b: int)->int\nensures true\n{return a+b}\n"
+  },
+  {
+   "name": "managed-bad-call",
+   "body": "let p=Op(add)\nreturn @@p(1)",
+   "code": "AI3107",
+   "pre": "managed fn Op(a: int, b: int)->int;\nfn add(a: int, b: int)->int\nensures true\n{return a+b}\nfn sub(a: int, b: int)->int\nensures true\n{return a-b}\n"
+  },
+  {
+   "name": "managed-unknown-target",
+   "body": "let p=Op(@@missing)\nreturn 0",
+   "code": "AI3107",
+   "pre": "managed fn Op(a: int, b: int)->int;\nfn add(a: int, b: int)->int\nensures true\n{return a+b}\nfn sub(a: int, b: int)->int\nensures true\n{return a-b}\n"
+  },
+  {
+   "name": "managed-bad-result",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "managed fn @@Bad()->long;\nfn f()->long\nensures true\n{return 1}\n"
+  }
+ ]
+}

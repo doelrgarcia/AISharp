@@ -1,0 +1,151 @@
+{
+ "cases": [
+  {
+   "name": "default-int-typed",
+   "body": "let x=default(int)\nreturn x",
+   "value": 0,
+   "type": "int",
+   "cs": "int x=default(int); return x;"
+  },
+  {
+   "name": "default-int-annotation",
+   "body": "let x:int=default\nreturn x",
+   "value": 0,
+   "type": "int",
+   "cs": "int x=default; return x;"
+  },
+  {
+   "name": "default-return-literal",
+   "body": "return default",
+   "value": 0,
+   "type": "int",
+   "cs": "return default;"
+  },
+  {
+   "name": "default-long",
+   "body": "let x=default(long)\nreturn (int)x",
+   "value": 0,
+   "type": "int",
+   "cs": "long x=default(long); return (int)x;"
+  },
+  {
+   "name": "default-uint",
+   "body": "let x=default(uint)\nif(x==0u){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "uint x=default(uint); if(x==0u){return 1;} return 0;"
+  },
+  {
+   "name": "default-ulong",
+   "body": "let x=default(ulong)\nif(x==0UL){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "ulong x=default(ulong); if(x==0UL){return 1;} return 0;"
+  },
+  {
+   "name": "default-byte",
+   "body": "let x=default(byte)\nreturn (int)x",
+   "value": 0,
+   "type": "int",
+   "cs": "byte x=default(byte); return (int)x;"
+  },
+  {
+   "name": "default-sbyte",
+   "body": "let x=default(sbyte)\nreturn (int)x",
+   "value": 0,
+   "type": "int",
+   "cs": "sbyte x=default(sbyte); return (int)x;"
+  },
+  {
+   "name": "default-short",
+   "body": "let x=default(short)\nreturn (int)x",
+   "value": 0,
+   "type": "int",
+   "cs": "short x=default(short); return (int)x;"
+  },
+  {
+   "name": "default-ushort",
+   "body": "let x=default(ushort)\nreturn (int)x",
+   "value": 0,
+   "type": "int",
+   "cs": "ushort x=default(ushort); return (int)x;"
+  },
+  {
+   "name": "default-bool",
+   "body": "let b=default(bool)\nif(b){return 1}\nreturn 0",
+   "value": 0,
+   "type": "int",
+   "cs": "bool b=default(bool); if(b){return 1;} return 0;"
+  },
+  {
+   "name": "default-char",
+   "body": "let c=default(char)\nif(c=='\\0'){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "char c=default(char); if(c=='\\0'){return 1;} return 0;"
+  },
+  {
+   "name": "default-float",
+   "body": "let x=default(float)\nif(x==0.0f){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "float x=default(float); if(x==0.0f){return 1;} return 0;"
+  },
+  {
+   "name": "default-double",
+   "body": "let x=default(double)\nif(x==0.0){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "double x=default(double); if(x==0.0){return 1;} return 0;"
+  },
+  {
+   "name": "default-decimal",
+   "body": "let x=default(decimal)\nif(x==0m){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "decimal x=default(decimal); if(x==0m){return 1;} return 0;"
+  },
+  {
+   "name": "default-enum",
+   "body": "let c=default(Color)\nif(c==Color.Red){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "Color c=default(Color); if(c==Color.Red){return 1;} return 0;",
+   "pre": "enum Color { Red, Green }\n",
+   "extra": "public enum Color{Red,Green}"
+  },
+  {
+   "name": "default-enum-int",
+   "body": "let c=default(Color)\nreturn (int)c",
+   "value": 0,
+   "type": "int",
+   "cs": "Color c=default(Color); return (int)c;",
+   "pre": "enum Color { Red, Green }\n",
+   "extra": "public enum Color{Red,Green}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "default-no-target",
+   "body": "let x=@@default\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "default-reference",
+   "body": "let x=@@default(&int)\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "default-product",
+   "body": "let x=@@default(P)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\n"
+  },
+  {
+   "name": "default-generic-constraint",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "fn identity@@<T>(x:T)->T\nensures true\n{return x}\n"
+  }
+ ]
+}

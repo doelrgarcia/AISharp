@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/20",
+  "milestone": "class-value-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "class-fields-method",
+    "class-method",
+    "class-reference-copy",
+    "class-generic-constraint"
+  ],
+  "note": "class declarations use pointer-backed allocation with reference aliasing, field/method access and generic class constraints",
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 4,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 4,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

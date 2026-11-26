@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "value-set-get",
+   "body": "var c=Counter(1)\nc.total=5\nreturn c.total",
+   "value": 5,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.value=value\nreturn this}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "value-double",
+   "body": "var c=Counter(1)\nc.total=5\nreturn c.total",
+   "value": 10,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.value=value*2\nreturn this}\n",
+   "cs": "return 10;"
+  },
+  {
+   "name": "value-read-field",
+   "body": "var c=Counter(2)\nc.total=7\nreturn c.value",
+   "value": 7,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.value=value\nreturn this}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "value-two-assignments",
+   "body": "var c=Counter(1)\nc.total=3\nc.total=9\nreturn c.total",
+   "value": 9,
+   "type": "int",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.value=value\nreturn this}\n",
+   "cs": "return 9;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "value-outside",
+   "body": "return @@value",
+   "code": "AI3103",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.value=value\nreturn this}\n"
+  },
+  {
+   "name": "value-no-getter",
+   "body": "var c=Counter(1)\nc.total=5\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Counter={value:int}\nset @@total(this: Counter)\nensures true\n{this.value=value\nreturn this}\n"
+  },
+  {
+   "name": "value-bool-field",
+   "body": "var c=Counter(1)\nc.total=5\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Counter={value:int, flag:bool}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.flag=@@value\nreturn this}\n"
+  },
+  {
+   "name": "value-immutable",
+   "body": "let c=Counter(1)\n@@c.total=5",
+   "code": "AI3105",
+   "pre": "type Counter={value:int}\nget total(this: Counter)->int\nensures true\n{return this.value}\nset total(this: Counter)\nensures true\n{this.value=value\nreturn this}\n"
+  }
+ ]
+}

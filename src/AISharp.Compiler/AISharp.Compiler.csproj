@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>AISharp.Compiler</PackageId>
+    <Description>AI# compiler front end: lexer, parser, AST, semantic model, type checker, effect checker, HIR, typed MIR, diagnostics, and source maps.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;CS1587</NoWarn>
+  </PropertyGroup>
+</Project>

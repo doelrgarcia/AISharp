@@ -1,0 +1,58 @@
+{
+ "cases": [
+  {
+   "name": "from-double",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nbufferWrite(&mut b,2,3)\nvar q=from x in b select x*2\nreturn bufferPeek(&q,0)+bufferPeek(&q,1)+bufferPeek(&q,2)",
+   "value": 12,
+   "type": "int",
+   "pre": "",
+   "cs": "return 12;"
+  },
+  {
+   "name": "from-identity",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nbufferWrite(&mut b,2,3)\nvar q=from x in b select x\nreturn bufferPeek(&q,0)+bufferPeek(&q,1)+bufferPeek(&q,2)",
+   "value": 6,
+   "type": "int",
+   "pre": "",
+   "cs": "return 6;"
+  },
+  {
+   "name": "from-offset",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nbufferWrite(&mut b,2,3)\nvar q=from x in b select x+1\nreturn bufferPeek(&q,0)+bufferPeek(&q,2)",
+   "value": 6,
+   "type": "int",
+   "pre": "",
+   "cs": "return 6;"
+  },
+  {
+   "name": "from-empty",
+   "body": "var b=buffer(0)\nvar q=from x in b select x\nreturn bufferLength(q)",
+   "value": 0,
+   "type": "int",
+   "pre": "",
+   "cs": "return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "from-nonbuffer",
+   "body": "var q=from x in @@3 select x\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "from-unbound-projection",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nbufferWrite(&mut b,2,3)\nvar q=from x in b select @@y\nreturn 0",
+   "code": "AI3103"
+  },
+  {
+   "name": "from-missing-select",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nbufferWrite(&mut b,2,3)\nvar q=from x in b @@;\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "from-missing-in",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,1)\nbufferWrite(&mut b,1,2)\nbufferWrite(&mut b,2,3)\nvar q=from x @@b select x\nreturn 0",
+   "code": "AI3100"
+  }
+ ]
+}

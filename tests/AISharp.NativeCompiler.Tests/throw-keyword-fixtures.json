@@ -1,0 +1,23 @@
+{
+ "cases": [],
+ "negative": [
+  {
+   "name": "throw-nonfallible",
+   "body": "return 0",
+   "code": "AI3132",
+   "pre": "fn f()->int\nensures true\n{\n@@throw 1\n}\n"
+  },
+  {
+   "name": "throw-wrong-type",
+   "body": "return 0",
+   "code": "AI3131",
+   "pre": "fn f()->int fails long\nensures true\n{\n@@throw true\n}\n"
+  },
+  {
+   "name": "throw-without-value",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f()->int fails int\nensures true\n{\n@@throw\n}\n"
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "cases": [
+  {
+   "name": "as-object-string",
+   "body": "let o:object=(object)\"abc\"\nlet s=o as string\nif(s==\"abc\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=\"abc\"; string s=o as string; if(s==\"abc\"){return 1;} return 0;"
+  },
+  {
+   "name": "as-object-int-null",
+   "body": "let o:object=(object)5\nlet s=o as string\nif(s==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=5; string s=o as string; if(s==null){return 1;} return 0;"
+  },
+  {
+   "name": "as-string-identity",
+   "body": "let s:string=\"x\"\nlet t=s as string\nif(t==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=\"x\"; string t=s as string; if(t==\"x\"){return 1;} return 0;"
+  },
+  {
+   "name": "as-null-string",
+   "body": "let s:string=null\nlet t=s as string\nif(t==null){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=null; string t=s as string; if(t==null){return 1;} return 0;"
+  },
+  {
+   "name": "as-object-identity",
+   "body": "let o:object=(object)\"x\"\nlet p=o as object\nif((string)p==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=\"x\"; object p=o as object; if((string)p==\"x\"){return 1;} return 0;"
+  },
+  {
+   "name": "as-concat-null",
+   "body": "let o:object=(object)3\nlet s=o as string\nif(s+\"x\"==\"x\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "object o=3; string s=o as string; if(s+\"x\"==\"x\"){return 1;} return 0;"
+  },
+  {
+   "name": "as-field",
+   "body": "let p=P((object)\"y\")\nlet s=p.a as string\nif(s==\"y\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={a:object}\n",
+   "cs": "return 1;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "as-int-target",
+   "body": "let o:object=(object)1\nlet x=o @@as int\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "as-int-source",
+   "body": "let x=1 @@as string\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "as-product-target",
+   "body": "let o:object=(object)1\nlet x=o @@as P\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\n"
+  },
+  {
+   "name": "as-missing",
+   "body": "let o:object=(object)1\nlet x=o as\n@@return 0",
+   "code": "AI3100"
+  }
+ ]
+}

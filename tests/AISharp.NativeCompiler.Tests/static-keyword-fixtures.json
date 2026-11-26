@@ -1,0 +1,114 @@
+{
+ "cases": [
+  {
+   "name": "static-counter",
+   "body": "return bump()+bump()+bump()",
+   "value": 6,
+   "type": "int",
+   "pre": "fn bump()->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n",
+   "cs": "return 6;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-init-once",
+   "body": "return bump()+bump()",
+   "value": 13,
+   "type": "int",
+   "pre": "fn bump()->int\nensures true\n{static var n:int=5\nn=n+1\nreturn n}\n",
+   "cs": "return 13;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-independent",
+   "body": "return a()+a()+b()+b()",
+   "value": 6,
+   "type": "int",
+   "pre": "fn a()->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\nfn b()->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n",
+   "cs": "return 6;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-loop",
+   "body": "var total=0\nvar i=0\nwhile(i<3)\n{\ntotal+=next()\ni++\n}\nreturn total",
+   "value": 6,
+   "type": "int",
+   "pre": "fn next()->int\nensures true\n{static var n:int=0\nn=n+1\nreturn n}\n",
+   "cs": "return 6;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-bool",
+   "body": "return b()+b()",
+   "value": 3,
+   "type": "int",
+   "pre": "fn b()->int\nensures true\n{static var f:bool=false\nif(f){return 2}\nf=true\nreturn 1}\n",
+   "cs": "return 3;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-char",
+   "body": "return c()+c()",
+   "value": 130,
+   "type": "int",
+   "pre": "fn c()->int\nensures true\n{static var ch:char='A'\nreturn (int)ch}\n",
+   "cs": "return 130;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-enum",
+   "body": "return e()+e()",
+   "value": 2,
+   "type": "int",
+   "pre": "enum Color { Red, Green }\nfn e()->int\nensures true\n{static var c:Color=Color.Red\nc=Color.Green\nif(c==Color.Green){return 1}\nreturn 0}\n",
+   "cs": "return 2;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  },
+  {
+   "name": "static-in-block",
+   "body": "return f()+f()",
+   "value": 3,
+   "type": "int",
+   "pre": "fn f()->int\nensures true\n{if(true)\n{static var n:int=0\nn=n+1\nreturn n}\nreturn 0}\n",
+   "cs": "return 3;",
+   "extra": "public static class S{public static int N; public static int A; public static int B; public static bool F; public static char C='A';} public enum Color{Red,Green}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "static-let",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f()->int\nensures true\n{static let @@n:int=0\nreturn n}\n"
+  },
+  {
+   "name": "static-nonconstant",
+   "body": "let seed=f(3)\nreturn seed",
+   "code": "AI3107",
+   "pre": "fn f(x:int)->int\nensures true\n{static var @@n:int=x\nreturn n}\n"
+  },
+  {
+   "name": "static-buffer",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f()->int\nensures true\n{static var @@b:owned buffer=buffer(1)\nreturn 0}\n"
+  },
+  {
+   "name": "static-product",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\nfn f()->int\nensures true\n{static var @@p:P=P(1)\nreturn p.a}\n"
+  },
+  {
+   "name": "static-reference",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f()->int\nensures true\n{let x=1\nstatic var @@r:&int=&x\nreturn 0}\n"
+  },
+  {
+   "name": "static-const",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f()->int\nensures true\n{static const @@n:int=0\nreturn n}\n"
+  }
+ ]
+}

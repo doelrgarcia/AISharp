@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "ulong-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "spec-minimum",
+    "spec-maximum",
+    "literal-one",
+    "literal-upper",
+    "literal-lu-order",
+    "literal-hex",
+    "literal-u-suffix-falls-ulong",
+    "escaped-nominal",
+    "implicit-uint",
+    "implicit-byte",
+    "implicit-char",
+    "implicit-constant",
+    "promotion-uint",
+    "promotion-byte",
+    "promotion-char",
+    "promotion-constant",
+    "shift-63",
+    "shift-right",
+    "complement",
+    "comparison-unsigned",
+    "add-wrap",
+    "sub-wrap",
+    "mul-wrap",
+    "divide",
+    "cast-fits",
+    "cast-ulong-long-wrap",
+    "cast-long-ulong-wrap",
+    "cast-ulong-uint-wrap",
+    "cast-ulong-byte-wrap",
+    "cast-int-ulong-wrap",
+    "field-storage",
+    "generic-storage",
+    "reference-store",
+    "function-abi",
+    "compound",
+    "compound-constant",
+    "compound-wrap",
+    "update-wrap",
+    "constant-fold",
+    "constant-wrap"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 40,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 40,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 40,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 40,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

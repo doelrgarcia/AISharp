@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/2",
+  "milestone": "lexer",
+  "sourceSha256": "c9ac00c6ecc521574704ba1abd7fd146a4a7709f58b13452b79d0ec12ad868a8",
+  "tokenRecordBytes": 16,
+  "checks": [
+    {
+      "host": "32",
+      "stageTokens": 2770,
+      "sampleTokens": 19,
+      "stageBuildSha256": "2760e38a25c03be55965a83e96bc3d203c0ce8e99752e4802fbeabe60d2569b4"
+    },
+    {
+      "host": "64",
+      "stageTokens": 2770,
+      "sampleTokens": 19,
+      "stageBuildSha256": "9903a79a78fd08a9748af09613127c43705ae264388b413d8d7573ee9717951f"
+    },
+    {
+      "host": "32d",
+      "stageTokens": 2770,
+      "sampleTokens": 19,
+      "stageBuildSha256": "6aa0e9bb4876f081dee5e170cd37d473ea78d195e4ba5e1c1478ee7c550d1bdc"
+    },
+    {
+      "host": "64d",
+      "stageTokens": 2770,
+      "sampleTokens": 19,
+      "stageBuildSha256": "ac572eb169051ed9a0f97069329d4588c19457c650514586de45d7849ee67853"
+    }
+  ],
+  "ok": true
+}

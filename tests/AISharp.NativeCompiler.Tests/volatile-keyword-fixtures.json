@@ -1,0 +1,113 @@
+{
+ "cases": [
+  {
+   "name": "volatile-read",
+   "body": "let v=V(1,0)\nreturn v.x",
+   "value": 1,
+   "type": "int",
+   "pre": "type V={volatile x:int, y:int}\n",
+   "cs": "var v=new V(1,0); return v.x;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-write-read",
+   "body": "var v=V(1,0)\nv.x=5\nreturn v.x",
+   "value": 5,
+   "type": "int",
+   "pre": "type V={volatile x:int, y:int}\n",
+   "cs": "var v=new V(1,0); v.x=5; return v.x;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-compound",
+   "body": "var v=V(1,0)\nv.x+=2\nreturn v.x",
+   "value": 3,
+   "type": "int",
+   "pre": "type V={volatile x:int, y:int}\n",
+   "cs": "var v=new V(1,0); v.x+=2; return v.x;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-copy",
+   "body": "let v=V(3,0)\nvar q=v\nq.x=7\nreturn v.x+q.x",
+   "value": 10,
+   "type": "int",
+   "pre": "type V={volatile x:int, y:int}\n",
+   "cs": "var v=new V(3,0); var q=v; q.x=7; return v.x+q.x;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-function",
+   "body": "let v=V(6,0)\nreturn f(v)",
+   "value": 6,
+   "type": "int",
+   "pre": "type V={volatile x:int, y:int}\nfn f(v:V)->int\nensures true\n{return v.x}\n",
+   "cs": "var v=new V(6,0); return v.x;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-two-fields",
+   "body": "var v=V(2,3)\nreturn v.x+v.y",
+   "value": 5,
+   "type": "int",
+   "pre": "type V={volatile x:int, volatile y:int}\n",
+   "cs": "var v=new V(2,3); return v.x+v.y;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-generic",
+   "body": "var b=Box<int>(4)\nb.v=9\nreturn b.v",
+   "value": 9,
+   "type": "int",
+   "pre": "type Box<T>={volatile v:T}\n",
+   "cs": "var b=new Box(4); b.v=9; return b.v;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  },
+  {
+   "name": "volatile-readonly-other",
+   "body": "let r=R(1,0)\nreturn r.x",
+   "value": 1,
+   "type": "int",
+   "pre": "type R={volatile x:int, readonly y:int}\n",
+   "cs": "var r=new R(1); return r.x;",
+   "extra": "public struct V{public volatile int x; public volatile int y; public V(int x,int y){this.x=x;this.y=y;}} public struct R{public volatile int x; public readonly int y; public R(int x){this.x=x;this.y=0;}} public struct Box{public volatile int v; public Box(int v){this.v=v;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "volatile-local",
+   "body": "@@volatile var x=1\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "volatile-parameter",
+   "body": "return f(1)",
+   "code": "AI3107",
+   "pre": "fn f(@@volatile x:int)->int\nensures true\n{return x}\n"
+  },
+  {
+   "name": "volatile-readonly-field",
+   "body": "var v=V(1)\nreturn v.x",
+   "code": "AI3107",
+   "pre": "type V={volatile readonly @@x:int}\n"
+  },
+  {
+   "name": "volatile-duplicate-field",
+   "body": "var v=V(1)\nreturn v.x",
+   "code": "AI3107",
+   "pre": "type V={volatile volatile @@x:int}\n"
+  },
+  {
+   "name": "volatile-borrow",
+   "body": "var v=V(1)\nlet p=&v.@@x\nreturn 0",
+   "code": "AI3107",
+   "pre": "type V={volatile x:int}\n"
+  },
+  {
+   "name": "volatile-mut-borrow",
+   "body": "var v=V(1)\nlet p=&mut v.@@x\nreturn 0",
+   "code": "AI3107",
+   "pre": "type V={volatile x:int}\n"
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "long-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "min-identity",
+    "max-identity",
+    "typed-sum",
+    "add-boundary",
+    "div-rem-signs",
+    "unchecked-add-wrap",
+    "shift-mask",
+    "shift-sign",
+    "bitwise",
+    "compound",
+    "widening-int",
+    "widening-narrow",
+    "explicit-narrow-int",
+    "explicit-unchecked-wrap",
+    "explicit-byte-unchecked-wrap",
+    "alias-local",
+    "alias-param",
+    "alias-generic",
+    "field-storage",
+    "reference-read",
+    "reference-store",
+    "evaluation-once",
+    "comparison",
+    "constant-folding",
+    "distinct-from-int"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 25,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 25,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 25,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 25,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

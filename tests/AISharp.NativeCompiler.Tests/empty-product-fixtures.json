@@ -1,0 +1,510 @@
+{
+  "cases": [
+    {
+      "name": "construct-copy-discard",
+      "pre": "type Empty={}\n",
+      "body": "let a=Empty()\nlet b=a\nlet c=a\nEmpty()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "function-roundtrip",
+      "pre": "type Empty={}\nfn make()->Empty\nensures true\n{return Empty()}\nfn pass(e:Empty)->Empty\nensures true\n{return e}\nfn consume(e:Empty)->int\nensures true\n{return 42}\n",
+      "body": "let a=pass(make())\nlet b=a\nreturn consume(b)",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "nested-empty-only",
+      "pre": "type Outer={first:Empty,last:Inner}\ntype Inner={a:Empty,b:Empty}\ntype Empty={}\n",
+      "body": "var p=Outer(Empty(),Inner(Empty(),Empty()))\nlet q=p\np.last=Inner(Empty(),Empty())\nlet x=q.first\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "partial-empty-init",
+      "pre": "type Pair={left:Empty,right:Empty}\ntype Empty={}\n",
+      "body": "var p:Pair\np.left=Empty()\np.right=Empty()\nlet q=p\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "branch-empty-init",
+      "pre": "type Empty={}\n",
+      "body": "var e:Empty\nlet b=true\nif(b){e=Empty()}else{e=Empty()}\nlet q=e\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "loop-empty-replacement",
+      "pre": "type Empty={}\n",
+      "body": "var e=Empty()\nfor(var i=0;i<3;i++){e=Empty()\nlet q=e}\nlet q=e\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "loop-break-continue",
+      "pre": "type Empty={}\n",
+      "body": "var n=0\nfor(var i=0;i<5;i++){let e=Empty()\nif(i==1){continue}\nif(i==4){break}\nlet q=e\nn+=14}\nreturn n",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "borrowed-return",
+      "pre": "type Empty={}\nfn identity(p:&Empty)->&Empty\nensures true\n{return p}\n",
+      "body": "var e=Empty()\nlet p=identity(&e)\nlet q=*p\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "exclusive-replace-return",
+      "pre": "type Empty={}\nfn replace(p:&mut Empty)->&mut Empty\nensures true\n{*p=Empty()\nreturn p}\n",
+      "body": "var e=Empty()\nlet p=replace(&mut e)\n*p=Empty()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "disjoint-empty-fields",
+      "pre": "type Pair={left:Empty,right:Empty}\ntype Empty={}\n",
+      "body": "var p=Pair(Empty(),Empty())\nlet a=&mut p.left\nlet b=&mut p.right\n*a=Empty()\n*b=Empty()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "reborrow-nll",
+      "pre": "type Empty={}\n",
+      "body": "var e=Empty()\nlet a=&mut e\n{let b=&mut *a\n*b=Empty()}\n*a=Empty()\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "empty-call-evaluation-order",
+      "pre": "type Empty={}\ntype Pair={a:Empty,b:Empty}\nfn tick(p:&mut int)->Empty\nensures true\n{*p=*p*10+2\nreturn Empty()}\n",
+      "body": "var n=0\nlet p=Pair(tick(&mut n),tick(&mut n))\nreturn n",
+      "value": 22,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "discarded-result-effects",
+      "pre": "type Empty={}\nfn tick(p:&mut int)->Empty\nensures true\n{*p+=21\nreturn Empty()}\n",
+      "body": "var n=0\ntick(&mut n)\nlet e=tick(&mut n)\nreturn n",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "exclusive-call-argument-order",
+      "pre": "type Empty={}\nfn tick(p:&mut int)->Empty\nensures true\n{*p+=42\nreturn Empty()}\nfn use(e:Empty,n:int)->int\nensures true\n{return n}\n",
+      "body": "var n=0\nreturn use(tick(&mut n),n)",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "immutable-copy-field-in-owned",
+      "pre": "type Empty={}\ntype Mixed={e:Empty,b:owned buffer}\n",
+      "body": "let p=Mixed(Empty(),buffer(2))\nlet b=p.b\nlet e=p.e\nlet e2=p.e\nreturn bufferLength(b)+40",
+      "value": 42,
+      "error": null,
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 1,
+        "ownersCreated": 1,
+        "drops": 1,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1
+        ]
+      }
+    },
+    {
+      "name": "empty-field-reinit-after-whole-move",
+      "pre": "type Empty={}\ntype Mixed={e:Empty,b:owned buffer}\n",
+      "body": "var p=Mixed(Empty(),buffer(2))\nlet q=p\np.e=Empty()\np.b=buffer(3)\nreturn bufferLength(q.b)+bufferLength(p.b)+37",
+      "value": 42,
+      "error": null,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "mixed-field-drop-order",
+      "pre": "type Empty={}\ntype Mixed={first:owned buffer,e:Empty,last:owned buffer}\n",
+      "body": "let p=Mixed(buffer(1),Empty(),buffer(2))\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "empty-owned-constructor-effects",
+      "pre": "type Empty={}\ntype Mixed={e:Empty,b:owned buffer}\nfn make()->Empty\nensures true\n{let b=buffer(2)\nreturn Empty()}\n",
+      "body": "let p=Mixed(make(),buffer(1))\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "empty-before-terminal-fault",
+      "pre": "type Empty={}\n",
+      "body": "let e=Empty()\nlet b=buffer(1)\nreturn bufferPeek(&b,1)",
+      "value": null,
+      "error": "System.IndexOutOfRangeException",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 0,
+        "liveBytes": 1,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "escaped-empty",
+      "pre": "type @struct={}\n",
+      "body": "let e=@struct()\nlet q=e\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "empty-early-return-owned-cleanup",
+      "pre": "type Empty={}\nfn make(flag:bool)->Empty\nensures true\n{let b=buffer(1)\nif(flag){return Empty()}\nreturn Empty()}\n",
+      "body": "let a=make(true)\nlet b=make(false)\nreturn 42",
+      "value": 42,
+      "error": null,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "allocationFailures": 0,
+        "liveBytes": 0,
+        "dropOrder": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "empty-type-user-function-precedence",
+      "pre": "type Empty={}\nfn Empty()->int\nensures true\n{return 42}\n",
+      "body": "return Empty()",
+      "value": 42,
+      "error": null,
+      "memory": null
+    }
+  ],
+  "negative": [
+    {
+      "name": "empty-uninitialized",
+      "pre": "type Empty={}\n",
+      "body": "var e:Empty\nlet q=@@e\nreturn 0",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "var e:Empty",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-field-uninitialized",
+      "pre": "type Pair={left:Empty,right:Empty}\ntype Empty={}\n",
+      "body": "var p:Pair\np.left=Empty()\nlet q=@@p\nreturn 0",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "var p:Pair",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-branch-uninitialized",
+      "pre": "type Empty={}\n",
+      "body": "var e:Empty\nlet b=true\nif(b){e=Empty()}\nlet q=@@e\nreturn 0",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "var e:Empty",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-loop-uninitialized",
+      "pre": "type Empty={}\n",
+      "body": "var e:Empty\nwhile(false){e=Empty()}\nlet q=@@e\nreturn 0",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "var e:Empty",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-arity",
+      "pre": "type Empty={}\n",
+      "body": "let e=@@Empty(1)\nreturn 0",
+      "code": "AI3107",
+      "length": 5,
+      "expectedRelated": []
+    },
+    {
+      "name": "empty-member",
+      "pre": "type Empty={}\n",
+      "body": "let e=Empty()\nreturn e.@@missing",
+      "code": "AI3103",
+      "length": 7,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Empty={}",
+          "shift": 5,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "empty-padding-hidden",
+      "pre": "type Empty={}\n",
+      "body": "let e=Empty()\nreturn e.@@ai_empty_cell",
+      "code": "AI3103",
+      "length": 13,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Empty={}",
+          "shift": 5,
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "empty-nominal-mismatch",
+      "pre": "type A={}\ntype B={}\n",
+      "body": "let e:A=@@B()\nreturn 0",
+      "code": "AI3107",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "destination-declaration",
+          "needle": "let e:A",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-read-after-whole-move",
+      "pre": "type Empty={}\ntype Mixed={e:Empty,b:owned buffer}\n",
+      "body": "let p=Mixed(Empty(),buffer(1))\nlet q=p\nlet e=p.@@e\nreturn bufferLength(q.b)",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "let p=Mixed",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "field-declaration",
+          "needle": "e:Empty",
+          "shift": 0,
+          "length": 1
+        },
+        {
+          "kind": "possible-move",
+          "needle": "let q=p",
+          "shift": 6,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-shared-write",
+      "pre": "type Empty={}\n",
+      "body": "var e=Empty()\nlet p=&e\n@@*p=Empty()\nreturn 0",
+      "code": "AI3115",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "let p=&e",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "*p=Empty()",
+          "shift": 1,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-live-shared-conflict",
+      "pre": "type Empty={}\n",
+      "body": "var e=Empty()\nlet p=&e\ne@@=Empty()\nlet q=*p\nreturn 0",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var e=Empty",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "let p=&e",
+          "shift": 6,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-uninitialized-borrow",
+      "pre": "type Empty={}\n",
+      "body": "var e:Empty\nlet p=@@&e\nlet q=*p\nreturn 0",
+      "code": "AI3102",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "var e:Empty",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-local-return",
+      "pre": "type Empty={}\nfn bad()->&Empty\nensures true\n{let e=Empty()\n@@return &e}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let e=Empty",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &e",
+          "shift": 7,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-mutable-immutable",
+      "pre": "type Empty={}\n",
+      "body": "let e=Empty()\nlet p=&mut @@e\nreturn 0",
+      "code": "AI3105",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let e=Empty()",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "storage-use",
+          "needle": "&mut e",
+          "shift": 5,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-parameter-slot-return",
+      "pre": "type Empty={}\nfn bad(e:Empty)->&Empty\nensures true\n{@@return &e}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(e:Empty",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &e",
+          "shift": 7,
+          "length": 1
+        }
+      ]
+    }
+  ]
+}

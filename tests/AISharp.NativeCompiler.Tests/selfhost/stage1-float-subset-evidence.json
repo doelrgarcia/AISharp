@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "float-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "literal-integer-form",
+    "literal-fraction",
+    "literal-exponent",
+    "literal-leading-dot",
+    "literal-separator",
+    "literal-uppercase-suffix",
+    "add",
+    "subtract",
+    "multiply",
+    "divide",
+    "exact-single-arithmetic",
+    "unary-minus",
+    "promote-int",
+    "promote-long",
+    "promote-uint",
+    "promote-ulong",
+    "int-to-float-rounding",
+    "long-to-float-rounding",
+    "comparisons",
+    "division-by-zero-infinity",
+    "nan-not-equal",
+    "nan-comparison-false",
+    "cast-unchecked-truncate",
+    "cast-checked-truncate",
+    "cast-unchecked-saturate",
+    "cast-unchecked-nan",
+    "cast-unchecked-byte-wrap",
+    "cast-unchecked-byte-negative",
+    "constant-folding",
+    "field-storage",
+    "generic-storage",
+    "reference-read",
+    "function-abi",
+    "float-equals-int"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 34,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 34,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 34,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 34,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

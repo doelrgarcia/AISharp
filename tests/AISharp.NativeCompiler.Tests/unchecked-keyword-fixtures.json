@@ -1,0 +1,48 @@
+{
+ "cases": [
+  {
+   "name": "add-wrap",
+   "body": "var v:int=2147483647\nreturn unchecked(v+1)",
+   "type": "int",
+   "pre": "",
+   "value": -2147483648,
+   "cs": "int v=int.MaxValue; return unchecked(v+1);"
+  },
+  {
+   "name": "subtract-wrap",
+   "body": "var v:int=-2147483648\nreturn unchecked(v-1)",
+   "type": "int",
+   "pre": "",
+   "value": 2147483647,
+   "cs": "int v=int.MinValue; return unchecked(v-1);"
+  },
+  {
+   "name": "constant-narrow",
+   "body": "const b:byte=unchecked((byte)300)\nreturn (int)b",
+   "type": "int",
+   "pre": "",
+   "value": 44,
+   "cs": "const byte b=unchecked((byte)300); return b;"
+  },
+  {
+   "name": "cast-wrap",
+   "body": "var l:long=4294967296L\nreturn unchecked((int)l)",
+   "type": "int",
+   "pre": "",
+   "value": 0,
+   "cs": "long l=4294967296L; return unchecked((int)l);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "nonnumeric-arithmetic",
+   "body": "return unchecked(true@@+1)",
+   "code": "AI3107"
+  },
+  {
+   "name": "nonnumeric-cast",
+   "body": "return unchecked((@@int)true)",
+   "code": "AI3107"
+  }
+ ]
+}

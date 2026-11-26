@@ -1,0 +1,197 @@
+{
+  "cases": [
+    {
+      "name": "copy-integer",
+      "body": "let a=7\nlet b=a\nreturn a+b",
+      "value": 14
+    },
+    {
+      "name": "copy-boolean",
+      "body": "let a=true\nlet b=a\nreturn a && b",
+      "value": true,
+      "type": "bool"
+    },
+    {
+      "name": "copy-argument-keeps-source",
+      "body": "let a=21\nlet b=twice(a)\nreturn a+b",
+      "pre": "fn twice(n: int) -> int\nensures true\n{return n*2}\n",
+      "value": 63
+    }
+  ],
+  "negative": [
+    {
+      "name": "memory-gate-borrow-plain",
+      "body": "var n=1\nlet p=&n\nn@@=2\nreturn *p",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-borrow-checked",
+      "body": "checked{\nvar n=1\nlet p=&n\nn@@=2\nreturn *p\n}",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-borrow-unchecked",
+      "body": "unchecked{\nvar n=1\nlet p=&n\nn@@=2\nreturn *p\n}",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-exclusive-borrow-plain",
+      "body": "var n=1\nlet p=&mut n\nlet old=@@n\nreturn *p+old",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-exclusive-borrow-checked",
+      "body": "checked{\nvar n=1\nlet p=&mut n\nlet old=@@n\nreturn *p+old\n}",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-exclusive-borrow-unchecked",
+      "body": "unchecked{\nvar n=1\nlet p=&mut n\nlet old=@@n\nreturn *p+old\n}",
+      "code": "AI3114",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-dereference-plain",
+      "body": "var n=1\nreturn *@@n",
+      "code": "AI3115",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-dereference-checked",
+      "body": "checked{\nvar n=1\nreturn *@@n\n}",
+      "code": "AI3115",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-dereference-unchecked",
+      "body": "unchecked{\nvar n=1\nreturn *@@n\n}",
+      "code": "AI3115",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-owned-type-plain",
+      "body": "var n: @@owned<int>\nreturn 0",
+      "code": "AI3100",
+      "length": 5
+    },
+    {
+      "name": "memory-gate-owned-type-checked",
+      "body": "checked{\nvar n: @@owned<int>\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 5
+    },
+    {
+      "name": "memory-gate-owned-type-unchecked",
+      "body": "unchecked{\nvar n: @@owned<int>\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 5
+    },
+    {
+      "name": "memory-gate-borrowed-type-plain",
+      "body": "var n: borrowed@@<int>\nreturn 0",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-borrowed-type-checked",
+      "body": "checked{\nvar n: borrowed@@<int>\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-borrowed-type-unchecked",
+      "body": "unchecked{\nvar n: borrowed@@<int>\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-pointer-type-plain",
+      "body": "var p: int@@*\nreturn 0",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-pointer-type-checked",
+      "body": "checked{\nvar p: int@@*\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-pointer-type-unchecked",
+      "body": "unchecked{\nvar p: int@@*\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "memory-gate-string-owner-plain",
+      "body": "var s: @@string\nreturn 0",
+      "code": "AI3100",
+      "length": 6
+    },
+    {
+      "name": "memory-gate-string-owner-checked",
+      "body": "checked{\nvar s: @@string\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 6
+    },
+    {
+      "name": "memory-gate-string-owner-unchecked",
+      "body": "unchecked{\nvar s: @@string\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 6
+    },
+    {
+      "name": "memory-gate-heap-construction-plain",
+      "body": "let p=@@new Box()\nreturn 0",
+      "code": "AI3100",
+      "length": 3
+    },
+    {
+      "name": "memory-gate-heap-construction-checked",
+      "body": "checked{\nlet p=@@new Box()\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 3
+    },
+    {
+      "name": "memory-gate-heap-construction-unchecked",
+      "body": "unchecked{\nlet p=@@new Box()\nreturn 0\n}",
+      "code": "AI3100",
+      "length": 3
+    },
+    {
+      "name": "memory-gate-unsafe-block-plain",
+      "body": "@@unsafe {return 0}",
+      "code": "AI3100",
+      "length": 6
+    },
+    {
+      "name": "memory-gate-unsafe-block-checked",
+      "body": "checked{\n@@unsafe {return 0}\n}",
+      "code": "AI3100",
+      "length": 6
+    },
+    {
+      "name": "memory-gate-unsafe-block-unchecked",
+      "body": "unchecked{\n@@unsafe {return 0}\n}",
+      "code": "AI3100",
+      "length": 6
+    },
+    {
+      "name": "no-implicit-allocator",
+      "body": "return @@allocate(16)",
+      "code": "AI3103",
+      "length": 8
+    },
+    {
+      "name": "no-unchecked-borrow-expression",
+      "body": "var n=1\nlet p=unchecked(&n)\nn@@=2\nreturn *p",
+      "code": "AI3114",
+      "length": 1
+    }
+  ]
+}

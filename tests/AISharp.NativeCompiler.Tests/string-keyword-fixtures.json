@@ -1,0 +1,102 @@
+{
+ "cases": [
+  {
+   "name": "string-eq",
+   "body": "if(\"abc\"==\"abc\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string a=\"abc\"; if(a==\"abc\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-ne",
+   "body": "if(\"abc\"!=\"abd\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string a=\"abc\"; if(a!=\"abd\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-var",
+   "body": "let s:string=\"abc\"\nif(s==\"abc\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=\"abc\"; if(s==\"abc\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-concat",
+   "body": "if(\"ab\"+\"cd\"==\"abcd\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "if(\"ab\"+\"cd\"==\"abcd\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-concat-var",
+   "body": "let a:string=\"xy\"\nlet b:string=\"z\"\nlet c=a+b\nif(c==\"xyz\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string c=\"xy\"+\"z\"; if(c==\"xyz\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-empty",
+   "body": "let s:string=\"\"\nif(s==\"\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=\"\"; if(s==\"\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-field",
+   "body": "let p=P(\"ab\",\"cd\")\nif(p.a+p.b==\"abcd\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={a:string, b:string}\n",
+   "cs": "var p=new P(); return (p.a+p.b==\"abcd\")?1:0;",
+   "extra": "public class P{public string a=\"ab\"; public string b=\"cd\";}"
+  },
+  {
+   "name": "string-function",
+   "body": "return f()",
+   "value": 1,
+   "type": "int",
+   "pre": "fn f()->int\nensures true\n{let s:string=\"ok\"\nif(s==\"ok\"){return 1}\nreturn 0}\n",
+   "cs": "int f(){string s=\"ok\"; if(s==\"ok\"){return 1;} return 0;} return f();"
+  },
+  {
+   "name": "string-copy",
+   "body": "let s:string=\"abc\"\nlet t=s\nif(t==\"abc\" && s==\"abc\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=\"abc\"; string t=s; if(t==\"abc\" && s==\"abc\"){return 1;} return 0;"
+  },
+  {
+   "name": "string-long",
+   "body": "let s:string=\"abcdefghijklmnopqrstuvwxyz\"\nif(s==\"abcdefghijklmnopqrstuvwxyz\"){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "string s=\"abcdefghijklmnopqrstuvwxyz\"; if(s==\"abcdefghijklmnopqrstuvwxyz\"){return 1;} return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "string-plus-int",
+   "body": "let s:string=\"a\"\nlet x=s@@+1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "string-mul",
+   "body": "let s:string=\"a\"\nlet x=s@@*2\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "string-pattern",
+   "body": "let s:string=\"a\"\nreturn match @@s {\"a\" => 1, _ => 0}",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "cases": [
+  {
+   "name": "this-method",
+   "body": "let c=Counter(2)\nreturn c.inc(3)",
+   "value": 5,
+   "type": "int",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "this-constructor",
+   "body": "let c=Counter(7)\nreturn c.value",
+   "value": 7,
+   "type": "int",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "this-extension-receiver",
+   "body": "let c=Counter(4)\nreturn c.inc(1)",
+   "value": 5,
+   "type": "int",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n",
+   "cs": "return 5;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "this-outside",
+   "body": "return @@this",
+   "code": "AI3103",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n"
+  },
+  {
+   "name": "this-unknown-method",
+   "body": "let c=Counter(1)\nreturn c.@@missing(2)",
+   "code": "AI3103",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n"
+  },
+  {
+   "name": "this-wrong-arity",
+   "body": "let c=Counter(1)\nreturn c.@@inc()",
+   "code": "AI3107",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n"
+  },
+  {
+   "name": "this-ctor-type",
+   "body": "let c=Counter(@@true)\nreturn c.value",
+   "code": "AI3107",
+   "pre": "type Counter={value:int}\nconstructor Counter(v: int)\n{this.value=v}\nfn inc(this: Counter, n: int)->int\nensures true\n{return this.value+n}\n"
+  }
+ ]
+}

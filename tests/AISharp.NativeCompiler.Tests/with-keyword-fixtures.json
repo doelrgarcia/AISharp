@@ -1,0 +1,128 @@
+{
+ "cases": [
+  {
+   "name": "with-one-field",
+   "body": "let p=P(1,2)\nlet q=p with {a=5}\nreturn q.a*10+q.b",
+   "value": 52,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=p with {a=5}; return q.a*10+q.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-two-fields",
+   "body": "let p=P(1,2)\nlet q=p with {a=5, b=6}\nreturn q.a*10+q.b",
+   "value": 56,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=p with {a=5,b=6}; return q.a*10+q.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-original-unchanged",
+   "body": "var p=P(1,2)\nlet q=p with {a=9}\nreturn p.a*10+p.b",
+   "value": 12,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=p with {a=9}; return p.a*10+p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-return",
+   "body": "return (P(1,2) with {b=7}).b",
+   "value": 7,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\n",
+   "cs": "return (new P(1,2) with {b=7}).b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-function",
+   "body": "let q=make() with {a=3}\nreturn q.a",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\nfn make()->P\nensures true\n{return P(0,0)}\n",
+   "cs": "P Make()=>new P(0,0); var q=Make() with {a=3}; return q.a;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-function-field",
+   "body": "let q=make() with {b=4}\nreturn q.b",
+   "value": 4,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\nfn make()->P\nensures true\n{return P(0,0)}\n",
+   "cs": "P Make()=>new P(0,0); var q=Make() with {b=4}; return q.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-chain",
+   "body": "let p=P(1,2)\nlet q=p with {a=3} with {b=4}\nreturn q.a*10+q.b",
+   "value": 34,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=(p with {a=3}) with {b=4}; return q.a*10+q.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-nested",
+   "body": "let q=Q(P(1,2))\nlet r=q with {p=P(5,6)}\nreturn r.p.a*10+r.p.b",
+   "value": 56,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(1,2)); var r=q with {p=new P(5,6)}; return r.p.a*10+r.p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  },
+  {
+   "name": "with-nested-inner",
+   "body": "let q=Q(P(1,2))\nlet r=q with {p=q.p with {a=9}}\nreturn r.p.a*10+r.p.b",
+   "value": 92,
+   "type": "int",
+   "pre": "type P={a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(1,2)); var r=q with {p=q.p with {a=9}}; return r.p.a*10+r.p.b;",
+   "extra": "public record P(int a,int b); public record Q(P p);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "with-unknown-field",
+   "body": "let p=P(1,2)\nlet q=p with {@@c=3}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int, b:int}\n"
+  },
+  {
+   "name": "with-duplicate-field",
+   "body": "let p=P(1,2)\nlet q=p with {a=3, @@a=4}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int, b:int}\n"
+  },
+  {
+   "name": "with-readonly-field",
+   "body": "let p=P(1,2)\nlet q=p with {@@a=3}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={readonly a:int, b:int}\n"
+  },
+  {
+   "name": "with-volatile-field",
+   "body": "let p=P(1,2)\nlet q=p with {@@a=3}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={volatile a:int, b:int}\n"
+  },
+  {
+   "name": "with-non-product",
+   "body": "return (1 @@with {a=1}).a",
+   "code": "AI3107"
+  },
+  {
+   "name": "with-non-copy",
+   "body": "let x=B(buffer(1))\nlet y=x @@with {}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type B={b:owned buffer}\n"
+  },
+  {
+   "name": "with-union",
+   "body": "let u=A\nlet v=u @@with {}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type U=A|B\n"
+  }
+ ]
+}

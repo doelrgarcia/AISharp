@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/41",
+  "milestone": "generic-product-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "pair-int",
+    "pair-order",
+    "pair-int-string",
+    "pair-string-int",
+    "pair-cross-function",
+    "pair-string-length",
+    "triple-int",
+    "triple-cross-function",
+    "quad-int",
+    "pair-named-fields",
+    "pair-typed-cross-function",
+    "pair-long-field",
+    "pair-char-field",
+    "pair-product-local",
+    "pair-product-cross-function",
+    "pair-product-declaration-order",
+    "pair-long-cross-function",
+    "pair-product-q",
+    "pair-product-q-order",
+    "pair-product-q-cross"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 20,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 20,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 20,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 20,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

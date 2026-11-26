@@ -1,0 +1,90 @@
+{
+ "cases": [
+  {
+   "name": "scoped-param-read",
+   "body": "var n=7\nreturn sum(&n)",
+   "type": "int",
+   "pre": "fn sum(x: scoped &int)->int\nensures true\n{return *x}\n",
+   "value": 7,
+   "cs": "int n=7; int Sum(scoped ref int x)=>x; return Sum(ref n);"
+  },
+  {
+   "name": "scoped-param-two",
+   "body": "var a=2\nvar b=3\nreturn pair(&a,&b)",
+   "type": "int",
+   "pre": "fn pair(x: scoped &int,y: scoped &int)->int\nensures true\n{return *x+*y}\n",
+   "value": 5,
+   "cs": "int a=2; int b=3; int Pair(scoped ref int x, scoped ref int y)=>x+y; return Pair(ref a, ref b);"
+  },
+  {
+   "name": "scoped-local-read",
+   "body": "var n=5\nvar r=0\n{\nlet p: scoped &int=&n\nr=*p\n}\nreturn r",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int n=5; int r=0; { scoped ref int p = ref n; r=p; } return r;"
+  },
+  {
+   "name": "scoped-local-observe-write",
+   "body": "var n=2\nn=5\nlet p: scoped &int=&n\nreturn *p",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "int n=2; n=5; scoped ref int p = ref n; return p;"
+  },
+  {
+   "name": "unscoped-return-legal",
+   "body": "var n=3\nlet p=id(&n)\nreturn *p",
+   "type": "int",
+   "pre": "fn id(x: &int)->&int\nensures true\n{return x}\n",
+   "value": 3
+  },
+  {
+   "name": "scoped-param-chain",
+   "body": "var n=9\nreturn use(&n)",
+   "type": "int",
+   "pre": "fn pass(x: scoped &int)->int\nensures true\n{return *x}\nfn use(y: &int)->int\nensures true\n{return pass(y)}\n",
+   "value": 9,
+   "cs": "int n=9; int Pass(scoped ref int x)=>x; int Use(ref int y)=>Pass(ref y); return Use(ref n);"
+  },
+  {
+   "name": "scoped-mut-reference",
+   "body": "var n=4\nreturn bump(&mut n)",
+   "type": "int",
+   "pre": "fn bump(x: scoped &mut int)->int\nensures true\n{*x+=1\nreturn *x}\n",
+   "value": 5,
+   "cs": "int n=4; int Bump(scoped ref int x){x++;return x;} return Bump(ref n);"
+  }
+ ],
+ "negative": [
+  {
+   "name": "scoped-param-return",
+   "body": "return 0",
+   "code": "AI3117",
+   "pre": "fn leak(x: scoped &int)->&int\nensures true\n{return @@x}\n"
+  },
+  {
+   "name": "scoped-local-return",
+   "body": "return 0",
+   "code": "AI3117",
+   "pre": "fn escape()->&int\nensures true\n{var n=1\nlet p: scoped &int=&n\nreturn @@p}\n"
+  },
+  {
+   "name": "scoped-product-capture",
+   "body": "return 0",
+   "code": "AI3117",
+   "pre": "type Holder={value:&int}\nfn make(x: scoped &int)->Holder\nensures true\n{return @@Holder(x)}\n"
+  },
+  {
+   "name": "scoped-nonreference-param",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(@@x: scoped int)->int\nensures true\n{return x}\n"
+  },
+  {
+   "name": "scoped-nonreference-local",
+   "body": "let @@p: scoped int=1\nreturn p",
+   "code": "AI3107"
+  }
+ ]
+}

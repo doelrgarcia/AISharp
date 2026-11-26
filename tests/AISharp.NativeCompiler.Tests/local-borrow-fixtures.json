@@ -1,0 +1,266 @@
+{
+  "cases": [
+    {
+      "name": "borrow-shared-last-use",
+      "body": "var x=3\nlet p=&x\nlet n=*p\nx=4\nreturn n+x",
+      "value": 7
+    },
+    {
+      "name": "borrow-shared-alias",
+      "body": "var x=3\nlet p=&x\nlet q=p\nreturn *p+*q+x",
+      "value": 9
+    },
+    {
+      "name": "borrow-exclusive-mutation",
+      "body": "var x=3\nlet p=&mut x\n*p+=4\nreturn x",
+      "value": 7
+    },
+    {
+      "name": "borrow-exclusive-transfer",
+      "body": "var x=2\nlet p=&mut x\nlet q=p\n*q=9\nreturn x",
+      "value": 9
+    },
+    {
+      "name": "borrow-reborrow-resume",
+      "body": "var x=3\nlet p=&mut x\nlet q=&mut *p\n*q=6\n*p+=2\nreturn x",
+      "value": 8
+    },
+    {
+      "name": "borrow-shared-reborrow",
+      "body": "var x=4\nlet p=&mut x\nlet q=&*p\nlet n=*q\n*p=6\nreturn n+x",
+      "value": 10
+    },
+    {
+      "name": "borrow-loop",
+      "body": "var x=0\nfor(var i=0;i<4;i++){let p=&mut x\n*p+=i}\nreturn x",
+      "value": 6
+    },
+    {
+      "name": "borrow-loop-reborrow",
+      "body": "var x=0\nvar p=&mut x\nfor(var i=0;i<3;i++){p=&mut *p\n*p+=1}\nreturn x",
+      "value": 3
+    },
+    {
+      "name": "borrow-loop-control",
+      "body": "var x=0\nfor(var i=0;i<5;i++){let p=&mut x\n*p+=i\nif(i==1){continue}\nif(i==3){break}}\nreturn x",
+      "value": 6
+    },
+    {
+      "name": "borrow-branch-disjoint",
+      "body": "return choose(0)+choose(1)",
+      "pre": "fn choose(n: int) -> int\nensures true\n{var x=1\nvar y=2\nvar p:borrowed mut int\nif(n==0){p=&mut x}else{p=&mut y}\n*p+=3\nreturn x+y}\n",
+      "value": 12
+    },
+    {
+      "name": "borrow-branch-same",
+      "body": "return choose(0)+choose(1)",
+      "pre": "fn choose(n: int) -> int\nensures true\n{var x=2\nvar p:borrowed mut int\nif(n==0){p=&mut x}else{p=&mut x}\n*p+=3\nreturn x}\n",
+      "value": 10
+    },
+    {
+      "name": "borrow-refslot-follow",
+      "body": "var x=3\nlet p=&x\nlet rr=&p\nreturn **rr",
+      "value": 3
+    },
+    {
+      "name": "borrow-refslot-replace",
+      "body": "var x=2\nvar y=5\nvar p=&x\nlet pp=&mut p\n*pp=&y\nx=7\nreturn *p+x",
+      "value": 12
+    },
+    {
+      "name": "borrow-nested-exclusive",
+      "body": "var x=2\nvar p=&mut x\nlet pp=&mut p\n**pp=6\nreturn x",
+      "value": 6
+    },
+    {
+      "name": "borrow-pointer-typedef",
+      "body": "var x=3\nlet p: &mut int=&mut x\nlet pp: &&mut int=&p\nreturn **pp",
+      "value": 3
+    },
+    {
+      "name": "borrow-reference-reassign",
+      "body": "var x=3\nvar y=4\nvar p=&x\np=&y\nx=7\nreturn *p+x",
+      "value": 11
+    },
+    {
+      "name": "borrow-temporary-pointer-update",
+      "body": "var x=2\n(*(&mut x))++\nreturn x",
+      "value": 3
+    },
+    {
+      "name": "borrow-checked-access",
+      "body": "var x=2\nlet p=&mut x\n*unchecked(p)+=3\n*p+=4\nreturn x",
+      "value": 9
+    },
+    {
+      "name": "borrow-empty-unused",
+      "body": "var x=3\n&mut x\nx=4\nreturn x",
+      "value": 4
+    },
+    {
+      "name": "borrow-buffer-views",
+      "body": "var b=buffer(2)\nlet p=&mut b\nbufferWrite(p,1,9)\nlet n=bufferPeek(p,1)\nreturn n+bufferLength(b)",
+      "value": 11
+    },
+    {
+      "name": "borrow-buffer-shared",
+      "body": "let b=buffer(3)\nlet p=&b\nlet q=p\nreturn bufferSize(p)+bufferPeek(q,2)",
+      "value": 3
+    },
+    {
+      "name": "borrow-buffer-replace",
+      "body": "var b=buffer(2)\nlet p=&mut b\n*p=buffer(4)\nbufferWrite(p,3,8)\nreturn bufferPeek(p,3)+bufferLength(b)",
+      "value": 12
+    },
+    {
+      "name": "borrow-fault-index",
+      "body": "let b=buffer(1)\nlet p=&b\nreturn bufferPeek(p,1)",
+      "error": "System.IndexOutOfRangeException"
+    },
+    {
+      "name": "borrow-fault-value",
+      "body": "var b=buffer(1)\nlet p=&mut b\nbufferWrite(p,0,256)\nreturn 0",
+      "error": "System.ArgumentOutOfRangeException"
+    },
+    {
+      "name": "borrow-fault-negative",
+      "body": "let b=buffer(0)\nreturn bufferPeek(&b,-1)",
+      "error": "System.IndexOutOfRangeException"
+    }
+  ],
+  "negative": [
+    {
+      "name": "borrow-write-shared",
+      "body": "var x=1\nlet p=&x\nx@@=2\nreturn *p",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-read-exclusive",
+      "body": "var x=1\nlet p=&mut x\nlet n=@@x\nreturn *p+n",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-second-exclusive",
+      "body": "var x=1\nlet p=&mut x\nlet q=@@&mut x\nreturn *p+*q",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-shared-during-exclusive",
+      "body": "var x=1\nlet p=&mut x\nlet q=@@&x\nreturn *p+*q",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-immutable-exclusive",
+      "body": "let x=1\nlet p=&mut @@x\nreturn *p",
+      "code": "AI3105",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-readonly-write",
+      "body": "var x=1\nlet p=&x\n@@*p=2\nreturn x",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-parent-frozen",
+      "body": "var x=1\nlet p=&mut x\nlet q=&mut *p\n*p@@=2\nreturn *q",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-nested-indirect-conflict",
+      "body": "var x=1\nlet p=&x\nlet pp=&p\nx@@=2\nreturn **pp",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-nested-readonly-escalation",
+      "body": "var x=1\nlet p=&mut x\nlet pp=&p\n*@@*pp=2\nreturn x",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-exclusive-use-after-move",
+      "body": "var x=1\nlet p=&mut x\nlet q=p\nreturn *@@p+*q",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-scope-escape",
+      "body": "var r: borrowed int\n{let x=3\nr=&x@@}\nreturn *r",
+      "code": "AI3116",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-refslot-escape",
+      "body": "var r: borrowed borrowed int\nlet x=3\n{let p=&x\nr=&p@@}\nreturn **r",
+      "code": "AI3116",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-owner-move",
+      "body": "let b=buffer(1)\nlet p=&b\nbufferLength(@@b)\nreturn bufferSize(p)",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-owner-replace",
+      "body": "var b=buffer(1)\nlet p=&b\nb@@=buffer(2)\nreturn bufferSize(p)",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-move-out",
+      "body": "let b=buffer(1)\nlet p=&b\nlet q=@@*p\nreturn bufferLength(q)",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-const",
+      "body": "let x=1\nconst p=@@&x\nreturn *p",
+      "code": "AI3113",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-uninitialized",
+      "body": "var x:int\nlet p=&@@x\nreturn 0",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-loop-conflict",
+      "body": "var x=1\nlet p=&x\nfor(var i=0;i<2;i++){x@@=i}\nreturn *p",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "borrow-old-shared-alias",
+      "body": "var x=1\nvar y=2\nvar p=&x\nlet q=p\np=&y\nx@@=4\nreturn *q+*p",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true
+    }
+  ]
+}

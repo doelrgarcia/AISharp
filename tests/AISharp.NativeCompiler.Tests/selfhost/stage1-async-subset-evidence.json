@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/33",
+  "milestone": "async-await-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    {
+      "keyword": "async",
+      "name": "async-call"
+    },
+    {
+      "keyword": "async",
+      "name": "async-value"
+    },
+    {
+      "keyword": "async",
+      "name": "async-twice"
+    },
+    {
+      "keyword": "async",
+      "name": "async-await"
+    },
+    {
+      "keyword": "await",
+      "name": "await-direct"
+    },
+    {
+      "keyword": "await",
+      "name": "await-local"
+    },
+    {
+      "keyword": "await",
+      "name": "await-sum"
+    },
+    {
+      "keyword": "await",
+      "name": "await-nested"
+    }
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "asyncCases": 4,
+      "awaitCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "asyncCases": 4,
+      "awaitCases": 4,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "asyncCases": 4,
+      "awaitCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "asyncCases": 4,
+      "awaitCases": 4,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "class-fields-method",
+   "body": "let a=new Counter(4)\nlet b=a\na.value=a.value+3\nif(a==b){return a.value+b.value}\nreturn 0",
+   "value": 14,
+   "type": "int",
+   "pre": "class Counter={value:int}\nfn inc(this: Counter)->int\nensures true\n{return this.value+1}\n",
+   "cs": "return 14;"
+  },
+  {
+   "name": "class-method",
+   "body": "let a=new Counter(4)\nreturn a.inc()",
+   "value": 5,
+   "type": "int",
+   "pre": "class Counter={value:int}\nfn inc(this: Counter)->int\nensures true\n{return this.value+1}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "class-reference-copy",
+   "body": "let a=new Counter(4)\nlet b=a\na.value=9\nreturn b.value",
+   "value": 9,
+   "type": "int",
+   "pre": "class Counter={value:int}\nfn inc(this: Counter)->int\nensures true\n{return this.value+1}\n",
+   "cs": "return 9;"
+  },
+  {
+   "name": "class-generic-constraint",
+   "body": "let a=new Counter(3)\nlet box=Box<Counter>(a)\nreturn box.value.inc()",
+   "value": 4,
+   "type": "int",
+   "pre": "class Counter={value:int}\nfn inc(this: Counter)->int\nensures true\n{return this.value+1}\ntype Box<T> where T: class={value:T}\n",
+   "cs": "return 4;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "class-field-type",
+   "body": "let a=new Counter(@@true)\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Counter={value:int}\nfn inc(this: Counter)->int\nensures true\n{return this.value+1}\n"
+  },
+  {
+   "name": "class-unknown-method",
+   "body": "let a=new Counter(1)\nreturn a.@@nope()",
+   "code": "AI3103",
+   "pre": "class Counter={value:int}\nfn inc(this: Counter)->int\nensures true\n{return this.value+1}\n"
+  },
+  {
+   "name": "class-constraint-int",
+   "body": "let b=@@Box<int>(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where T: class={value:T}\n"
+  },
+  {
+   "name": "class-constraint-string",
+   "body": "let b=@@Box<string>(\"x\")\nreturn 0",
+   "code": "AI3107",
+   "pre": "type Box<T> where T: class={value:T}\n"
+  }
+ ]
+}

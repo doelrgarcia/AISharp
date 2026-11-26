@@ -1,0 +1,475 @@
+{
+  "cases": [
+    {
+      "name": "constant-boundaries",
+      "body": "const lo: i32= -2147483648\nconst hi: int=2147483647\nreturn lo+hi",
+      "value": -1,
+      "error": null
+    },
+    {
+      "name": "constant-chain",
+      "body": "const a=6\nconst b=a*7\nconst c: i32=b-1\nreturn c",
+      "value": 41,
+      "error": null
+    },
+    {
+      "name": "constant-boolean",
+      "body": "const a=true\nconst b=false\nreturn (!b && a) ^ (a & b)",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "constant-operators",
+      "body": "const n=7\nconst z=3\nconst yes=(n+z==10) && (n-z==4) && (n*z==21) && (n/z==2) && (n%z==1) && ((n&z)==3) && ((n|z)==7) && ((n^z)==4) && (~n== -8) && (-n== -7) && (+n==7)\nreturn yes",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "constant-relational",
+      "body": "const n=7\nreturn n>3 && n>=7 && n<8 && n<=7 && n!=0 && n==7",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "constant-masked-shifts",
+      "body": "const n= -2147483648\nreturn (n>>1)== -1073741824 && (n>>>1)==1073741824 && (1<< -1)== -2147483648 && (n>>32)==n",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "constant-if-flow",
+      "body": "const yes=1+2==3\nvar answer: int\nif(yes){answer=42}\nreturn answer",
+      "value": 42,
+      "error": null
+    },
+    {
+      "name": "constant-loop-flow",
+      "body": "const forever=true\nwhile(forever){return 3}",
+      "value": 3,
+      "error": null
+    },
+    {
+      "name": "constant-scope",
+      "body": "const n=7\n{const m=n+1\nif(m==8){return n}}\nreturn 0",
+      "value": 7,
+      "error": null
+    },
+    {
+      "name": "escaped-constant-name",
+      "body": "const @const=19\nconst @checked=@const+1\nconst @unchecked=@checked+1\nreturn @unchecked",
+      "value": 21,
+      "error": null
+    },
+    {
+      "name": "escaped-context-function",
+      "body": "return @unchecked(9)",
+      "value": 9,
+      "error": null,
+      "pre": "fn @unchecked(value: int) -> int\nensures true\n{return value}\n"
+    },
+    {
+      "name": "constant-argument",
+      "body": "const n=21\nreturn twice(n)",
+      "value": 42,
+      "error": null,
+      "pre": "fn twice(value: int) -> int\nensures true\n{return value*2}\n"
+    },
+    {
+      "name": "unchecked-constant-add",
+      "body": "const n=unchecked(2147483647+1)\nreturn n",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "unchecked-constant-subtract",
+      "body": "const n=unchecked(-2147483648-1)\nreturn n",
+      "value": 2147483647,
+      "error": null
+    },
+    {
+      "name": "unchecked-constant-multiply",
+      "body": "const n=unchecked(65536*65536)\nreturn n",
+      "value": 0,
+      "error": null
+    },
+    {
+      "name": "unchecked-constant-negate",
+      "body": "const n=unchecked(-(-2147483648))\nreturn n",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-add",
+      "body": "var n=2147483647\nreturn unchecked(n+1)",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-subtract",
+      "body": "var n= -2147483648\nreturn unchecked(n-1)",
+      "value": 2147483647,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-multiply",
+      "body": "var n=65536\nreturn unchecked(n*n)",
+      "value": 0,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-negate",
+      "body": "var n= -2147483648\nreturn unchecked(-n)",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-increment",
+      "body": "var n=2147483647\nunchecked{n++}\nreturn n",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-decrement",
+      "body": "var n= -2147483648\nunchecked{--n}\nreturn n",
+      "value": 2147483647,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-compound-add",
+      "body": "var n=2147483647\nunchecked{n+=1}\nreturn n",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-compound-subtract",
+      "body": "var n= -2147483648\nunchecked{n-=1}\nreturn n",
+      "value": 2147483647,
+      "error": null
+    },
+    {
+      "name": "unchecked-runtime-compound-multiply",
+      "body": "var n=65536\nunchecked{n*=65536}\nreturn n",
+      "value": 0,
+      "error": null
+    },
+    {
+      "name": "postfix-wrap-value",
+      "body": "var n=2147483647\nlet old=unchecked(n++)\nif(old==2147483647 && n== -2147483648){return 1}\nreturn 0",
+      "value": 1,
+      "error": null
+    },
+    {
+      "name": "prefix-wrap-value",
+      "body": "var n=2147483647\nlet now=unchecked(++n)\nif(now== -2147483648 && now==n){return 1}\nreturn 0",
+      "value": 1,
+      "error": null
+    },
+    {
+      "name": "left-snapshot",
+      "body": "var n=2147483647\nreturn unchecked(n+(n=1))",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "compound-snapshot",
+      "body": "var n=2147483647\nunchecked{n+=(n=1)}\nreturn n",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "arguments-snapshot",
+      "body": "var n=2147483647\nreturn take(unchecked(n++),n)",
+      "value": 2147483647,
+      "error": null,
+      "pre": "fn take(a: int,b: int) -> int\nensures true\n{if(b== -2147483648){return a}\nreturn 0}\n"
+    },
+    {
+      "name": "for-wrap-update",
+      "body": "var n=2147483646\nvar count=0\nunchecked{for(var i=0;i<3;i++){n++\ncount++}}\nif(count==3){return n}\nreturn 0",
+      "value": -2147483647,
+      "error": null
+    },
+    {
+      "name": "unchecked-bit-compounds",
+      "body": "var n= -1\nunchecked{n&=255\nn|=256\nn^=1\nn<<=1\nn>>=1\nn>>>=0}\nreturn n",
+      "value": 510,
+      "error": null
+    },
+    {
+      "name": "unchecked-shift-counts",
+      "body": "var n= -2147483648\nreturn unchecked((n>>>1)==1073741824 && (n>>1)== -1073741824 && (n<<32)==n)",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "checked-safe-expression",
+      "body": "var n=40\nreturn checked(n+2)",
+      "value": 42,
+      "error": null
+    },
+    {
+      "name": "checked-safe-block",
+      "body": "var n=6\nchecked{n*=7}\nreturn n",
+      "value": 42,
+      "error": null
+    },
+    {
+      "name": "inner-unchecked",
+      "body": "var n=2147483647\nchecked{n=unchecked(n+1)}\nreturn n",
+      "value": -2147483648,
+      "error": null
+    },
+    {
+      "name": "constant-inner-unchecked",
+      "body": "const n=checked(unchecked(2147483647+1)+1)\nreturn n",
+      "value": -2147483647,
+      "error": null
+    },
+    {
+      "name": "remainder-minimum-constant",
+      "body": "const n= -2147483648\nreturn unchecked(n% -1)",
+      "value": 0,
+      "error": null
+    },
+    {
+      "name": "boolean-context",
+      "body": "const b=unchecked(!false && true)\nreturn checked(b)",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "checked-runtime-add",
+      "body": "var n=2147483647\nreturn checked(n+1)",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "checked-runtime-negate",
+      "body": "var n= -2147483648\nreturn checked(-n)",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "inner-checked",
+      "body": "var n=2147483647\nunchecked{n=checked(n+1)}\nreturn n",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "block-restoration",
+      "body": "var n=2147483647\nunchecked{n+=0}\nn++\nreturn n",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "expression-restoration",
+      "body": "var n=2147483647\nlet value=unchecked(n+1)\nreturn n+1",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "callee-is-lexical",
+      "body": "return unchecked(fault())",
+      "value": null,
+      "error": "System.OverflowException",
+      "pre": "fn fault() -> int\nensures true\n{var n=2147483647\nreturn n+1}\n"
+    },
+    {
+      "name": "unchecked-divide-overflow",
+      "body": "var n= -2147483648\nreturn unchecked(n/ -1)",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "unchecked-compound-divide-overflow",
+      "body": "var n= -2147483648\nunchecked{n/= -1}\nreturn n",
+      "value": null,
+      "error": "System.OverflowException"
+    },
+    {
+      "name": "unchecked-divide-zero",
+      "body": "var z=0\nreturn unchecked(1/z)",
+      "value": null,
+      "error": "System.DivideByZeroException"
+    },
+    {
+      "name": "unchecked-remainder-zero",
+      "body": "var z=0\nreturn unchecked(1%z)",
+      "value": null,
+      "error": "System.DivideByZeroException"
+    }
+  ],
+  "negative": [
+    {
+      "name": "constant-add",
+      "body": "const n=2147483647@@+1\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-subtract",
+      "body": "const n=-2147483648@@-1\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-multiply",
+      "body": "const n=65536@@*65536\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-negate",
+      "body": "const n=@@-(-2147483648)\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-divide-zero",
+      "body": "const n=1@@/0\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-remainder-zero",
+      "body": "const n=1@@%0\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-divide-overflow",
+      "body": "const n=-2147483648@@/ -1\nreturn n",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "constant-fault-without-declaration",
+      "body": "return 2147483647@@+1",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "inner-checked-constant",
+      "body": "return unchecked(checked(2147483647@@+1))",
+      "code": "AI3111",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "unchecked-constant-division-overflow",
+      "body": "return unchecked(-2147483648@@/ -1)",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "unreachable-constant-fault",
+      "body": "const b=false && ((1@@/0)==0)\nreturn 0",
+      "code": "AI3111",
+      "length": 1
+    },
+    {
+      "name": "nonconstant-let",
+      "body": "let n=1\nconst c=@@n\nreturn c",
+      "code": "AI3113",
+      "length": 1
+    },
+    {
+      "name": "nonconstant-parameter",
+      "body": "return helper(1)",
+      "code": "AI3113",
+      "pre": "fn helper(n: int) -> int\nensures true\n{const c=@@n\nreturn c}\n",
+      "length": 1
+    },
+    {
+      "name": "nonconstant-call",
+      "body": "const c=@@helper()\nreturn c",
+      "code": "AI3113",
+      "pre": "fn helper() -> int\nensures true\n{return 1}\n",
+      "length": 6
+    },
+    {
+      "name": "constant-type",
+      "body": "const n: bool=@@1\nreturn 0",
+      "code": "AI3107",
+      "length": 1
+    },
+    {
+      "name": "constant-return-type",
+      "body": "const b=true\n@@return b",
+      "code": "AI3020",
+      "length": 6
+    },
+    {
+      "name": "constant-assignment",
+      "body": "const n=1\n@@n=2\nreturn n",
+      "code": "AI3105",
+      "length": 1
+    },
+    {
+      "name": "constant-update",
+      "body": "const n=1\n@@n++\nreturn n",
+      "code": "AI3105",
+      "length": 1
+    },
+    {
+      "name": "duplicate-constant",
+      "body": "const n=1\nconst @@n=2\nreturn n",
+      "code": "AI3106",
+      "length": 1
+    },
+    {
+      "name": "raw-reserved-constant",
+      "body": "const @@const=1\nreturn 0",
+      "code": "AI3106",
+      "length": 5
+    },
+    {
+      "name": "constant-self-reference",
+      "body": "const n=@@n+1\nreturn n",
+      "code": "AI3103",
+      "length": 1
+    },
+    {
+      "name": "context-is-not-storage",
+      "body": "var n=1\n@@unchecked(n)=2\nreturn n",
+      "code": "AI3105",
+      "length": 9
+    },
+    {
+      "name": "context-update-is-not-storage",
+      "body": "var n=1\n@@checked(n)++\nreturn n",
+      "code": "AI3105",
+      "length": 7
+    },
+    {
+      "name": "empty-context",
+      "body": "return checked(@@)",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "context-missing-parenthesis",
+      "body": "return unchecked @@1",
+      "code": "AI3100",
+      "length": 1
+    },
+    {
+      "name": "positive-literal-stays-invalid",
+      "body": "return unchecked(@@2147483648)",
+      "code": "AI3107",
+      "length": 10
+    },
+    {
+      "name": "unsupported-type-stays-invalid",
+      "body": "unchecked{var n: @@long=1}\nreturn 0",
+      "code": "AI3100",
+      "length": 4
+    }
+  ]
+}

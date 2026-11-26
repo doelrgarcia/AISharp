@@ -1,0 +1,306 @@
+{
+ "cases": [
+  {
+   "name": "min-identity",
+   "body": "let v:long=-9223372036854775808L\nif(v==-9223372036854775808L){return 1}\nreturn 0",
+   "cs": "long v=long.MinValue; return v==long.MinValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "max-identity",
+   "body": "let v:long=9223372036854775807L\nif(v==9223372036854775807L){return 1}\nreturn 0",
+   "cs": "long v=long.MaxValue; return v==long.MaxValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "typed-sum",
+   "body": "var t:long=0L\nfor(var i:long=1L;i<=5L;i++){t+=i}\nreturn (int)t",
+   "cs": "long t=0; for(long i=1;i<=5;i++) t+=i; return (int)t;",
+   "value": 15
+  },
+  {
+   "name": "add-boundary",
+   "body": "var a:long=9223372036854775806L\nif(a+1L==9223372036854775807L){return 1}\nreturn 0",
+   "cs": "long a=9223372036854775806L; return a+1==long.MaxValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "div-rem-signs",
+   "body": "var a:long=-17L\nif(a/5L==-3L && a%5L==-2L){return 1}\nreturn 0",
+   "cs": "long a=-17; return a/5==-3&&a%5==-2?1:0;",
+   "value": 1
+  },
+  {
+   "name": "checked-add-overflow",
+   "body": "var a:long=9223372036854775807L\nreturn (int)(a+1L)",
+   "cs": "long a=long.MaxValue; return (int)(a+1);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "checked-sub-underflow",
+   "body": "var a:long=-9223372036854775808L\nreturn (int)(a-1L)",
+   "cs": "long a=long.MinValue; return (int)(a-1);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "checked-mul-overflow",
+   "body": "var a:long=4294967296L\nreturn (int)(a*a)",
+   "cs": "long a=4294967296L; return (int)(a*a);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "checked-negate-overflow",
+   "body": "var a:long=-9223372036854775808L\nreturn (int)(-a)",
+   "cs": "long a=long.MinValue; return (int)(-a);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "divide-overflow",
+   "body": "var a:long=-9223372036854775808L\nvar b:long=-1L\nreturn (int)(a/b)",
+   "cs": "long a=long.MinValue,b=-1; return (int)(a/b);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "remainder-minimum",
+   "body": "var a:long=-9223372036854775808L\nvar b:long=-1L\nreturn (int)(a%b)",
+   "cs": "long a=long.MinValue,b=-1; return (int)(a%b);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "remainder-minimum-unchecked",
+   "body": "var a:long=-9223372036854775808L\nvar b:long=-1L\nreturn (int)unchecked(a%b)",
+   "cs": "long a=long.MinValue,b=-1; return (int)unchecked(a%b);",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "unchecked-add-wrap",
+   "body": "var a:long=9223372036854775807L\nif(unchecked(a+1L)==-9223372036854775808L){return 1}\nreturn 0",
+   "cs": "long a=long.MaxValue; return unchecked(a+1)==long.MinValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "shift-mask",
+   "body": "var a:long=1L\nvar count:int=65\nif((a<<count)==2L){return 1}\nreturn 0",
+   "cs": "long a=1; int count=65; return (a<<count)==2?1:0;",
+   "value": 1
+  },
+  {
+   "name": "shift-sign",
+   "body": "var a:long=-2L\nif((a>>1)==-1L && (a>>>63)==1L){return 1}\nreturn 0",
+   "cs": "long a=-2; return (a>>1)==-1&&(unchecked((ulong)a)>>63)==1?1:0;",
+   "value": 1
+  },
+  {
+   "name": "bitwise",
+   "body": "if((~0L)==-1L && ((0x7fffffffffffffffL|1L)==0x7fffffffffffffffL)){return 1}\nreturn 0",
+   "cs": "return (~0L)==-1L&&(0x7fffffffffffffffL|1L)==0x7fffffffffffffffL?1:0;",
+   "value": 1
+  },
+  {
+   "name": "compound",
+   "body": "var x:long=7L\nx*=3L\nx/=2L\nx%=6L\nx<<=2\nx>>=1\nx>>>=1\nx|=8L\nx^=3L\nx&=15L\nx++\nx=x-1L\nreturn (int)~x",
+   "cs": "long x=7;x*=3;x/=2;x%=6;x<<=2;x>>=1;x>>>=1;x|=8;x^=3;x&=15;x++;x=x-1;return (int)~x;",
+   "value": -16
+  },
+  {
+   "name": "widening-int",
+   "body": "var i:int=-2147483648\nlet l:long=i\nif(l==-2147483648L){return 1}\nreturn 0",
+   "cs": "int i=int.MinValue; long l=i; return l==-2147483648L?1:0;",
+   "value": 1
+  },
+  {
+   "name": "widening-narrow",
+   "body": "var b:byte=255\nvar s:sbyte=-128\nvar h:short=-32768\nvar u:ushort=65535\nlet l:long=b\nif(l==255L && (long)s==-128L && (long)h==-32768L && (long)u==65535L){return 1}\nreturn 0",
+   "cs": "byte b=255; sbyte s=-128; short h=-32768; ushort u=65535; long l=b; return l==255&&(long)s==-128&&(long)h==-32768&&(long)u==65535?1:0;",
+   "value": 1
+  },
+  {
+   "name": "explicit-narrow-int",
+   "body": "let l:long=2147483647L\nreturn (int)l",
+   "cs": "long l=2147483647L; return (int)l;",
+   "value": 2147483647
+  },
+  {
+   "name": "explicit-narrow-checked-fault",
+   "body": "let l:long=2147483648L\nreturn (int)l",
+   "cs": "long l=2147483648L; return (int)l;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "explicit-unchecked-wrap",
+   "body": "let l:long=4294967296L\nreturn (int)unchecked((int)l)",
+   "cs": "long l=4294967296L; return unchecked((int)l);",
+   "value": 0
+  },
+  {
+   "name": "explicit-byte-checked-fault",
+   "body": "let l:long=256L\nlet b:byte=(byte)l\nreturn (int)b",
+   "cs": "long l=256; byte b=(byte)l; return b;",
+   "error": "System.OverflowException"
+  },
+  {
+   "name": "explicit-byte-unchecked-wrap",
+   "body": "let l:long=256L\nlet b:byte=unchecked((byte)l)\nreturn (int)b",
+   "cs": "long l=256; byte b=unchecked((byte)l); return b;",
+   "value": 0
+  },
+  {
+   "name": "alias-local",
+   "body": "let a:i64=9223372036854775807L\nlet b:long=a\nif(b==9223372036854775807L){return 1}\nreturn 0",
+   "cs": "long a=long.MaxValue,b=a; return b==long.MaxValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "alias-param",
+   "pre": "fn take(v:i64)->long ensures true {return v}\n",
+   "body": "if(take(42L)==42L){return 1}\nreturn 0",
+   "cs": "return Take(42)==42?1:0; long Take(long v)=>v;",
+   "value": 1
+  },
+  {
+   "name": "alias-generic",
+   "pre": "type Box<T>={value:T}\nfn read(v:Box<i64>)->int ensures true {if(v.value==42L){return 1} return 0}\n",
+   "body": "return read(Box<long>(42L))",
+   "cs": "return Read(new Box<long>{value=42})?1:0; bool Read(Box<long> b)=>b.value==42;",
+   "value": 1,
+   "extra": "class Box<T>{public T value;}"
+  },
+  {
+   "name": "field-storage",
+   "pre": "type Holder={value:long}\n",
+   "body": "let h=Holder(-9223372036854775808L)\nif(h.value==-9223372036854775808L){return 1}\nreturn 0",
+   "cs": "var h=new Holder{value=long.MinValue}; return h.value==long.MinValue?1:0;",
+   "value": 1,
+   "extra": "class Holder{public long value;}"
+  },
+  {
+   "name": "reference-read",
+   "body": "var l:long=-9223372036854775808L\nlet p=&l\nif(*p==-9223372036854775808L){return 1}\nreturn 0",
+   "cs": "long l=long.MinValue; ref long p=ref l; return p==long.MinValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "reference-store",
+   "body": "var l:long=0L\nlet p=&mut l\n*p=9223372036854775807L\nif(l==9223372036854775807L){return 1}\nreturn 0",
+   "cs": "long l=0; ref long p=ref l; p=long.MaxValue; return l==long.MaxValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "evaluation-once",
+   "body": "var x:long=1L\nreturn (int)(x+(x=2L))",
+   "cs": "long x=1; return (int)(x+(x=2));",
+   "value": 3
+  },
+  {
+   "name": "comparison",
+   "body": "if(-1L<0L && -9223372036854775808L<9223372036854775807L){return 1}\nreturn 0",
+   "cs": "return -1L<0&&long.MinValue<long.MaxValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "constant-folding",
+   "body": "const a:long=9223372036854775806L\nif(a+1L==9223372036854775807L){return 1}\nreturn 0",
+   "cs": "const long a=9223372036854775806L; return a+1==long.MaxValue?1:0;",
+   "value": 1
+  },
+  {
+   "name": "distinct-from-int",
+   "body": "let l:long=1L\nvar i:int=1\nif((long)i==l){return 1}\nreturn 0",
+   "cs": "long l=1; int i=1; return (long)i==l?1:0;",
+   "value": 1
+  }
+ ],
+ "negative": [
+  {
+   "name": "literal-too-high",
+   "body": "return @@9223372036854775808L",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-too-low",
+   "body": "return -@@9223372036854775809L",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-narrow-int",
+   "body": "var l:long=1L\nlet i:int=@@l\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-narrow-byte",
+   "body": "var l:long=1L\nlet b:byte=@@l\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-narrow-short",
+   "body": "var l:long=1L\nlet h:short=@@l\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "implicit-narrow-ushort",
+   "body": "var l:long=1L\nlet u:ushort=@@l\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-bool",
+   "body": "let l:long=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "assign-string",
+   "body": "let l:long=@@\"bad\"\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "unassigned",
+   "body": "var l:long\nreturn (int)@@l",
+   "code": "AI3102"
+  },
+  {
+   "name": "immutable",
+   "body": "let l:long=1L\n@@l=2L\nreturn 0",
+   "code": "AI3105"
+  },
+  {
+   "name": "duplicate",
+   "body": "let l:long=1L\nlet @@l:long=2L\nreturn 0",
+   "code": "AI3106"
+  },
+  {
+   "name": "scope",
+   "body": "{let l:long=1L}\nreturn (int)@@l",
+   "code": "AI3103"
+  },
+  {
+   "name": "condition",
+   "body": "var l:long=1L\nif(@@l){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "operator-bool",
+   "body": "var l:long=1L\nreturn (int)(l@@+true)",
+   "code": "AI3107"
+  },
+  {
+   "name": "argument-narrow",
+   "pre": "fn take(v:int)->int ensures true {return v}\n",
+   "body": "return take(@@1L)",
+   "code": "AI3107"
+  },
+  {
+   "name": "argument-long-to-intrinsic",
+   "body": "return bufferLength(buffer(@@1L))",
+   "code": "AI3107"
+  },
+  {
+   "name": "literal-without-suffix",
+   "body": "return @@9223372036854775807\n",
+   "code": "AI3107"
+  }
+ ]
+}

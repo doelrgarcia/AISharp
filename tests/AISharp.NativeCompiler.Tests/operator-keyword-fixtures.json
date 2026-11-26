@@ -1,0 +1,141 @@
+{
+ "cases": [
+  {
+   "name": "operator-add",
+   "body": "return (P(2)+P(3)).v",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={v:int}\noperator +(a:P,b:P)->P\nensures true\n{return P(a.v+b.v)}\n",
+   "cs": "return (new P(2)+new P(3)).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-add-chain",
+   "body": "return (P(1)+P(2)+P(3)).v",
+   "value": 6,
+   "type": "int",
+   "pre": "type P={v:int}\noperator +(a:P,b:P)->P\nensures true\n{return P(a.v+b.v)}\n",
+   "cs": "return (new P(1)+new P(2)+new P(3)).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-mul",
+   "body": "return (P(3)*P(4)).v",
+   "value": 12,
+   "type": "int",
+   "pre": "type P={v:int}\noperator *(a:P,b:P)->P\nensures true\n{return P(a.v*b.v)}\n",
+   "cs": "return (new P(3)*new P(4)).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-unary-neg",
+   "body": "return (-P(5)).v",
+   "value": -5,
+   "type": "int",
+   "pre": "type P={v:int}\noperator -(a:P)->P\nensures true\n{return P(-a.v)}\n",
+   "cs": "return (-new P(5)).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-equality",
+   "body": "if(P(2)==P(2)){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={v:int}\noperator ==(a:P,b:P)->bool\nensures true\n{return a.v==b.v}\noperator !=(a:P,b:P)->bool\nensures true\n{return a.v!=b.v}\n",
+   "cs": "return new P(2)==new P(2) ? 1 : 0;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-inequality",
+   "body": "if(P(2)!=P(3)){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={v:int}\noperator ==(a:P,b:P)->bool\nensures true\n{return a.v==b.v}\noperator !=(a:P,b:P)->bool\nensures true\n{return a.v!=b.v}\n",
+   "cs": "return new P(2)!=new P(3) ? 1 : 0;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-relational",
+   "body": "if(P(2)<P(3)){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "type P={v:int}\noperator <(a:P,b:P)->bool\nensures true\n{return a.v<b.v}\n",
+   "cs": "return new P(2)<new P(3) ? 1 : 0;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-compound-add",
+   "body": "var p=P(1)\np+=P(4)\nreturn p.v",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={v:int}\noperator +(a:P,b:P)->P\nensures true\n{return P(a.v+b.v)}\n",
+   "cs": "var p=new P(1); p+=new P(4); return p.v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-compound-mixed",
+   "body": "var p=P(2)\np*=P(3)\nreturn p.v",
+   "value": 6,
+   "type": "int",
+   "pre": "type P={v:int}\noperator *(a:P,b:P)->P\nensures true\n{return P(a.v*b.v)}\n",
+   "cs": "var p=new P(2); p*=new P(3); return p.v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-field-compound",
+   "body": "var q=Q(P(1))\nq.p+=P(4)\nreturn q.p.v",
+   "value": 5,
+   "type": "int",
+   "pre": "type P={v:int}\ntype Q={p:P}\noperator +(a:P,b:P)->P\nensures true\n{return P(a.v+b.v)}\n",
+   "cs": "var q=new Q(new P(1)); q.p+=new P(4); return q.p.v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "operator-arg-function",
+   "body": "return add(P(2),P(5)).v",
+   "value": 7,
+   "type": "int",
+   "pre": "type P={v:int}\noperator +(a:P,b:P)->P\nensures true\n{return P(a.v+b.v)}\nfn add(a:P,b:P)->P\nensures true\n{return a+b}\n",
+   "cs": "P Add(P a,P b)=>a+b; return Add(new P(2),new P(5)).v;",
+   "extra": "public struct P{public int v; public P(int v){this.v=v;} public static P operator +(P a,P b)=>new P(a.v+b.v); public static P operator *(P a,P b)=>new P(a.v*b.v); public static P operator -(P a)=>new P(-a.v); public static bool operator ==(P a,P b)=>a.v==b.v; public static bool operator !=(P a,P b)=>a.v!=b.v; public static bool operator <(P a,P b)=>a.v<b.v; public static bool operator >(P a,P b)=>a.v>b.v; public override bool Equals(object o)=>o is P p && p.v==v; public override int GetHashCode()=>v;} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "operator-none-declared",
+   "body": "return (P(1)@@+P(2)).v\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\n"
+  },
+  {
+   "name": "operator-eq-without-pair",
+   "body": "if(P(1)@@==P(1)){return 1}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\noperator ==(a:P,b:P)->bool\nensures true\n{return a.v==b.v}\n"
+  },
+  {
+   "name": "operator-wrong-return",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\noperator @@+(a:P,b:P)->int\nensures true\n{return a.v+b.v}\n"
+  },
+  {
+   "name": "operator-mismatched-params",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\ntype R={v:int}\noperator @@+(a:P,b:R)->P\nensures true\n{return P(a.v+b.v)}\n"
+  },
+  {
+   "name": "operator-bad-arity",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\noperator @@*(a:P)->P\nensures true\n{return a}\n"
+  },
+  {
+   "name": "operator-unsupported-symbol",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={v:int}\noperator @@&&(a:P,b:P)->P\nensures true\n{return a}\n"
+  }
+ ]
+}

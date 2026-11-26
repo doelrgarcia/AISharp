@@ -1,0 +1,89 @@
+{
+ "cases": [
+  {
+   "name": "plain-return",
+   "body": "return 5",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "return 5;"
+  },
+  {
+   "name": "branch-exits",
+   "body": "var c:bool=flag()\nif(c){return 1}\nreturn 2",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\n",
+   "extra": "static bool Flag()=>true;",
+   "value": 1,
+   "cs": "bool c=Flag(); if(c)return 1; return 2;"
+  },
+  {
+   "name": "value-from-call",
+   "body": "var c=0\nlet r=bump(&mut c)\nreturn r*10+c",
+   "type": "int",
+   "pre": "fn bump(c:&mut int)->int ensures true {*c+=1\nreturn *c}\n",
+   "extra": "static int Bump(ref int c){c++;return c;}",
+   "value": 11,
+   "cs": "int c=0; int r=Bump(ref c); return r*10+c;"
+  },
+  {
+   "name": "contract-preserved",
+   "body": "return pos(41)",
+   "type": "int",
+   "pre": "fn pos(v:int)->int ensures true {return v+1}\n",
+   "extra": "static int Pos(int v)=>v+1;",
+   "value": 42,
+   "cs": "return Pos(41);"
+  },
+  {
+   "name": "unit-function-then-return",
+   "body": "noop()\nreturn 3",
+   "type": "int",
+   "pre": "fn noop()->void ensures true {return}\n",
+   "extra": "static void Noop(){}",
+   "value": 3,
+   "cs": "Noop(); return 3;"
+  },
+  {
+   "name": "early-return-in-loop",
+   "body": "for(var i=0;i<5;i++){if(i==3){return i}}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "cs": "for(int i=0;i<5;i++){if(i==3)return i;} return 0;"
+  },
+  {
+   "name": "return-in-block",
+   "body": "{if(true){return 4}}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "cs": "{if(true)return 4;} return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "mismatched-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "missing-return",
+   "body": "return bad()",
+   "code": "AI3020",
+   "pre": "fn flag()->bool ensures true {return true}\nfn @@bad()->int ensures true {if(flag()){return 1}}\n"
+  },
+  {
+   "name": "reference-escapes",
+   "body": "return 0",
+   "code": "AI3117",
+   "pre": "fn badref()->&int ensures true {var local=1\n@@return &local}\n"
+  },
+  {
+   "name": "value-in-unit-return",
+   "body": "n()\nreturn 0",
+   "code": "AI3020",
+   "pre": "fn n()->void ensures true {@@return 1}\n"
+  }
+ ]
+}

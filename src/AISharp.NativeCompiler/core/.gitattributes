@@ -1,0 +1,3 @@
+outcomes.aisharp text eol=lf
+native_core_outcomes.hpp.in text eol=lf
+generate.py text eol=lf

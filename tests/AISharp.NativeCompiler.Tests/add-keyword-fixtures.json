@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "add-calls",
+   "body": "let c=new C(-1,0)\nc.Tick += Handler(add)\nreturn c.calls",
+   "value": 1,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "add-value",
+   "body": "let c=new C(-1,0)\nc.Tick += Handler(sub)\nreturn c.calls",
+   "value": 2,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n",
+   "cs": "return 2;"
+  },
+  {
+   "name": "add-two-objects",
+   "body": "let a=new C(-1,0)\nlet b=new C(-1,0)\na.Tick += Handler(add)\nb.Tick += Handler(sub)\nreturn a.calls+b.calls",
+   "value": 3,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n",
+   "cs": "return 3;"
+  },
+  {
+   "name": "add-after-remove",
+   "body": "let c=new C(-1,0)\nc.Tick -= Handler(add)\nreturn c.calls",
+   "value": 2,
+   "type": "int",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n",
+   "cs": "return 2;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "add-bad-value",
+   "body": "let c=new C(-1,0)\nc.Tick += @@3\nreturn 0",
+   "code": "AI3107",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n"
+  },
+  {
+   "name": "add-external-invoke",
+   "body": "let c=new C(-1,0)\nreturn c.@@Tick(3)",
+   "code": "AI3103",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n"
+  },
+  {
+   "name": "add-unbound",
+   "body": "let c=new C(-1,0)\nreturn @@Tick(3)",
+   "code": "AI3103",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n"
+  },
+  {
+   "name": "add-read",
+   "body": "let c=new C(-1,0)\nreturn c.@@Tick",
+   "code": "AI3103",
+   "pre": "delegate fn Handler(x: int)->int;\nfn add(x: int)->int\nensures true\n{return x+1}\nfn sub(x: int)->int\nensures true\n{return x-1}\nclass C={event Tick: Handler, calls:int}\nadd Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+1\nreturn this}\nremove Tick(this: C, value: Handler)\nensures true\n{this.calls=value.id+2\nreturn this}\n"
+  }
+ ]
+}

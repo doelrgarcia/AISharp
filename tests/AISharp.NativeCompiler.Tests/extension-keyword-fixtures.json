@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "extension-block",
+   "body": "let c=Counter(2)\nreturn c.inc(3)",
+   "value": 5,
+   "type": "int",
+   "pre": "type Counter={value:int}\nextension Counter\n{\nfn inc(n: int)->int\nensures true\n{return this.value+n}\nfn twice()->int\nensures true\n{return this.value*2}\n}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "extension-block-second",
+   "body": "let c=Counter(4)\nreturn c.twice()",
+   "value": 8,
+   "type": "int",
+   "pre": "type Counter={value:int}\nextension Counter\n{\nfn inc(n: int)->int\nensures true\n{return this.value+n}\nfn twice()->int\nensures true\n{return this.value*2}\n}\n",
+   "cs": "return 8;"
+  },
+  {
+   "name": "extension-primary",
+   "body": "let c=Counter(6)\nreturn c.add1()",
+   "value": 7,
+   "type": "int",
+   "pre": "type Counter={value:int}\nfn add1(this: Counter)->int\nensures true\n{return this.value+1}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "extension-receiver-copy",
+   "body": "let c=Counter(5)\nreturn c.inc(1)+c.inc(2)",
+   "value": 13,
+   "type": "int",
+   "pre": "type Counter={value:int}\nextension Counter\n{\nfn inc(n: int)->int\nensures true\n{return this.value+n}\nfn twice()->int\nensures true\n{return this.value*2}\n}\n",
+   "cs": "return 13;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "extension-unknown-type",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "extension @@Missing\n{\nfn f()->int\nensures true\n{return 0}\n}\n"
+  },
+  {
+   "name": "extension-duplicate",
+   "body": "return 0",
+   "code": "AI3106",
+   "pre": "type Counter={value:int}\nextension Counter\n{\nfn inc()->int\nensures true\n{return 1}\nfn @@inc()->int\nensures true\n{return 2}\n}\n"
+  },
+  {
+   "name": "extension-unknown-member",
+   "body": "let c=Counter(1)\nreturn c.@@nope()",
+   "code": "AI3103",
+   "pre": "type Counter={value:int}\nextension Counter\n{\nfn inc(n: int)->int\nensures true\n{return this.value+n}\nfn twice()->int\nensures true\n{return this.value*2}\n}\n"
+  },
+  {
+   "name": "extension-return-mismatch",
+   "body": "let c=Counter(1)\nreturn c.inc(2)",
+   "code": "AI3020",
+   "pre": "type Counter={value:int}\nextension Counter\n{\nfn inc(n: int)->int\nensures true\n{@@return true}\nfn twice()->int\nensures true\n{return this.value*2}\n}\n"
+  }
+ ]
+}

@@ -1,0 +1,746 @@
+{
+  "cases": [
+    {
+      "name": "qualified-simple",
+      "pre": "",
+      "body": "let x:std.core.Option<int>=std.core.Option<int>.Some(42)\nreturn match x {std.core.Option<int>.Some(n)=>n,std.core.Option<int>.None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-coexisting-generic-result",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let a:Result<int,bool>=Result<int,bool>.Ok(20)\nlet b:std.core.Result<int,bool>=std.core.Result<int,bool>.Ok(22)\nreturn (match a {Result<int,bool>.Ok(n)=>n,Result<int,bool>.Err(_)=>0})+(match b {std.core.Result<int,bool>.Ok(n)=>n,std.core.Result<int,bool>.Err(_)=>0})",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-coexisting-generic-option",
+      "pre": "type Option<T>=Some(T)|None\n",
+      "body": "let a:Option<int>=Option<int>.Some(20)\nlet b:std.core.Option<int>=std.core.Option<int>.Some(22)\nreturn (match a {Option<int>.Some(n)=>n,Option<int>.None=>0})+(match b {std.core.Option<int>.Some(n)=>n,std.core.Option<int>.None=>0})",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-coexisting-nongeneric",
+      "pre": "type Result={n:int}\ntype Option=UserNone|UserSome\n",
+      "body": "let a=Result(20)\nlet b:Option=UserSome\nlet c:std.core.Result<std.core.Option<int>,bool>=Ok(Some(22))\nreturn a.n+(match b {UserSome=>match c {Ok(o)=>match o {Some(n)=>n,None=>0},Err(_)=>0},UserNone=>0})",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option",
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-nested-user-core",
+      "pre": "type Result<T,E>=Mine(T)|Other(E)\ntype Option<T>=Value(T)|Empty\n",
+      "body": "let x:std.core.Result<Option<std.core.Option<int>>,Result<int,bool>>=Ok(Value(Some(42)))\nreturn match x {Ok(a)=>match a {Value(b)=>match b {Some(n)=>n,None=>0},Empty=>0},Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option",
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-inferred-core",
+      "pre": "type Option<T>=Some(T)|None\n",
+      "body": "let x:std.core.Option<int>=Some(42)\nreturn match x {Some(n)=>n,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-forward-fields",
+      "pre": "type Box={value:std.core.Option<P>}\ntype P={n:int}\nfn pass(x:Box)->std.core.Option<P> ensures true {return x.value}\n",
+      "body": "let a=pass(Box(Some(P(42))))\nreturn match a {Some(p)=>p.n,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-generic-field",
+      "pre": "type Box<T>={value:std.core.Result<T,bool>}\ntype Result={n:int}\n",
+      "body": "let a=Box<int>(Ok(42))\nreturn match a.value {Ok(n)=>n,Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-unit",
+      "pre": "type Result<T,E>=Mine(T)|Other(E)\nfn nothing()->unit ensures true {}\n",
+      "body": "let x:std.core.Result<unit,int>=Ok(nothing())\nmatch &x {Ok(u)=>u,Err(_)=>nothing()}\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-empty",
+      "pre": "type Option<T>=Some(T)|None\ntype Empty={}\nfn accept(e:Empty)->int ensures true {return 42}\n",
+      "body": "let x:std.core.Option<Empty>=Some(Empty())\nreturn match x {Some(e)=>accept(e),None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-owner",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Result<owned buffer,bool>=Ok(buffer(42))\nreturn match x {Ok(b)=>bufferLength(b),Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-error-owner",
+      "pre": "type Result={n:int}\n",
+      "body": "let x:std.core.Result<int,owned buffer>=Err(buffer(42))\nlet n=match &x {Ok(_)=>0,Err(b)=>bufferSize(b)}\nmatch x {Ok(_)=>0,Err(b)=>bufferLength(b)}\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-exclusive-ref",
+      "pre": "type Option<T>=Some(T)|None\n",
+      "body": "var n=41\nlet x:std.core.Option<&mut int>=Some(&mut n)\nmatch &x {Some(r)=>**r,None=>0}\nmatch x {Some(r)=>*r=42,None=>0}\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-reference-slot",
+      "pre": "type Option<T>=Some(T)|None\nfn store(dst:&mut std.core.Option<&int>,src:&int)->unit ensures true {*dst=Some(src)}\n",
+      "body": "let n=42\nvar x:std.core.Option<&int>=None\nstore(&mut x,&n)\nreturn match x {Some(r)=>*r,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-empty-ref-presence",
+      "pre": "type Option<T>=Some(T)|None\nfn clear(x:&mut std.core.Option<&int>)->unit ensures true {*x=None}\nfn none()->std.core.Option<&int> ensures true {let n=42\nvar x:std.core.Option<&int>=Some(&n)\nclear(&mut x)\nreturn x}\n",
+      "body": "return match none() {Some(r)=>*r,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-escaping-input",
+      "pre": "type Result<T,E>=Mine(T)|Other(E)\nfn pass(n:&int)->std.core.Result<&int,bool> ensures true {return Ok(n)}\n",
+      "body": "let n=42\nreturn match pass(&n) {Ok(r)=>*r,Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-guard",
+      "pre": "type Option<T>=Some(T)|None\nfn yes()->bool ensures true {return true}\n",
+      "body": "let x:std.core.Option<owned buffer>=Some(buffer(42))\nreturn match x {Some(b) when yes()=>bufferLength(b),Some(b)=>bufferLength(b),None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 1,
+      "dropOrder": [
+        1
+      ],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-temporary",
+      "pre": "type Result<T,E>=Mine(T)|Other(E)\ntype P={a:owned buffer,b:owned buffer}\n",
+      "body": "let x:std.core.Result<P,bool>=Ok(P(buffer(42),buffer(3)))\nreturn bufferLength((match x {Ok(p)=>p,Err(_)=>P(buffer(0),buffer(0))}).a)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 2,
+      "allocationCount": 2,
+      "dropOrder": [
+        2,
+        1
+      ],
+      "coreGenerics": [
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-ordinary-std-value",
+      "pre": "type Leaf={n:int}\ntype Root={core:Leaf}\n",
+      "body": "let std=Root(Leaf(42))\nreturn std.core.n",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": []
+    },
+    {
+      "name": "qualified-type-parameter",
+      "pre": "type P<Option>={x:std.core.Option<Option>}\n",
+      "body": "let x=P<int>(Some(42))\nreturn match x.x {Some(n)=>n,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-escaped",
+      "pre": "type @Option<@T>=User(@T)|No\n",
+      "body": "let x:@std.@core.@Option<int>=@std.@core.@Option<int>.Some(42)\nreturn match x {@std.@core.@Option<int>.Some(n)=>n,@std.@core.@Option<int>.None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-coexisting-capacity",
+      "pre": "type G0<T>={}\ntype G1<T>={}\ntype G2<T>={}\ntype G3<T>={}\ntype G4<T>={}\ntype G5<T>={}\ntype G6<T>={}\ntype G7<T>={}\ntype G8<T>={}\ntype G9<T>={}\ntype G10<T>={}\ntype G11<T>={}\ntype G12<T>={}\ntype G13<T>={}\ntype G14<T>={}\ntype G15<T>={}\ntype G16<T>={}\ntype G17<T>={}\ntype G18<T>={}\ntype G19<T>={}\ntype G20<T>={}\ntype G21<T>={}\ntype G22<T>={}\ntype G23<T>={}\ntype G24<T>={}\ntype G25<T>={}\ntype G26<T>={}\ntype G27<T>={}\ntype G28<T>={}\ntype G29<T>={}\ntype G30<T>={}\ntype G31<T>={}\ntype G32<T>={}\ntype G33<T>={}\ntype G34<T>={}\ntype G35<T>={}\ntype G36<T>={}\ntype G37<T>={}\ntype G38<T>={}\ntype G39<T>={}\ntype G40<T>={}\ntype G41<T>={}\ntype G42<T>={}\ntype G43<T>={}\ntype G44<T>={}\ntype G45<T>={}\ntype G46<T>={}\ntype G47<T>={}\ntype G48<T>={}\ntype G49<T>={}\ntype G50<T>={}\ntype G51<T>={}\ntype G52<T>={}\ntype G53<T>={}\ntype G54<T>={}\ntype G55<T>={}\ntype G56<T>={}\ntype G57<T>={}\ntype G58<T>={}\ntype G59<T>={}\ntype G60<T>={}\ntype G61<T>={}\ntype G62<T>={}\ntype G63<T>={}\ntype G64<T>={}\ntype G65<T>={}\ntype G66<T>={}\ntype G67<T>={}\ntype G68<T>={}\ntype G69<T>={}\ntype G70<T>={}\ntype G71<T>={}\ntype G72<T>={}\ntype G73<T>={}\ntype G74<T>={}\ntype G75<T>={}\ntype G76<T>={}\ntype G77<T>={}\ntype G78<T>={}\ntype G79<T>={}\ntype G80<T>={}\ntype G81<T>={}\ntype G82<T>={}\ntype G83<T>={}\ntype G84<T>={}\ntype G85<T>={}\ntype G86<T>={}\ntype G87<T>={}\ntype G88<T>={}\ntype G89<T>={}\ntype G90<T>={}\ntype G91<T>={}\ntype G92<T>={}\ntype G93<T>={}\ntype G94<T>={}\ntype G95<T>={}\ntype G96<T>={}\ntype G97<T>={}\ntype G98<T>={}\ntype G99<T>={}\ntype G100<T>={}\ntype G101<T>={}\ntype G102<T>={}\ntype G103<T>={}\ntype G104<T>={}\ntype G105<T>={}\ntype G106<T>={}\ntype G107<T>={}\ntype G108<T>={}\ntype G109<T>={}\ntype G110<T>={}\ntype G111<T>={}\ntype G112<T>={}\ntype G113<T>={}\ntype G114<T>={}\ntype G115<T>={}\ntype G116<T>={}\ntype G117<T>={}\ntype G118<T>={}\ntype G119<T>={}\ntype G120<T>={}\ntype G121<T>={}\ntype G122<T>={}\ntype G123<T>={}\ntype G124<T>={}\ntype G125<T>={}\ntype Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Result<std.core.Option<int>,bool>=Ok(Some(42))\nreturn match x {Ok(o)=>match o {Some(n)=>n,None=>0},Err(_)=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option",
+        "Result"
+      ]
+    },
+    {
+      "name": "qualified-inference-both-instances",
+      "pre": "type Option<T>=Some(T)|None\n",
+      "body": "let a:Option<int>=Some(20)\nlet b:std.core.Option<int>=Some(22)\nreturn (match a {Some(n)=>n,None=>0})+(match b {Some(n)=>n,None=>0})",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": [
+        "Option"
+      ]
+    },
+    {
+      "name": "qualified-ordinary-carrier-field-names",
+      "pre": "type Leaf={Option:int,Result:int}\ntype Root={core:Leaf}\n",
+      "body": "let std=Root(Leaf(20,22))\nreturn std.core.Option+std.core.Result",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0,
+      "allocationCount": 0,
+      "dropOrder": [],
+      "coreGenerics": []
+    }
+  ],
+  "negative": [
+    {
+      "name": "qualified-core-option-arity",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.@@Option<int,int>=None\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Option",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-result-arity",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.@@Result<int>=Ok(42)\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Result",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-option-no-arguments",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.@@Option=None\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Option",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-option-payload-type",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<int>=Some(@@true)\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "payload-declaration",
+          "needle": "Some(T)",
+          "shift": 5,
+          "length": 1,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-result-payload-type",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Result<int,int>=Err(@@false)\nreturn 0",
+      "code": "AI3107",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "payload-declaration",
+          "needle": "Err(E)",
+          "shift": 4,
+          "length": 1,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-missing-payload",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<int>=@@Some\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "case-declaration",
+          "needle": "Some(T)",
+          "shift": 0,
+          "length": 4,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-case-arity",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<int>=@@Some()\nreturn 0",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "case-declaration",
+          "needle": "Some(T)",
+          "shift": 0,
+          "length": 4,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-unknown-case",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<int>=std.core.Option<int>.@@Missing(42)\nreturn 0",
+      "code": "AI3103",
+      "length": 7,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-nominal-mismatch",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\ntype Fake<T>=Some(T)|None\nfn take(p:std.core.Option<int>)->int ensures true {return 0}\n",
+      "body": "let x:Fake<int>=Some(42)\nreturn take(@@x)",
+      "code": "AI3107",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "parameter-declaration",
+          "needle": "fn take(p:",
+          "shift": 8,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-move-owner-twice",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<owned buffer>=Some(buffer(42))\nlet y=x\nreturn match @@x {Some(b)=>bufferLength(b),None=>0}",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "declaration",
+          "needle": "let x:",
+          "shift": 4,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "possible-move",
+          "needle": "let y=x",
+          "shift": 6,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-local-reference-escape",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\nfn bad()->std.core.Option<&int> ensures true {let n=42\n@@return Some(&n)}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let n=42",
+          "shift": 4,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Some(&n)",
+          "shift": 5,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-nonexhaustive",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<int>=Some(42)\nreturn @@match x {Some(n)=>n}",
+      "code": "AI3060",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-pattern-arity",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<int>=Some(42)\nreturn match x {@@Some=>0,None=>0}",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-pattern-nominal",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\ntype Other<T>=Some(T)|None\n",
+      "body": "let x:std.core.Option<int>=Some(42)\nreturn match x {Other<int>.@@Some(n)=>n,None=>0}",
+      "code": "AI3107",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-guard-owner-consumption",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Option<owned buffer>=Some(buffer(42))\nreturn match x {Some(b) when bufferLength(@@b)==42=>0,Some(_)=>0,None=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "Some(b)",
+          "shift": 5,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "storage-use",
+          "needle": "bufferLength(b)",
+          "shift": 13,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-shared-write",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Result<int,bool>=Ok(0)\nreturn match &x {Ok(p)=>(@@*p=42),Err(_)=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Ok(p)",
+          "shift": 3,
+          "length": 1,
+          "source": "input"
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p=42)",
+          "shift": 2,
+          "length": 1,
+          "source": "input"
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-option-layout-cycle",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\ntype @@A={next:std.core.Option<A>}\n",
+      "body": "return 0",
+      "code": "AI3118",
+      "length": 1,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-result-layout-cycle",
+      "pre": "type Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\ntype @@A={next:std.core.Result<A,int>}\n",
+      "body": "return 0",
+      "code": "AI3118",
+      "length": 1,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-unknown-type",
+      "pre": "",
+      "body": "let x:std.core.@@Other<int>=0\nreturn 0",
+      "code": "AI3100",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-qualified-primitive",
+      "pre": "",
+      "body": "let x:std.core.@@int=0\nreturn 0",
+      "code": "AI3106",
+      "length": 3,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-unknown-module",
+      "pre": "",
+      "body": "let x:std.@@other.Option<int>=None\nreturn 0",
+      "code": "AI3100",
+      "length": 5,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-to-user",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Result<int,bool>=Ok(42)\nlet y:Result<int,bool>=@@x\nreturn 0",
+      "code": "AI3107",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "destination-declaration",
+          "needle": "let y:",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "qualified-user-to-core",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:Result<int,bool>=Ok(42)\nlet y:std.core.Result<int,bool>=@@x\nreturn 0",
+      "code": "AI3107",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "destination-declaration",
+          "needle": "let y:",
+          "shift": 4,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "qualified-core-pattern-on-user",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:Result<int,bool>=Ok(42)\nreturn match x {std.core.Result<int,bool>.@@Ok(n)=>n,Err(_)=>0}",
+      "code": "AI3107",
+      "length": 2,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-user-pattern-on-core",
+      "pre": "type Result<T,E>=Ok(T)|Err(E)\n",
+      "body": "let x:std.core.Result<int,bool>=Ok(42)\nreturn match x {Result<int,bool>.@@Ok(n)=>n,Err(_)=>0}",
+      "code": "AI3107",
+      "length": 2,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-core-type-missing-arguments",
+      "pre": "type Result={n:int}\n",
+      "body": "let x:std.core.@@Result=Ok(42)\nreturn 0",
+      "code": "AI3107",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "type-declaration",
+          "needle": "type Result",
+          "shift": 5,
+          "length": 6,
+          "source": "core"
+        }
+      ]
+    },
+    {
+      "name": "qualified-input-capacity",
+      "pre": "type G0<T>={}\ntype G1<T>={}\ntype G2<T>={}\ntype G3<T>={}\ntype G4<T>={}\ntype G5<T>={}\ntype G6<T>={}\ntype G7<T>={}\ntype G8<T>={}\ntype G9<T>={}\ntype G10<T>={}\ntype G11<T>={}\ntype G12<T>={}\ntype G13<T>={}\ntype G14<T>={}\ntype G15<T>={}\ntype G16<T>={}\ntype G17<T>={}\ntype G18<T>={}\ntype G19<T>={}\ntype G20<T>={}\ntype G21<T>={}\ntype G22<T>={}\ntype G23<T>={}\ntype G24<T>={}\ntype G25<T>={}\ntype G26<T>={}\ntype G27<T>={}\ntype G28<T>={}\ntype G29<T>={}\ntype G30<T>={}\ntype G31<T>={}\ntype G32<T>={}\ntype G33<T>={}\ntype G34<T>={}\ntype G35<T>={}\ntype G36<T>={}\ntype G37<T>={}\ntype G38<T>={}\ntype G39<T>={}\ntype G40<T>={}\ntype G41<T>={}\ntype G42<T>={}\ntype G43<T>={}\ntype G44<T>={}\ntype G45<T>={}\ntype G46<T>={}\ntype G47<T>={}\ntype G48<T>={}\ntype G49<T>={}\ntype G50<T>={}\ntype G51<T>={}\ntype G52<T>={}\ntype G53<T>={}\ntype G54<T>={}\ntype G55<T>={}\ntype G56<T>={}\ntype G57<T>={}\ntype G58<T>={}\ntype G59<T>={}\ntype G60<T>={}\ntype G61<T>={}\ntype G62<T>={}\ntype G63<T>={}\ntype G64<T>={}\ntype G65<T>={}\ntype G66<T>={}\ntype G67<T>={}\ntype G68<T>={}\ntype G69<T>={}\ntype G70<T>={}\ntype G71<T>={}\ntype G72<T>={}\ntype G73<T>={}\ntype G74<T>={}\ntype G75<T>={}\ntype G76<T>={}\ntype G77<T>={}\ntype G78<T>={}\ntype G79<T>={}\ntype G80<T>={}\ntype G81<T>={}\ntype G82<T>={}\ntype G83<T>={}\ntype G84<T>={}\ntype G85<T>={}\ntype G86<T>={}\ntype G87<T>={}\ntype G88<T>={}\ntype G89<T>={}\ntype G90<T>={}\ntype G91<T>={}\ntype G92<T>={}\ntype G93<T>={}\ntype G94<T>={}\ntype G95<T>={}\ntype G96<T>={}\ntype G97<T>={}\ntype G98<T>={}\ntype G99<T>={}\ntype G100<T>={}\ntype G101<T>={}\ntype G102<T>={}\ntype G103<T>={}\ntype G104<T>={}\ntype G105<T>={}\ntype G106<T>={}\ntype G107<T>={}\ntype G108<T>={}\ntype G109<T>={}\ntype G110<T>={}\ntype G111<T>={}\ntype G112<T>={}\ntype G113<T>={}\ntype G114<T>={}\ntype G115<T>={}\ntype G116<T>={}\ntype G117<T>={}\ntype G118<T>={}\ntype G119<T>={}\ntype G120<T>={}\ntype G121<T>={}\ntype G122<T>={}\ntype G123<T>={}\ntype G124<T>={}\ntype G125<T>={}\ntype Option<T>=Some(T)|None\ntype Result<T,E>=Ok(T)|Err(E)\ntype @@Overflow<T>={}\n",
+      "body": "let x:std.core.Option<int>=None\nreturn 0",
+      "code": "AI3100",
+      "length": 8,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "qualified-escaped-qualified-primitive",
+      "pre": "",
+      "body": "let x:std.core.@@@int=0\nreturn 0",
+      "code": "AI3100",
+      "length": 4,
+      "crlf": true,
+      "expectedRelated": []
+    }
+  ]
+}

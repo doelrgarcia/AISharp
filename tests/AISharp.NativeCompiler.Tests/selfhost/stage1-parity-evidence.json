@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "aisharp.stage1-parity/1",
+  "stage1SourceSha256": "f23c2a0c91aa4aae54df1a00c0bedc3ee4990f7840e31b7342c4725aa455c1c7",
+  "lexerSourceSha256": "c9ac00c6ecc521574704ba1abd7fd146a4a7709f58b13452b79d0ec12ad868a8",
+  "invalidPrograms": [
+    "inner-scope-shadowing",
+    "use-after-move",
+    "immutable-reassign",
+    "incompatible-return",
+    "second-move",
+    "mut-borrow-of-immutable",
+    "post-increment-of-immutable",
+    "compound-assign-of-immutable",
+    "string-returned-from-int"
+  ],
+  "genericCases": [
+    "wide-generic-field",
+    "char-generic-field",
+    "different-names",
+    "declaration-order",
+    "nested-generic-argument",
+    "generic-field-of-generic",
+    "field-assignment",
+    "explicit-generic-annotation",
+    "generic-return-value",
+    "generic-constructor-in-call",
+    "char-boundary",
+    "four-parameters",
+    "two-level-nesting",
+    "wide-parameter-and-return",
+    "non-generic-long-field"
+  ],
+  "validCases": [
+    "mutable-var-reassign",
+    "move-and-reinitialize",
+    "mutable-reference-parameter",
+    "loop-counter",
+    "conditional-move",
+    "wide-return",
+    "bool-return",
+    "deref-assignment",
+    "foreach-binding",
+    "max-int-return"
+  ],
+  "runtimeCases": [
+    "runtime-basic",
+    "runtime-peek-bounds",
+    "runtime-write-bounds",
+    "runtime-write-negative-index",
+    "runtime-byte-range",
+    "runtime-negative-length",
+    "runtime-allocation-failure"
+  ],
+  "productValid": [
+    "product-partial-move",
+    "product-partial-init",
+    "product-loop-field-reinitialize",
+    "product-copy",
+    "product-field-init",
+    "product-deref-view"
+  ],
+  "productInvalid": [
+    "product-moved-field",
+    "product-uninitialized-field",
+    "product-whole-use-after-move",
+    "product-double-field-move"
+  ],
+  "releaseCases": [
+    "release-local",
+    "release-two-borrows",
+    "release-escaped-return"
+  ],
+  "faultReleaseCases": [
+    "release-fault-path"
+  ],
+  "blockReleaseCases": [
+    "release-block-scope"
+  ],
+  "nestedReleaseCases": [
+    "release-nested-return",
+    "release-exit-sweep"
+  ],
+  "selfHost": {
+    "stage1CSha256": "b62ef6971dec515314e0981cfed2ccb759ae8f483e9beaee08a1b2fc51440054",
+    "stage2CSha256": "b62ef6971dec515314e0981cfed2ccb759ae8f483e9beaee08a1b2fc51440054",
+    "fixedPoint": true,
+    "loopExit": 45,
+    "stage1Seconds": 260.6
+  },
+  "ok": true
+}

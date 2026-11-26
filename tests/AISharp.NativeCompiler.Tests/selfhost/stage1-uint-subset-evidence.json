@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "uint-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "spec-minimum",
+    "spec-maximum",
+    "literal-decimal",
+    "literal-uppercase-suffix",
+    "literal-hex",
+    "literal-u-suffix-falls-ulong",
+    "escaped-nominal",
+    "widen-to-long",
+    "promote-int-constant",
+    "promote-int-variable-long",
+    "promote-byte",
+    "promote-char",
+    "unary-minus-long",
+    "complement",
+    "comparison-unsigned",
+    "shift-logical",
+    "cast-fits",
+    "cast-unchecked-int-wrap",
+    "cast-unchecked-long-wrap",
+    "cast-unchecked-byte-wrap",
+    "arithmetic-add-wrap",
+    "arithmetic-sub-wrap",
+    "arithmetic-mul-wrap",
+    "divide-remainder",
+    "update",
+    "update-wrap",
+    "compound",
+    "compound-constant",
+    "compound-wrap",
+    "field-storage",
+    "generic-storage",
+    "reference-store",
+    "function-abi",
+    "constant-fold",
+    "constant-wrap"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 35,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 35,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 35,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 35,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

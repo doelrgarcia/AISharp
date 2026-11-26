@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/34",
+  "milestone": "group-join-query-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    {
+      "keyword": "group",
+      "name": "group-project"
+    },
+    {
+      "keyword": "group",
+      "name": "group-identity"
+    },
+    {
+      "keyword": "group",
+      "name": "group-duplicates"
+    },
+    {
+      "keyword": "group",
+      "name": "group-empty"
+    },
+    {
+      "keyword": "join",
+      "name": "join-sum"
+    },
+    {
+      "keyword": "join",
+      "name": "join-first"
+    },
+    {
+      "keyword": "join",
+      "name": "join-product"
+    },
+    {
+      "keyword": "join",
+      "name": "join-empty"
+    }
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "groupCases": 4,
+      "joinCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "groupCases": 4,
+      "joinCases": 4,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "groupCases": 4,
+      "joinCases": 4,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "groupCases": 4,
+      "joinCases": 4,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

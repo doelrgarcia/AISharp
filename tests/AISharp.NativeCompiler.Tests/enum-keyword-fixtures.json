@@ -1,0 +1,213 @@
+{
+ "cases": [
+  {
+   "name": "default-sequential",
+   "body": "return (int)Color.Red*100+(int)Color.Green*10+(int)Color.Blue",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 56,
+   "cs": "return (int)Color.Red*100+(int)Color.Green*10+(int)Color.Blue;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "green-value",
+   "body": "return (int)Color.Green",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 5,
+   "cs": "return (int)Color.Green;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "blue-value",
+   "body": "return (int)Color.Blue",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 6,
+   "cs": "return (int)Color.Blue;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "uint-max",
+   "body": "if((uint)U32.Max==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 1,
+   "cs": "if((uint)U32.Max==4294967295u){return 1;} return 0;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "uint-zero",
+   "body": "if((uint)U32.Zero==0u){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 1,
+   "cs": "if((uint)U32.Zero==0u){return 1;} return 0;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "byte-max",
+   "body": "return (int)(byte)Small.B",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 255,
+   "cs": "return (int)(byte)Small.B;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "sbyte-negative",
+   "body": "return (int)(sbyte)Neg.M",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": -1,
+   "cs": "return (int)(sbyte)Neg.M;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "zero-implicit",
+   "body": "let c:Color=0\nreturn (int)c",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 0,
+   "cs": "Color c=0; return (int)c;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "cast-roundtrip",
+   "body": "return (int)((Color)5)",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 5,
+   "cs": "return (int)((Color)5);",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "local-inferred",
+   "body": "let c=Color.Blue\nreturn (int)c",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 6,
+   "cs": "var c=Color.Blue; return (int)c;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "equality",
+   "body": "let c=Color.Green\nif(c==Color.Green && c!=Color.Red){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 1,
+   "cs": "var c=Color.Green; return c==Color.Green && c!=Color.Red ? 1 : 0;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "relational",
+   "body": "if(Color.Green>Color.Red && Color.Green<Color.Blue){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 1,
+   "cs": "return Color.Green>Color.Red && Color.Green<Color.Blue ? 1 : 0;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "uint-equality",
+   "body": "let u=U32.Max\nif(u==U32.Max){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 1,
+   "cs": "var u=U32.Max; return u==U32.Max ? 1 : 0;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "sizeof-enum",
+   "body": "return sizeof(Color)*10+sizeof(Small)",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 41,
+   "cs": "return sizeof(Color)*10+sizeof(Small);",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "function-parameter",
+   "body": "return next(Color.Green)",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\nfn next(c:Color)->int\nensures true\n{return (int)c+1}\n",
+   "value": 6,
+   "cs": "return Next(Color.Green); int Next(Color c)=> (int)c+1;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "function-return",
+   "body": "return (int)first()",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\nfn first()->Color\nensures true\n{return Color.Red}\n",
+   "value": 0,
+   "cs": "return (int)First(); Color First()=>Color.Red;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "product-field",
+   "body": "let h=Holder(Color.Blue)\nreturn (int)h.c",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\ntype Holder={c:Color}\n",
+   "value": 6,
+   "cs": "var h=new Holder(Color.Blue); return (int)h.c;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "comparison-chain",
+   "body": "let c=Color.Blue\nif(c==Color.Red){return 1}\nif(c==Color.Green){return 2}\nreturn 3",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 3,
+   "cs": "var c=Color.Blue; if(c==Color.Red){return 1;} if(c==Color.Green){return 2;} return 3;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  },
+  {
+   "name": "cast-explicit-uint",
+   "body": "if((uint)((U32)4294967295u)==4294967295u){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n",
+   "value": 1,
+   "cs": "if((uint)((U32)4294967295u)==4294967295u){return 1;} return 0;",
+   "extra": "public enum Color{Red,Green=5,Blue} public enum U32:uint{Zero=0,Max=4294967295} public enum Small:byte{A=1,B=255} public enum Neg:sbyte{M=-1,P=1} public struct Holder{public Color c; public Holder(Color c){this.c=c;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "duplicate-member",
+   "body": "return 0",
+   "code": "AI3106",
+   "pre": "enum Bad { A, @@A }\n"
+  },
+  {
+   "name": "out-of-range-uint",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "enum Bad:uint { A=0, @@B=4294967296u }\n"
+  },
+  {
+   "name": "out-of-range-byte",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "enum Bad:byte { A=0, @@B=256 }\n"
+  },
+  {
+   "name": "nonintegral-backing",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "enum @@Bad:bool { A }\n"
+  },
+  {
+   "name": "no-implicit-nonzero",
+   "body": "let c:Color=@@5\nreturn 0",
+   "code": "AI3107",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n"
+  },
+  {
+   "name": "mismatched-equality",
+   "body": "if(Color.Red@@==U32.Zero){return 1}\nreturn 0",
+   "code": "AI3107",
+   "pre": "enum Color { Red, Green = 5, Blue }\nenum U32:uint { Zero=0, Max=4294967295u }\nenum Small:byte { A=1, B=255 }\nenum Neg:sbyte { M=-1, P=1 }\n"
+  }
+ ]
+}

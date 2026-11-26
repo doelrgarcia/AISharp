@@ -1,0 +1,331 @@
+{
+  "scope": "Actual CLI-emitted AI# functions exercised by supplemental native ABI callers; source-level seed construction is not claimed",
+  "cases": [
+    {
+      "name": "identity-exact-root",
+      "pre": "type Node={value:int,next:&Node}\nfn id(p:&Node)->&Node\nensures true\n{return p}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a)==&a ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "next-exact-prefix",
+      "pre": "type Node={value:int,next:&Node}\nfn next(p:&Node)->&Node\nensures true\n{return (*p).next}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a)==&b ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "second-exact-prefix",
+      "pre": "type Node={value:int,next:&Node}\nfn second(p:&Node)->&Node\nensures true\n{return (*(*p).next).next}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a)==&a ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "loop-cyclic-tail",
+      "pre": "type Node={value:int,next:&Node}\nfn walk(p:&Node,n:int)->&Node\nensures true\n{var cur=p\nvar i=0\nwhile(i<n){cur=(*cur).next\ni++}\nreturn cur}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a,0)==&a && f0(&a,3)==&b && f0(&a,40)==&a ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "recursive-cyclic-tail",
+      "pre": "type Node={value:int,next:&Node}\nfn nth(p:&Node,n:int)->&Node\nensures true\n{if(n==0){return p}\nreturn nth((*p).next,n-1)}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a,3)==&b && f0(&a,40)==&a ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "recursive-terminal-limit",
+      "pre": "type Node={value:int,next:&Node}\nfn nth(p:&Node,n:int)->&Node\nensures true\n{if(n==0){return p}\nreturn nth((*p).next,n-1)}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=(int32_t)f0(&a,200)->m0;",
+      "error": "AISharp.RecursionLimitException",
+      "memory": null
+    },
+    {
+      "name": "local-construction-and-caller-instantiation",
+      "pre": "type Node={value:int,next:&Node}\nfn next(p:&Node)->&Node\nensures true\n{return (*p).next}\nfn run(seed:&Node)->int\nensures true\n{let local=Node(20,seed)\nreturn (*next(&local)).value+local.value}\n",
+      "abiBody": "ai_product_0 seed={0};seed.m0=22;seed.m1=&seed;int32_t result=f1(&seed);",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "local-next-reference-escapes-to-input",
+      "pre": "type Node={value:int,next:&Node}\nfn next(p:&Node)->&Node\nensures true\n{return (*p).next}\nfn keep(seed:&Node)->&Node\nensures true\n{let local=Node(0,seed)\nreturn next(&local)}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f1(&a)==&a ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "branch-merge",
+      "pre": "type Node={value:int,next:&Node}\nfn choose(p:&Node,flag:bool)->&Node\nensures true\n{if(flag){return p}\nreturn (*p).next}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a,true)==&a && f0(&a,false)==&b ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "precall-return-effect-snapshot",
+      "pre": "type Node={value:int,next:&Node}\nfn redirect(p:&mut Node,q:&Node)->&Node\nensures true\n{let old=(*p).next\n(*p).next=q\nreturn old}\nfn run(p:&mut Node,q:&Node)->int\nensures true\n{let old=redirect(&mut *p,q)\nreturn (*old).value+(*(*p).next).value}\n",
+      "abiBody": "ai_product_0 a={0},b={0},c={0};a.m0=0;b.m0=20;c.m0=22;a.m1=&b;b.m1=&b;c.m1=&c;int32_t result=f1(&a,&c);if(a.m1!=&c)result=0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "tail-source-reference-slot-effect",
+      "pre": "type Node={value:int,next:&Node}\nfn select(slot:&mut &Node,p:&Node,n:int)->&Node\nensures true\n{var cur=p\nvar i=0\nwhile(i<n){cur=(*cur).next\ni++}\nlet old=*slot\n*slot=cur\nreturn old}\nfn run(p:&Node,old:&Node)->int\nensures true\n{var slot=old\nlet prior=select(&mut slot,p,3)\nreturn (*prior).value+(*slot).value}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=22;b.m0=20;a.m1=&a;b.m1=&b;int32_t result=f1(&a,&b);",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "mutual-schema-and-local-construction",
+      "pre": "type A={value:int,b:&B}\ntype B={a:&A}\nfn next(p:&A)->&A\nensures true\n{return (*(*p).b).a}\nfn run(seed:&A)->int\nensures true\n{let b=B(seed)\nlet a=A(20,&b)\nreturn (*next(&a)).value+a.value}\n",
+      "abiBody": "ai_product_0 a={0};ai_product_1 b={0};a.m0=22;a.m1=&b;b.m0=&a;int32_t result=f1(&a);",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "mutual-recursive-calls",
+      "pre": "type Node={value:int,next:&Node}\nfn even(p:&Node,n:int)->&Node\nensures true\n{if(n==0){return p}\nreturn odd((*p).next,n-1)}\nfn odd(p:&Node,n:int)->&Node\nensures true\n{if(n==0){return p}\nreturn even((*p).next,n-1)}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&b;b.m1=&a;int32_t result=f0(&a,3)==&b && f1(&b,4)==&b ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "branch-field-identities",
+      "pre": "type Node={value:int,left:&Node,right:&Node}\nfn select(p:&Node)->&Node\nensures true\n{return (*(*p).left).right}\nfn right(p:&Node)->&Node\nensures true\n{return (*p).right}\n",
+      "abiBody": "ai_product_0 a={0},b={0},c={0};a.m0=1;b.m0=2;c.m0=3;a.m1=&b;a.m2=&c;b.m1=&b;b.m2=&a;c.m1=&a;c.m2=&c;int32_t result=f0(&a)==&a && f1(&a)==&c ? 42 : 0;",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "owned-field-source-cleanup",
+      "pre": "type Node={b:owned buffer,next:&Node}\nfn next(p:&Node)->&Node\nensures true\n{return (*p).next}\nfn run(seed:&Node)->int\nensures true\n{var local=Node(buffer(1),seed)\nbufferWrite(&mut local.b,0,20)\nlet p=next(&local)\nreturn bufferPeek(&local.b,0)+bufferPeek(&(*p).b,0)}\n",
+      "abiBody": "ai_product_0 seed={0};seed.m0=ai_buffer_create(1);ai_buffer_write(&seed.m0,0,22);seed.m1=&seed;int32_t result=f1(&seed);ai_product_0_drop(&seed);",
+      "error": null,
+      "memory": {
+        "attempts": 2,
+        "allocations": 2,
+        "releases": 2,
+        "ownersCreated": 2,
+        "drops": 2,
+        "liveBytes": 0,
+        "dropOrder": [
+          2,
+          1
+        ],
+        "allocationFailures": 0
+      }
+    },
+    {
+      "name": "cyclic-buffer-terminal-bounds",
+      "pre": "type Node={b:owned buffer,next:&Node}\nfn peek(p:&Node)->int\nensures true\n{return bufferPeek(&(*(*p).next).b,1)}\n",
+      "abiBody": "ai_product_0 seed={0};seed.m0=ai_buffer_create(1);seed.m1=&seed;int32_t result=f0(&seed);",
+      "error": "System.IndexOutOfRangeException",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "liveBytes": 1,
+        "dropOrder": [],
+        "allocationFailures": 0
+      }
+    },
+    {
+      "name": "exclusive-head-shared-cyclic-tail",
+      "pre": "type Node={value:int,next:&Node}\nfn run(p:&mut Node)->int\nensures true\n{let tail=&(*(*p).next).value\n(*p).value+=2\nreturn (*p).value+*tail}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=40;b.m0=0;a.m1=&b;b.m1=&b;int32_t result=f0(&a);",
+      "error": null,
+      "memory": null
+    },
+    {
+      "name": "long-independent-observed-prefixes",
+      "pre": "type Node={value:int,left:&Node,right:&Node}\nfn deep(p:&Node)->int\nensures true\n{let a=(*(*(*(*(*(*(*(*(*(*(*(*p).left).left).left).left).left).left).left).left).left).left).left).left\nlet b=(*(*(*(*(*(*(*(*(*(*(*(*p).right).right).right).right).right).right).right).right).right).right).right).right\nreturn (*a).value+(*b).value}\n",
+      "abiBody": "ai_product_0 a={0},b={0};a.m0=20;b.m0=22;a.m1=&a;a.m2=&b;b.m1=&a;b.m2=&b;int32_t result=f0(&a);",
+      "error": null,
+      "memory": null
+    }
+  ],
+  "contractPositives": [
+    {
+      "name": "exclusive-next",
+      "pre": "type Node={value:int,next:&mut Node}\nfn next(p:&mut Node)->&mut Node\nensures true\n{return &mut *(*p).next}\n"
+    },
+    {
+      "name": "exclusive-cursor-loop",
+      "pre": "type Node={value:int,next:&mut Node}\nfn walk(p:&mut Node,n:int)->&mut Node\nensures true\n{var cur=p\nvar i=0\nwhile(i<n){cur=&mut *(*cur).next\ni++}\nreturn cur}\n"
+    }
+  ],
+  "negative": [
+    {
+      "name": "shared-cycle-write",
+      "pre": "type Node={value:int,next:&Node}\nfn bad(p:&Node)->unit\nensures true\n{(@@*p).value=2\nreturn}\n",
+      "code": "AI3115",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p).value",
+          "shift": 2,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "local-cycle-value-escape",
+      "pre": "type Node={value:int,next:&Node}\nfn bad(p:&Node)->&Node\nensures true\n{let local=Node(1,p)\n@@return &local}\n",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let local",
+          "shift": 4,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "identity-local-call-escape",
+      "pre": "type Node={value:int,next:&Node}\nfn id(p:&Node)->&Node\nensures true\n{return p}\nfn bad(p:&Node)->&Node\nensures true\n{let local=Node(1,p)\n@@return id(&local)}\n",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let local",
+          "shift": 4,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "id(&local)",
+          "shift": 0,
+          "length": 2
+        }
+      ]
+    },
+    {
+      "name": "exclusive-live-child-write",
+      "pre": "type Node={value:int,next:&mut Node}\nfn bad(p:&mut Node)->int\nensures true\n{let cur=&mut *(*p).next\nlet child=&(*cur).value\n(*cur).value@@=2\nreturn *child}\n",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&(*cur).value",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "tail-live-child-write",
+      "pre": "type Node={value:int,next:&mut Node}\nfn bad(p:&mut Node,n:int)->int\nensures true\n{var cur=p\nvar i=0\nwhile(i<n){cur=&mut *(*cur).next\ni++}\nlet child=&(*cur).value\n(*cur).value@@=2\nreturn *child}\n",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&(*cur).value",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "exclusive-return-live-child",
+      "pre": "type Node={value:int,next:&mut Node}\nfn bad(slot:&mut &int,p:&mut Node)->&mut Node\nensures true\n{*slot=&(*(*p).next).value\nreturn @@&mut *(*p).next}\n",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "p:&mut Node",
+          "shift": 0,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&(*(*p).next).value",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "cycle-slot-local-escape",
+      "pre": "type Node={value:int,next:&Node}\nfn bad(slot:&mut &Node,p:&Node)->unit\nensures true\n{let local=Node(1,p)\n*slot=&local\n@@return}\n",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let local",
+          "shift": 4,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "shared-outer-exclusive-inner-write",
+      "pre": "type Node={value:int,next:&Node,view:&mut int}\nfn bad(p:&Node)->unit\nensures true\n{*(@@*p).view=2\nreturn}\n",
+      "code": "AI3115",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p).view",
+          "shift": 2,
+          "length": 1
+        }
+      ]
+    }
+  ],
+  "capacity": [
+    {
+      "name": "expanded-input-place-bound",
+      "pre": "type Leaf={a:&int,b:&int,c:&int,d:&int}\ntype Middle={f0:Leaf,f1:Leaf,f2:Leaf,f3:Leaf,f4:Leaf,f5:Leaf,f6:Leaf,f7:Leaf,f8:Leaf,f9:Leaf,f10:Leaf,f11:Leaf,f12:Leaf,f13:Leaf,f14:Leaf,f15:Leaf,f16:Leaf,f17:Leaf,f18:Leaf,f19:Leaf,f20:Leaf,f21:Leaf,f22:Leaf,f23:Leaf,f24:Leaf,f25:Leaf,f26:Leaf,f27:Leaf,f28:Leaf,f29:Leaf,f30:Leaf,f31:Leaf,f32:Leaf,f33:Leaf,f34:Leaf,f35:Leaf,f36:Leaf,f37:Leaf,f38:Leaf,f39:Leaf,f40:Leaf,f41:Leaf,f42:Leaf,f43:Leaf,f44:Leaf,f45:Leaf,f46:Leaf,f47:Leaf,f48:Leaf,f49:Leaf,f50:Leaf,f51:Leaf,f52:Leaf,f53:Leaf,f54:Leaf,f55:Leaf,f56:Leaf,f57:Leaf,f58:Leaf,f59:Leaf,f60:Leaf,f61:Leaf,f62:Leaf,f63:Leaf,f64:Leaf,f65:Leaf,f66:Leaf,f67:Leaf,f68:Leaf,f69:Leaf,f70:Leaf,f71:Leaf,f72:Leaf,f73:Leaf,f74:Leaf,f75:Leaf,f76:Leaf,f77:Leaf,f78:Leaf,f79:Leaf,f80:Leaf,f81:Leaf,f82:Leaf,f83:Leaf,f84:Leaf,f85:Leaf,f86:Leaf,f87:Leaf,f88:Leaf,f89:Leaf,f90:Leaf,f91:Leaf,f92:Leaf,f93:Leaf,f94:Leaf,f95:Leaf,f96:Leaf,f97:Leaf,f98:Leaf,f99:Leaf,f100:Leaf,f101:Leaf,f102:Leaf,f103:Leaf,f104:Leaf,f105:Leaf,f106:Leaf,f107:Leaf,f108:Leaf,f109:Leaf,f110:Leaf,f111:Leaf,f112:Leaf,f113:Leaf,f114:Leaf,f115:Leaf,f116:Leaf,f117:Leaf,f118:Leaf,f119:Leaf,f120:Leaf,f121:Leaf,f122:Leaf,f123:Leaf,f124:Leaf,f125:Leaf,f126:Leaf,f127:Leaf}\ntype Top={f0:Middle,f1:Middle,f2:Middle,f3:Middle,f4:Middle,f5:Middle,f6:Middle,f7:Middle,f8:Middle,f9:Middle,f10:Middle,f11:Middle,f12:Middle,f13:Middle,f14:Middle,f15:Middle,f16:Middle,f17:Middle,f18:Middle,f19:Middle,f20:Middle,f21:Middle,f22:Middle,f23:Middle,f24:Middle,f25:Middle,f26:Middle,f27:Middle,f28:Middle,f29:Middle,f30:Middle,f31:Middle,f32:Middle,f33:Middle,f34:Middle,f35:Middle,f36:Middle,f37:Middle,f38:Middle,f39:Middle,f40:Middle,f41:Middle,f42:Middle,f43:Middle,f44:Middle,f45:Middle,f46:Middle,f47:Middle,f48:Middle,f49:Middle,f50:Middle,f51:Middle,f52:Middle,f53:Middle,f54:Middle,f55:Middle,f56:Middle,f57:Middle,f58:Middle,f59:Middle,f60:Middle,f61:Middle,f62:Middle,f63:Middle,f64:Middle,f65:Middle,f66:Middle,f67:Middle,f68:Middle,f69:Middle,f70:Middle,f71:Middle,f72:Middle,f73:Middle,f74:Middle,f75:Middle,f76:Middle,f77:Middle,f78:Middle,f79:Middle,f80:Middle,f81:Middle,f82:Middle,f83:Middle,f84:Middle,f85:Middle,f86:Middle,f87:Middle,f88:Middle,f89:Middle,f90:Middle,f91:Middle,f92:Middle,f93:Middle,f94:Middle,f95:Middle,f96:Middle,f97:Middle,f98:Middle,f99:Middle,f100:Middle,f101:Middle,f102:Middle,f103:Middle,f104:Middle,f105:Middle,f106:Middle,f107:Middle,f108:Middle,f109:Middle,f110:Middle,f111:Middle,f112:Middle,f113:Middle,f114:Middle,f115:Middle,f116:Middle,f117:Middle,f118:Middle,f119:Middle,f120:Middle,f121:Middle,f122:Middle,f123:Middle,f124:Middle,f125:Middle,f126:Middle,f127:Middle}\nfn large(p:&Top)->unit\nensures true\n{return}\n",
+      "message": "input projection region limit"
+    }
+  ]
+}

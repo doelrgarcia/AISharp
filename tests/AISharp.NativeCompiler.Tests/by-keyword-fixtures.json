@@ -1,0 +1,58 @@
+{
+ "cases": [
+  {
+   "name": "group-project",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x by x into g select g*10\nreturn bufferPeek(&q,0)+bufferPeek(&q,2)",
+   "value": 40,
+   "type": "int",
+   "pre": "",
+   "cs": "return 40;"
+  },
+  {
+   "name": "group-identity",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x by x into g select g\nreturn bufferPeek(&q,0)+bufferPeek(&q,2)",
+   "value": 4,
+   "type": "int",
+   "pre": "",
+   "cs": "return 4;"
+  },
+  {
+   "name": "group-duplicates",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,2)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x by x into g select g\nreturn bufferPeek(&q,0)+bufferPeek(&q,2)",
+   "value": 3,
+   "type": "int",
+   "pre": "",
+   "cs": "return 3;"
+  },
+  {
+   "name": "group-empty",
+   "body": "var b=buffer(0)\nvar q=from x in b group x by x into g select g\nreturn bufferLength(q)",
+   "value": 0,
+   "type": "int",
+   "pre": "",
+   "cs": "return 0;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "group-unknown-key",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x by @@y into g select g\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "group-missing-into",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x by x @@select g\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "group-missing-by",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x @@into g select g\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "group-missing-select",
+   "body": "var b=buffer(3)\nbufferWrite(&mut b,0,3)\nbufferWrite(&mut b,1,1)\nbufferWrite(&mut b,2,2)\nvar q=from x in b group x by x into g @@;\nreturn 0",
+   "code": "AI3100"
+  }
+ ]
+}

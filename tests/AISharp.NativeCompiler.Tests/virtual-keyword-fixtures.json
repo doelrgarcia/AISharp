@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "virtual-derived",
+   "body": "let d=new Derived(5)\nreturn d.get()",
+   "value": 2,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\n",
+   "cs": "return 2;"
+  },
+  {
+   "name": "virtual-base-default",
+   "body": "let b=new Base(7)\nreturn b.get()",
+   "value": 1,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\n",
+   "cs": "return 1;"
+  },
+  {
+   "name": "virtual-derived-field",
+   "body": "let d=new Derived(9)\nreturn d.w+d.get()",
+   "value": 11,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\n",
+   "cs": "return 11;"
+  },
+  {
+   "name": "virtual-method-in-method",
+   "body": "let d=new Derived(3)\nreturn d.get()*2",
+   "value": 4,
+   "type": "int",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\noverride fn get(this: Derived)->int\nensures true\n{return 2}\n",
+   "cs": "return 4;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "virtual-no-base-override",
+   "body": "let d=new Derived(1)\nreturn 0",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\noverride fn @@nope(this: Derived)->int\nensures true\n{return 1}\n"
+  },
+  {
+   "name": "virtual-signature-override",
+   "body": "let d=new Derived(1)\nreturn d.get(2)",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\nclass Derived: Base={w:int}\nvirtual fn get(this: Base)->int\nensures true\n{return 1}\noverride fn @@get(this: Derived, x: int)->int\nensures true\n{return x}\n"
+  },
+  {
+   "name": "virtual-struct-receiver",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type Pair={a:int}\nvirtual fn @@m(this: Pair)->int\nensures true\n{return 1}\n"
+  },
+  {
+   "name": "virtual-override-without-virtual",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "class Base={v:int}\noverride fn @@m(this: Base)->int\nensures true\n{return 1}\n"
+  }
+ ]
+}

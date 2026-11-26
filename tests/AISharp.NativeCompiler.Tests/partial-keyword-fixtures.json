@@ -1,0 +1,123 @@
+{
+ "cases": [
+  {
+   "name": "partial-two-fragments",
+   "body": "let p=P(3,4)\nreturn p.a+p.b",
+   "value": 7,
+   "type": "int",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\n",
+   "cs": "var p=new P(3,4); return p.a+p.b;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-three-fragments",
+   "body": "let p=P(1,2,3)\nreturn p.a*100+p.b*10+p.c",
+   "value": 123,
+   "type": "int",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\npartial type P={c:int}\n",
+   "cs": "var p=new P(1,2,3); return p.a*100+p.b*10+p.c;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-single-fragment",
+   "body": "let p=P(5)\nreturn p.a",
+   "value": 5,
+   "type": "int",
+   "pre": "partial type P={a:int}\n",
+   "cs": "var p=new P(5); return p.a;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-fields-in-fragment",
+   "body": "let p=P(2,3)\nreturn p.a+p.b",
+   "value": 5,
+   "type": "int",
+   "pre": "partial type P={a:int, b:int}\n",
+   "cs": "var p=new P(2,3); return p.a+p.b;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-function",
+   "body": "let p=P(6,7)\nreturn sum(p)",
+   "value": 13,
+   "type": "int",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\nfn sum(p:P)->int\nensures true\n{return p.a+p.b}\n",
+   "cs": "var p=new P(6,7); return p.a+p.b;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-sizeof",
+   "body": "return sizeof(P)",
+   "value": 8,
+   "type": "int",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\n",
+   "cs": "return 8;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-copy",
+   "body": "let p=P(1,2)\nlet q:P=p\nreturn q.a*10+q.b",
+   "value": 12,
+   "type": "int",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\n",
+   "cs": "var p=new P(1,2); P q=p; return q.a*10+q.b;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-nested",
+   "body": "let q=Q(P(4,5))\nreturn q.p.a+q.p.b",
+   "value": 9,
+   "type": "int",
+   "pre": "partial type P={a:int}\npartial type P={b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(4,5)); return q.p.a+q.p.b;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "partial-readonly-field",
+   "body": "let p=P(3,4)\nreturn p.a+p.b",
+   "value": 7,
+   "type": "int",
+   "pre": "partial type P={readonly a:int}\npartial type P={b:int}\n",
+   "cs": "var p=new P(3,4); return p.a+p.b;",
+   "extra": "public partial struct P{public int a;} public partial struct P{public int b; public int c; public P(int a){this.a=a;this.b=0;this.c=0;} public P(int a,int b){this.a=a;this.b=b;this.c=0;} public P(int a,int b,int c){this.a=a;this.b=b;this.c=c;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "partial-duplicate-field",
+   "body": "return 0",
+   "code": "AI3106",
+   "pre": "partial type P={a:int}\npartial type P={@@a:int}\n"
+  },
+  {
+   "name": "partial-conflict-normal",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={x:int}\npartial type @@P={a:int}\n"
+  },
+  {
+   "name": "partial-enum",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@partial enum E { A }\n"
+  },
+  {
+   "name": "partial-generic",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "partial type @@P<T>={a:T}\n"
+  },
+  {
+   "name": "partial-union",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "partial type P = @@A|B\n"
+  },
+  {
+   "name": "partial-not-type",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "@@partial fn f()->int\nensures true\n{return 0}\n"
+  }
+ ]
+}

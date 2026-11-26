@@ -1,0 +1,53 @@
+{
+ "cases": [
+  {
+   "name": "infer-and-update",
+   "body": "var x=0\nx+=1\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "var x=0; x+=1; return x;"
+  },
+  {
+   "name": "infer-int-stable",
+   "body": "var total=0\nfor(var i=1;i<=4;i++){total+=i}\nreturn total",
+   "type": "int",
+   "pre": "",
+   "value": 10,
+   "cs": "var total=0; for(var i=1;i<=4;i++)total+=i; return total;"
+  },
+  {
+   "name": "infer-byte",
+   "body": "var b:byte=7\nb+=1\nreturn (int)b",
+   "type": "int",
+   "pre": "",
+   "value": 8,
+   "cs": "var b=(byte)7; b+=1; return b;"
+  },
+  {
+   "name": "reassign-compatible",
+   "body": "var x=1\nx=2\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "var x=1; x=2; return x;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "uninitialized",
+   "body": "var @@x\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "incompatible-assignment",
+   "body": "var x=1\nx=@@true\nreturn x",
+   "code": "AI3107"
+  },
+  {
+   "name": "immutable-let",
+   "body": "let x=5\n@@x=6\nreturn x",
+   "code": "AI3105"
+  }
+ ]
+}

@@ -1,0 +1,75 @@
+{
+ "cases": [
+  {
+   "name": "args-length-zero",
+   "body": "if(args.length==0){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "args-length-nonnegative",
+   "body": "if(args.length>=0){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "args-length-bounded",
+   "body": "if(args.length<=16){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "args-conditional",
+   "body": "if(args.length>0){return 0}\nreturn 1",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "args-copy",
+   "body": "let a=args\nif(a.length==0){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  },
+  {
+   "name": "args-copy2",
+   "body": "let a=args\nlet b=a\nif(b.length==0){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "pre": "",
+   "cs": "return 1;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "args-arithmetic",
+   "body": "let x=args@@+1\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "args-function",
+   "body": "return f()",
+   "code": "AI3107",
+   "pre": "fn f()->int\nensures true\n{return @@args.length}\n"
+  },
+  {
+   "name": "args-index-type",
+   "body": "let x=args[@@true]\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "args-eq",
+   "body": "if(args@@==args){return 1}\nreturn 0",
+   "code": "AI3107"
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "async-call",
+   "body": "return compute()",
+   "value": 7,
+   "type": "int",
+   "pre": "async fn compute()->int\nensures true\n{return 7}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "async-value",
+   "body": "let x=compute()\nreturn x",
+   "value": 7,
+   "type": "int",
+   "pre": "async fn compute()->int\nensures true\n{return 7}\n",
+   "cs": "return 7;"
+  },
+  {
+   "name": "async-twice",
+   "body": "return compute()+compute()",
+   "value": 14,
+   "type": "int",
+   "pre": "async fn compute()->int\nensures true\n{return 7}\n",
+   "cs": "return 14;"
+  },
+  {
+   "name": "async-await",
+   "body": "return await compute()",
+   "value": 7,
+   "type": "int",
+   "pre": "async fn compute()->int\nensures true\n{return 7}\n",
+   "cs": "return 7;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "async-nonfunction",
+   "body": "return 0",
+   "code": "AI3100",
+   "pre": "async @@int x;\n"
+  },
+  {
+   "name": "async-repeat",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "async @@async fn f()->int\nensures true\n{return 1}\n"
+  },
+  {
+   "name": "await-bad-call",
+   "body": "return await @@compute(1,2)",
+   "code": "AI3107",
+   "pre": "async fn compute()->int\nensures true\n{return 7}\n"
+  },
+  {
+   "name": "await-double",
+   "body": "return await@@;",
+   "code": "AI3100",
+   "pre": "async fn compute()->int\nensures true\n{return 7}\n"
+  }
+ ]
+}

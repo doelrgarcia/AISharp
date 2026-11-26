@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "global-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "global-construction",
+    "global-field-type",
+    "global-function-return",
+    "global-enum-value",
+    "global-alias",
+    "global-initializer",
+    "global-nested"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 7,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 7,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 7,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 7,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

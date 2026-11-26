@@ -1,0 +1,129 @@
+{
+ "cases": [
+  {
+   "name": "out-set",
+   "body": "var v=0\nset(v)\nreturn v",
+   "value": 5,
+   "type": "int",
+   "cs": "int v=0; Set(out v); return v;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn set(out x:int)->int\nensures true\n{*x=5\nreturn 0}\n"
+  },
+  {
+   "name": "out-increment-initial",
+   "body": "var v=4\ninc(v)\nreturn v",
+   "value": 5,
+   "type": "int",
+   "cs": "int v=4; Inc(out v); return v;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn inc(out x:int)->int\nensures true\n{*x=*x+1\nreturn 0}\n"
+  },
+  {
+   "name": "out-two-params",
+   "body": "var a=0\nvar b=0\npair(a,b)\nreturn a*10+b",
+   "value": 23,
+   "type": "int",
+   "cs": "int a=0,b=0; Pair(out a,out b); return a*10+b;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn pair(out a:int,out b:int)->int\nensures true\n{*a=2\n*b=3\nreturn 0}\n"
+  },
+  {
+   "name": "out-long",
+   "body": "var v=0L\nsetLong(v)\nreturn (int)v",
+   "value": 9,
+   "type": "int",
+   "cs": "long v=0L; SetLong(out v); return (int)v;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn setLong(out x:long)->long\nensures true\n{*x=9L\nreturn 0L}\n"
+  },
+  {
+   "name": "out-bool",
+   "body": "var v=false\nsetBool(v)\nif(v){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "bool v=false; SetBool(out v); if(v){return 1;} return 0;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn setBool(out x:bool)->bool\nensures true\n{*x=true\nreturn false}\n"
+  },
+  {
+   "name": "out-double",
+   "body": "var v=0.0\nsetDouble(v)\nif(v==2.5){return 1}\nreturn 0",
+   "value": 1,
+   "type": "int",
+   "cs": "double v=0.0; SetDouble(out v); if(v==2.5){return 1;} return 0;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn setDouble(out x:double)->double\nensures true\n{*x=2.5\nreturn 0.0}\n"
+  },
+  {
+   "name": "out-reuse",
+   "body": "var v=0\nset(v)\nlet a=v\nset(v)\nreturn a+v",
+   "value": 10,
+   "type": "int",
+   "cs": "int v=0; Set(out v); int a=v; Set(out v); return a+v;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn set(out x:int)->int\nensures true\n{*x=5\nreturn 0}\n"
+  },
+  {
+   "name": "out-loop",
+   "body": "var total=0\nvar i=0\nwhile(i<3)\n{\nset(total)\ni++\n}\nreturn total",
+   "value": 5,
+   "type": "int",
+   "cs": "int total=0; for(var i=0;i<3;i++){Set(out total);} return total;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn set(out x:int)->int\nensures true\n{*x=5\nreturn 0}\n"
+  },
+  {
+   "name": "out-return-value",
+   "body": "var v=0\nlet r=setAndReturn(v)\nreturn r+v",
+   "value": 7,
+   "type": "int",
+   "cs": "int v=0; int r=SetAndReturn(out v); return r+v;",
+   "extra": "public static int Set(out int x){x=5;return 0;} public static int Inc(out int x){x=5;return 0;} public static int Pair(out int a,out int b){a=2;b=3;return 0;} public static long SetLong(out long x){x=9L;return 0;} public static bool SetBool(out bool x){x=true;return false;} public static double SetDouble(out double x){x=2.5;return 0.0;} public static int SetAndReturn(out int x){x=3;return 4;}",
+   "pre": "fn setAndReturn(out x:int)->int\nensures true\n{*x=3\nreturn 4}\n"
+  }
+ ],
+ "negative": [
+  {
+   "name": "out-not-assigned",
+   "body": "var v=0\nf(v)\nreturn v",
+   "code": "AI3107",
+   "pre": "fn f(out @@x:int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "out-rvalue",
+   "body": "var v=0\nset(@@5)\nreturn v",
+   "code": "AI3115",
+   "pre": "fn set(out x:int)->int\nensures true\n{*x=5\nreturn 0}\n"
+  },
+  {
+   "name": "out-immutable",
+   "body": "let v=0\nset(@@v)\nreturn 0",
+   "code": "AI3105",
+   "pre": "fn set(out x:int)->int\nensures true\n{*x=5\nreturn 0}\n"
+  },
+  {
+   "name": "out-product",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\nfn f(out @@p:P)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "out-reference",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(out @@p:&int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "out-readonly-conflict",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(readonly out @@p:int)->int\nensures true\n{return 0}\n"
+  },
+  {
+   "name": "out-in-conflict",
+   "body": "return 0",
+   "code": "AI3107",
+   "pre": "fn f(in out @@p:int)->int\nensures true\n{return 0}\n"
+  }
+ ]
+}

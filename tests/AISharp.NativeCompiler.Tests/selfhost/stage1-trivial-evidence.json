@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/1",
+  "milestone": "trivial-lexer-emitter",
+  "sourceSha256": "3b5eb8f24876e4aac465e1de91cb12bc232b481f1394785960353089b60cf259",
+  "generatedC": "int main(void){return N;}",
+  "checks": [
+    {
+      "host": "32",
+      "values": [
+        0,
+        7,
+        42
+      ],
+      "stageBuildSha256": "28c8de40343237f7d15b421ddd16d936dece550d064e45279c39ec9a6b84a083"
+    },
+    {
+      "host": "64",
+      "values": [
+        0,
+        7,
+        42
+      ],
+      "stageBuildSha256": "808596eb569f49bc0f2a4847e5d15e6bec2bd7bad7b8c97c35e21bf7bd19535c"
+    },
+    {
+      "host": "32d",
+      "values": [
+        0,
+        7,
+        42
+      ],
+      "stageBuildSha256": "402a29602f1500a1add1c6284ade8ee603c7abba9c94f2bcadc4e54747d25e1f"
+    },
+    {
+      "host": "64d",
+      "values": [
+        0,
+        7,
+        42
+      ],
+      "stageBuildSha256": "a79032de5c709e924583d91ce98c8cfcfc65372edc8fe8bdd0aad9a2ce7d052a"
+    }
+  ],
+  "ok": true
+}

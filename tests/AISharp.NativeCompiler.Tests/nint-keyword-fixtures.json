@@ -1,0 +1,113 @@
+{
+ "cases": [
+  {
+   "name": "common-add",
+   "body": "var v:nint=5\nv+=2\nreturn (int)v",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "cs": "nint v=5; v+=2; return (int)v;"
+  },
+  {
+   "name": "int-to-nint",
+   "body": "var i:int=2\nlet n:nint=i\nreturn (int)n",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "int i=2; nint n=i; return (int)n;"
+  },
+  {
+   "name": "int-maximum",
+   "body": "let v:nint=2147483647\nif(v>0){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 1,
+   "cs": "nint v=2147483647; return v>0?1:0;"
+  },
+  {
+   "name": "negative-value",
+   "body": "let v:nint=-1\nreturn (int)v",
+   "type": "int",
+   "pre": "",
+   "value": -1,
+   "cs": "nint v=-1; return (int)v;"
+  },
+  {
+   "name": "beyond-int32",
+   "body": "let v:nint=2147483648L\nif(v>0){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "code32": "AI3107",
+   "value64": 1
+  },
+  {
+   "name": "long-maximum",
+   "body": "let v:nint=9223372036854775807L\nif(v>0){return 1}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "code32": "AI3107",
+   "value64": 1
+  },
+  {
+   "name": "long-to-nint",
+   "body": "var l:long=2L\nlet n:nint=l\nreturn (int)n",
+   "type": "int",
+   "pre": "",
+   "code32": "AI3107",
+   "value64": 2
+  },
+  {
+   "name": "checked-cast",
+   "body": "var l:long=5L\nlet n:nint=(nint)l\nreturn (int)n",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "cs": "long l=5L; nint n=(nint)l; return (int)n;"
+  },
+  {
+   "name": "function-abi",
+   "body": "return (int)idv(3)",
+   "type": "int",
+   "pre": "fn idv(v:nint)->nint ensures true {return v}\n",
+   "value": 3,
+   "cs": "return (int)Idv(3); int Idv(nint v)=>(int)v;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "bool-assignment",
+   "body": "let v:nint=@@true\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "string-assignment",
+   "body": "let v:nint=@@\"bad\"\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "condition",
+   "body": "let v:nint=1\nif(@@v){return 1}\nreturn 0",
+   "code": "AI3101"
+  },
+  {
+   "name": "implicit-narrow",
+   "body": "let n:nint=1\nlet b:byte=@@n\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "return-type",
+   "body": "@@return true",
+   "code": "AI3020"
+  },
+  {
+   "name": "signed-to-unsigned",
+   "body": "var n:nint=1\nlet u:nuint=@@n\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "immutable-update",
+   "body": "let n:nint=1\n@@n=2\nreturn 0",
+   "code": "AI3105"
+  }
+ ]
+}

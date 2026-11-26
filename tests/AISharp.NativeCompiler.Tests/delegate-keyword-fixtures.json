@@ -1,0 +1,62 @@
+{
+ "cases": [
+  {
+   "name": "delegate-call",
+   "body": "let h=Handler(add)\nreturn h(4)",
+   "value": 5,
+   "type": "int",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "delegate-second-target",
+   "body": "let h=Handler(sub)\nreturn h(9)",
+   "value": 8,
+   "type": "int",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\n",
+   "cs": "return 8;"
+  },
+  {
+   "name": "delegate-parameter",
+   "body": "return apply(Handler(add), 4)",
+   "value": 5,
+   "type": "int",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\nfn apply(h: Handler, x: int)->int\nensures true\n{return h(x)}\n",
+   "cs": "return 5;"
+  },
+  {
+   "name": "delegate-two-vars",
+   "body": "let a=Handler(add)\nlet b=Handler(sub)\nreturn a(4)+b(9)",
+   "value": 13,
+   "type": "int",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\n",
+   "cs": "return 13;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "delegate-bad-signature",
+   "body": "let h=Handler(@@bad)\nreturn 0",
+   "code": "AI3107",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\nfn bad(a: int, b: int)->int\nensures true\n{return a+b}\n"
+  },
+  {
+   "name": "delegate-unknown",
+   "body": "let h=Handler(@@missing)\nreturn 0",
+   "code": "AI3107",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\n"
+  },
+  {
+   "name": "delegate-bad-call",
+   "body": "let h=Handler(add)\nreturn @@h(1,2)",
+   "code": "AI3107",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\n"
+  },
+  {
+   "name": "delegate-combine",
+   "body": "let h=Handler(add)\nlet g=Handler(sub)\nreturn h@@+g",
+   "code": "AI3107",
+   "pre": "delegate fn Handler(a: int)->int;\nfn add(a: int)->int\nensures true\n{return a+1}\nfn sub(a: int)->int\nensures true\n{return a-1}\n"
+  }
+ ]
+}

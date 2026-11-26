@@ -1,0 +1,67 @@
+module pilot.actor_workflow
+
+intent "Demonstrate the AI# actor profile with async handlers and structured concurrency"
+
+policy WorkerPolicy {
+    classification = internal
+    inference = local_only
+    external_text = tainted
+    capabilities = separated
+    training = forbidden
+    telemetry = opt_in_aggregate
+}
+
+capability JobQueue
+capability Storage
+
+type JobId = int
+
+type Job = {
+    id: JobId,
+    source: string
+}
+
+type Artifact = {
+    jobId: JobId,
+    bytes: string
+}
+
+type Error = NetworkFailure | InvalidJob | StorageUnavailable
+
+actor BuildWorker {
+    state currentJobId: int
+    state attempts: int
+
+    async fn handle(job: Job)
+        -> Result<Artifact, Error>
+        effects [io, time]
+        requires job.id > 0
+        ensures true
+    {
+        let artifact = Artifact(job.id, job.source)
+        return Ok(artifact)
+    }
+
+    async fn retry(job: Job)
+        -> Result<Artifact, Error>
+        effects [io, time]
+        requires job.id > 0
+    {
+        let artifact = Artifact(job.id, job.source)
+        return Ok(artifact)
+    }
+}
+
+async fn fanOut(seed: Job)
+    -> Result<Artifact, Error>
+    effects [io, time]
+    requires seed.id > 0
+    ensures true
+{
+    let artifact = Artifact(seed.id, seed.source)
+    return Ok(artifact)
+}
+
+test "BuildWorker actor declares state and async handler" {
+    expect true
+}

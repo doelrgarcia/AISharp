@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "new-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "new-product",
+    "new-product-nested",
+    "new-product-generic",
+    "new-product-generic-bool",
+    "new-buffer",
+    "new-with",
+    "new-function-arg",
+    "new-partial",
+    "new-loop"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 9,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 9,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 9,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 9,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

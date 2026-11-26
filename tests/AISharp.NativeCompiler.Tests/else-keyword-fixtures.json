@@ -1,0 +1,46 @@
+{
+ "cases": [
+  {
+   "name": "else-taken",
+   "body": "var c:bool=flagFalse()\nvar n=0\nif(c){n=1}else{n=2}\nreturn n",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\nfn flagFalse()->bool ensures true {return false}\n",
+   "value": 2,
+   "cs": "bool c=false; int n=0; if(c){n=1;}else{n=2;} return n;"
+  },
+  {
+   "name": "else-if-chain",
+   "body": "var n=0\nvar x=2\nif(x==1){n=1}else{if(x==2){n=2}else{n=3}}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "cs": "int n=0,x=2; if(x==1)n=1; else if(x==2)n=2; else n=3; return n;"
+  },
+  {
+   "name": "nested-else-binds-inner",
+   "body": "var a:bool=flag()\nvar b:bool=flagFalse()\nvar n=0\nif(a){if(b){n=1}else{n=2}}else{n=3}\nreturn n",
+   "type": "int",
+   "pre": "fn flag()->bool ensures true {return true}\nfn flagFalse()->bool ensures true {return false}\n",
+   "value": 2,
+   "cs": "bool a=true,b=false; int n=0; if(a){if(b)n=1;else n=2;}else n=3; return n;"
+  }
+ ],
+ "negative": [
+  {
+   "name": "unmatched-else",
+   "body": "@@else {return 1}\nreturn 0",
+   "code": "AI3100"
+  },
+  {
+   "name": "assign-opposite-branch",
+   "body": "var c:bool=flag()\nvar x:int\nif(!c){x=1}\nreturn @@x",
+   "code": "AI3102",
+   "pre": "fn flag()->bool ensures true {return true}\n"
+  },
+  {
+   "name": "else-int-condition",
+   "body": "var n=0\nif(true){n=1}else{if(@@1){n=2}}\nreturn n",
+   "code": "AI3101"
+  }
+ ]
+}

@@ -1,0 +1,7 @@
+#pragma once
+#include <string_view>
+namespace aisharp {
+inline constexpr std::string_view core_outcomes_uri = "aisharp://std/core/outcomes/1";
+inline constexpr std::string_view core_outcomes_sha256 = "@AISHARP_CORE_HASH@";
+inline constexpr std::string_view core_outcomes_text = R"AISharpCore(@AISHARP_CORE_TEXT@)AISharpCore";
+}

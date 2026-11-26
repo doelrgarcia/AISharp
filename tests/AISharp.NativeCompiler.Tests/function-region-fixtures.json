@@ -1,0 +1,842 @@
+{
+  "cases": [
+    {
+      "name": "region-shared-read",
+      "pre": "fn read(p:&int)->int\nensures true\n{return *p}\n",
+      "body": "let x=42\nreturn read(&x)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-mutate",
+      "pre": "fn bump(p:&mut int)->unit\nensures true\n{*p+=1\nreturn}\n",
+      "body": "var x=41\nbump(&mut x)\nreturn x",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-shared-result",
+      "pre": "fn id(p:&int)->&int\nensures true\n{return p}\n",
+      "body": "let x=42\nlet p=id(&x)\nreturn *p",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-exclusive-result",
+      "pre": "fn id(p:&mut int)->&mut int\nensures true\n{return p}\n",
+      "body": "var x=40\nlet p=id(&mut x)\n*p+=2\nreturn x",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-shared-reborrow-result",
+      "pre": "fn view(p:&mut int)->&int\nensures true\n{return &*p}\n",
+      "body": "var x=42\nlet p=view(&mut x)\nreturn *p",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-exclusive-reborrow-call",
+      "pre": "fn bump(p:&mut int)->unit\nensures true\n{*p+=1\nreturn}\n",
+      "body": "var x=40\nlet p=&mut x\nbump(&mut *p)\n*p+=1\nreturn x",
+      "value": 42
+    },
+    {
+      "name": "region-buffer-view",
+      "pre": "fn size(p:&owned buffer)->int\nensures true\n{return bufferSize(p)}\n",
+      "body": "let b=buffer(42)\nreturn size(&b)",
+      "value": 42
+    },
+    {
+      "name": "region-buffer-mutate",
+      "pre": "fn put(p:&mut owned buffer)->unit\nensures true\n{bufferWrite(p,0,42)\nreturn}\n",
+      "body": "var b=buffer(1)\nput(&mut b)\nreturn bufferGet(b,0)",
+      "value": 42
+    },
+    {
+      "name": "region-buffer-replace",
+      "pre": "fn replace(p:&mut owned buffer)->unit\nensures true\n{*p=buffer(42)\nreturn}\n",
+      "body": "var b=buffer(1)\nreplace(&mut b)\nreturn bufferLength(b)",
+      "value": 42
+    },
+    {
+      "name": "region-bool",
+      "pre": "fn flip(p:&mut bool)->&mut bool\nensures true\n{*p= !*p\nreturn p}\n",
+      "body": "var x=false\nlet p=flip(&mut x)\nif(*p){return 42}\nreturn 0",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-two-return-origins",
+      "pre": "fn choose(a:&int,b:&int,c:bool)->&int\nensures true\n{if(c){return a}\nreturn b}\n",
+      "body": "let a=42\nlet b=7\nreturn *choose(&a,&b,true)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          },
+          {
+            "parameter": 1,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-forward",
+      "pre": "fn first(p:&int)->&int\nensures true\n{return second(p)}\nfn second(p:&int)->&int\nensures true\n{return p}\n",
+      "body": "let x=42\nreturn *first(&x)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-recursion",
+      "pre": "fn walk(p:&int,n:int)->&int\nensures true\n{if(n==0){return p}\nreturn walk(p,n-1)}\n",
+      "body": "let x=42\nreturn *walk(&x,4)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-mutual-recursion",
+      "pre": "fn first(p:&int,n:int)->&int\nensures true\n{if(n==0){return p}\nreturn second(p,n-1)}\nfn second(p:&int,n:int)->&int\nensures true\n{return first(p,n)}\n",
+      "body": "let x=42\nreturn *second(&x,4)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-nested-shared",
+      "pre": "fn read(p:&&int)->int\nensures true\n{return **p}\n",
+      "body": "let x=42\nlet p=&x\nreturn read(&p)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 0,
+                "depth": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-nested-inner-return",
+      "pre": "fn read(p:&&int)->&int\nensures true\n{return *p}\n",
+      "body": "let x=42\nlet p=&x\nlet r=read(&p)\nreturn *r",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 2
+          }
+        ],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 0,
+                "depth": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-refslot-effect",
+      "pre": "fn set(dst:&mut &int,src:&int)->unit\nensures true\n{*dst=src\nreturn}\n",
+      "body": "let x=1\nlet y=42\nvar p=&x\nset(&mut p,&y)\nreturn *p",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 1,
+                "depth": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-conditional-effect",
+      "pre": "fn set(dst:&mut &int,src:&int,c:bool)->unit\nensures true\n{if(c){*dst=src}\nreturn}\n",
+      "body": "let x=1\nlet y=42\nvar p=&x\nset(&mut p,&y,true)\nreturn *p",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 0,
+                "depth": 2
+              },
+              {
+                "parameter": 1,
+                "depth": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-effect-forward",
+      "pre": "fn forward(dst:&mut &int,src:&int)->unit\nensures true\n{set(dst,src)\nreturn}\nfn set(dst:&mut &int,src:&int)->unit\nensures true\n{*dst=src\nreturn}\n",
+      "body": "let x=1\nlet y=42\nvar p=&x\nforward(&mut p,&y)\nreturn *p",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 1,
+                "depth": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-snapshot-before-effect",
+      "pre": "fn swap(dst:&mut &int,src:&int)->&int\nensures true\n{let old=*dst\n*dst=src\nreturn old}\n",
+      "body": "let x=42\nlet y=7\nvar p=&x\nlet old=swap(&mut p,&y)\nreturn *old",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 2
+          }
+        ],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 1,
+                "depth": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-effect-clears-old-loan",
+      "pre": "fn set(dst:&mut &int,src:&int)->unit\nensures true\n{*dst=src\nreturn}\n",
+      "body": "var x=1\nlet y=42\nvar p=&x\nset(&mut p,&y)\nx=2\nreturn *p",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 1,
+                "depth": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-nested-exclusive",
+      "pre": "fn inc(p:&mut &mut int)->unit\nensures true\n{**p+=2\nreturn}\n",
+      "body": "var x=40\nvar p=&mut x\ninc(&mut p)\nreturn x",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 0,
+                "depth": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-shared-through-exclusive-container",
+      "pre": "fn read(p:&&mut int)->int\nensures true\n{return **p}\n",
+      "body": "var x=42\nlet p=&mut x\nreturn read(&p)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 0,
+                "depth": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-exclusive-effect",
+      "pre": "fn set(dst:&mut &mut int,src:&mut int)->unit\nensures true\n{*dst=src\nreturn}\n",
+      "body": "var x=1\nvar y=40\nvar p=&mut x\nset(&mut p,&mut y)\n*p+=2\nreturn y",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [],
+        "effects": [
+          {
+            "parameter": 0,
+            "depth": 1,
+            "origins": [
+              {
+                "parameter": 1,
+                "depth": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "region-shared-end-nll",
+      "pre": "fn id(p:&int)->&int\nensures true\n{return p}\n",
+      "body": "var x=21\nlet p=id(&x)\nlet n=*p\nx=21\nreturn n+x",
+      "value": 42
+    },
+    {
+      "name": "region-local-slot-alias-return",
+      "pre": "fn id(p:&int)->&int\nensures true\n{let local=p\nreturn local}\n",
+      "body": "let x=42\nreturn *id(&x)",
+      "value": 42
+    },
+    {
+      "name": "region-loop-result",
+      "pre": "fn select(a:&int,b:&int,c:bool)->&int\nensures true\n{var p=a\nwhile(c){p=b\nbreak}\nreturn p}\n",
+      "body": "let a=42\nlet b=7\nreturn *select(&a,&b,false)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 0,
+            "depth": 1
+          },
+          {
+            "parameter": 1,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-call-single-evaluation",
+      "pre": "fn id(p:&int,n:int)->&int\nensures true\n{return p}\n",
+      "body": "var n=0\nlet x=42\nlet p=id(&x,n++)\nreturn *p+n-1",
+      "value": 42
+    },
+    {
+      "name": "region-intrinsic-name-shadow",
+      "pre": "fn bufferSize(p:&int)->int\nensures true\n{return *p+1}\n",
+      "body": "let x=41\nreturn bufferSize(&x)",
+      "value": 42
+    },
+    {
+      "name": "region-escaped-parameter",
+      "pre": "fn id(@return:&int)->&int\nensures true\n{return @return}\n",
+      "body": "let x=42\nreturn *id(&x)",
+      "value": 42
+    },
+    {
+      "name": "region-parameter-boundary",
+      "pre": "fn last(p0:&int,p1:&int,p2:&int,p3:&int,p4:&int,p5:&int,p6:&int,p7:&int,p8:&int,p9:&int,p10:&int,p11:&int,p12:&int,p13:&int,p14:&int,p15:&int,p16:&int,p17:&int,p18:&int,p19:&int,p20:&int,p21:&int,p22:&int,p23:&int,p24:&int,p25:&int,p26:&int,p27:&int,p28:&int,p29:&int,p30:&int,p31:&int,p32:&int,p33:&int,p34:&int,p35:&int,p36:&int,p37:&int,p38:&int,p39:&int,p40:&int,p41:&int,p42:&int,p43:&int,p44:&int,p45:&int,p46:&int,p47:&int,p48:&int,p49:&int,p50:&int,p51:&int,p52:&int,p53:&int,p54:&int,p55:&int,p56:&int,p57:&int,p58:&int,p59:&int,p60:&int,p61:&int,p62:&int,p63:&int,p64:&int,p65:&int,p66:&int,p67:&int,p68:&int,p69:&int,p70:&int,p71:&int,p72:&int,p73:&int,p74:&int,p75:&int,p76:&int,p77:&int,p78:&int,p79:&int,p80:&int,p81:&int,p82:&int,p83:&int,p84:&int,p85:&int,p86:&int,p87:&int,p88:&int,p89:&int,p90:&int,p91:&int,p92:&int,p93:&int,p94:&int,p95:&int,p96:&int,p97:&int,p98:&int,p99:&int,p100:&int,p101:&int,p102:&int,p103:&int,p104:&int,p105:&int,p106:&int,p107:&int,p108:&int,p109:&int,p110:&int,p111:&int,p112:&int,p113:&int,p114:&int,p115:&int,p116:&int,p117:&int,p118:&int,p119:&int,p120:&int,p121:&int,p122:&int,p123:&int,p124:&int,p125:&int,p126:&int,p127:&int)->&int\nensures true\n{return p127}\n",
+      "body": "let x=42\nreturn *last(&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x,&x)",
+      "value": 42,
+      "expectedFirstSummary": {
+        "returned": [
+          {
+            "parameter": 127,
+            "depth": 1
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "name": "region-nested-depth",
+      "pre": "fn deep(p:&&&&&&&&&&&&&&&&int)->int\nensures true\n{return ****************p}\n",
+      "body": "let x=42\nlet p0=&x\nlet p1=&p0\nlet p2=&p1\nlet p3=&p2\nlet p4=&p3\nlet p5=&p4\nlet p6=&p5\nlet p7=&p6\nlet p8=&p7\nlet p9=&p8\nlet p10=&p9\nlet p11=&p10\nlet p12=&p11\nlet p13=&p12\nlet p14=&p13\nreturn deep(&p14)",
+      "value": 42
+    },
+    {
+      "name": "region-local-store-restored",
+      "pre": "fn safe(dst:&mut &int,src:&int)->unit\nensures true\n{{let x=1\n*dst=&x\n*dst=src}\nreturn}\n",
+      "body": "let x=0\nlet y=42\nvar p=&x\nsafe(&mut p,&y)\nreturn *p",
+      "value": 42
+    }
+  ],
+  "negative": [
+    {
+      "name": "region-local-return",
+      "pre": "fn bad()->&int\nensures true\n{let x=1\n@@return &x}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &x",
+          "shift": 7,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-value-parameter-return",
+      "pre": "fn bad(x:int)->&int\nensures true\n{@@return &x}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(x:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &x",
+          "shift": 7,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-ref-parameter-slot-return",
+      "pre": "fn bad(p:&int)->&&int\nensures true\n{@@return &p}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &p",
+          "shift": 7,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-owned-parameter-return",
+      "pre": "fn bad(b:owned buffer)->&owned buffer\nensures true\n{@@return &b}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(b:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &b",
+          "shift": 7,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-external-local-store",
+      "pre": "fn bad(dst:&mut &int)->unit\nensures true\n{let x=1\n*dst=&x\n@@return}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "*dst=&x",
+          "shift": 5,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-call-result-outlives",
+      "pre": "fn id(p:&int)->&int\nensures true\n{return p}\n",
+      "body": "var p:&int\n{let x=1\np=id(&x)@@}\nreturn *p",
+      "code": "AI3116",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "p=id(",
+          "shift": 2,
+          "length": 2
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-call-effect-outlives",
+      "pre": "fn set(dst:&mut &int,src:&int)->unit\nensures true\n{*dst=src\nreturn}\n",
+      "body": "let a=0\nvar p=&a\n{let x=1\nset(&mut p,&x)@@}\nreturn *p",
+      "code": "AI3116",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "set(&mut p",
+          "shift": 0,
+          "length": 3
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-call-result-conflict",
+      "pre": "fn id(p:&int)->&int\nensures true\n{return p}\n",
+      "body": "var x=1\nlet p=id(&x)\nx@@=2\nreturn *p",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "p=id(",
+          "shift": 2,
+          "length": 2
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-call-frozen-parent",
+      "pre": "fn write(p:&mut int)->unit\nensures true\n{*p=2\nreturn}\n",
+      "body": "var x=1\nlet p=&mut x\nlet q=&*p\nwrite(@@&mut *p)\nreturn *q",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "q=&*p",
+          "shift": 2,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-exclusive-moved-call",
+      "pre": "fn write(p:&mut int)->unit\nensures true\n{*p=2\nreturn}\n",
+      "body": "var x=1\nlet p=&mut x\nwrite(p)\nreturn *@@p",
+      "code": "AI3102",
+      "length": 1,
+      "crlf": true
+    },
+    {
+      "name": "region-call-alias-arguments",
+      "pre": "fn write(a:&mut int,b:&int)->unit\nensures true\n{*a=*b\nreturn}\n",
+      "body": "var x=1\nwrite(&mut x,@@&x)\nreturn x",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "write(&mut x",
+          "shift": 6,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-escape-through-call",
+      "pre": "fn id(p:&int)->&int\nensures true\n{return p}\nfn bad()->&int\nensures true\n{let x=1\n@@return id(&x)}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return id(",
+          "shift": 7,
+          "length": 2
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-nested-local-return",
+      "pre": "fn bad(p:&&int)->&&int\nensures true\n{let q=*p\n@@return &q}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let q=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return &q",
+          "shift": 7,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-callee-store-child-then-return-parent",
+      "pre": "fn bad(p:&mut int,dst:&mut &mut int)->&mut int\nensures true\n{*dst=&mut *p\n@@return p}\n",
+      "body": "return 0",
+      "code": "AI3114",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "bad(p:",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "*dst=&mut *p",
+          "shift": 5,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-callee-local-store-end",
+      "pre": "fn bad(dst:&mut &int)->unit\nensures true\n{{let x=1\n*dst=&x}\n@@return}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "*dst=&x",
+          "shift": 5,
+          "length": 1
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-call-effect-keeps-new-loan",
+      "pre": "fn set(dst:&mut &int,src:&int)->unit\nensures true\n{*dst=src\nreturn}\n",
+      "body": "let a=0\nvar x=1\nvar p=&a\nset(&mut p,&x)\nx@@=2\nreturn *p",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "set(&mut p",
+          "shift": 0,
+          "length": 3
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-call-result-owner-move",
+      "pre": "fn view(p:&owned buffer)->&owned buffer\nensures true\n{return p}\n",
+      "body": "let b=buffer(1)\nlet p=view(&b)\nlet n=bufferLength(@@b)\nreturn bufferSize(p)",
+      "code": "AI3114",
+      "length": 1,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let b=",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "p=view(",
+          "shift": 2,
+          "length": 4
+        }
+      ],
+      "crlf": true
+    },
+    {
+      "name": "region-source-nesting-limit",
+      "pre": "fn deep(p:&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@@int)->unit\nensures true\n{return}\n",
+      "body": "return 0",
+      "code": "AI3100",
+      "length": 3,
+      "crlf": true
+    }
+  ]
+}

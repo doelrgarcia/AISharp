@@ -1,0 +1,1013 @@
+{
+  "status": "WIP active payload outcomes INCOMPLETE",
+  "cases": [
+    {
+      "name": "borrow-shared-owner",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nlet n=match &x {Data(b)=>bufferSize(b),Empty=>0}\nreturn match x {Data(b)=>bufferLength(b)+n-42,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-mut-owner",
+      "pre": "type E=Data(owned buffer)|Empty\nfn update(b:&mut owned buffer)->int ensures true {bufferWrite(b,0,42)\nreturn bufferPeek(b,0)}\n",
+      "body": "var x:E=Data(buffer(1))\nlet n=match &mut x {Data(b)=>update(b),Empty=>0}\nreturn match x {Data(b)=>bufferGet(b,0)+n-42,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-mut-reuse",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(1)\nlet r=&mut x\nlet n=match r {Data(p)=>(*p=42),Empty=>0}\nreturn match r {Data(p)=>*p+n-42,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-input",
+      "pre": "type E=Data(int)|Empty\nfn get(x:&E)->int ensures true {return match x {Data(p)=>*p,Empty=>0}}\n",
+      "body": "let x:E=Data(42)\nreturn get(&x)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-return",
+      "pre": "type E=Data(int)|Empty\nfn get(x:&E,fallback:&int)->&int ensures true {return match x {Data(p)=>p,Empty=>fallback}}\n",
+      "body": "let x:E=Data(42)\nlet other=0\nreturn *get(&x,&other)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-none-reference",
+      "pre": "type E=Some(&int)|None\n",
+      "body": "let x:E=None\nreturn match &x {Some(p)=>**p,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-none-reference-call",
+      "pre": "type E=Some(&int)|None\nfn get(x:&E)->int ensures true {return match x {Some(p)=>**p,None=>42}}\n",
+      "body": "let x:E=None\nreturn get(&x)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-guard",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match &x {Data(b) when bufferSize(b)>0=>bufferSize(b),Data(_)=>0,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-pure-union",
+      "pre": "type E=A|B\n",
+      "body": "let x:E=A\nreturn match &x {A=>42,B=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-two-shared",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nlet other=0\nlet a=match &x {Data(p)=>p,Empty=>&other}\nlet b=match &x {Data(p)=>p,Empty=>&other}\nreturn *a+*b-42",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-disjoint-exclusive",
+      "pre": "type E=Data(int,int)|Empty\nfn sum(a:&mut int,b:&mut int)->int ensures true {*a+=20\n*b+=22\nreturn *a+*b}\n",
+      "body": "var x:E=Data(0,0)\nreturn match &mut x {Data(a,b)=>sum(a,b),Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-none-return",
+      "pre": "type E=Some(&int)|None\nfn get(x:&E,d:&int)->&int ensures true {return match x {Some(p)=>*p,None=>d}}\n",
+      "body": "let x:E=None\nlet d=42\nreturn *get(&x,&d)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-none-carrier-return",
+      "pre": "type Option<T>=Some(T)|None\nfn get(x:&Option<&int>)->Option<&int> ensures true {return match x {Some(p)=>Some(*p),None=>None}}\n",
+      "body": "let x:Option<&int>=None\nreturn match get(&x) {Some(p)=>*p,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-single-evaluation",
+      "pre": "type E=Data(int)|Empty\nfn select(n:&mut int,x:&E)->&E ensures true {*n+=1\nreturn x}\n",
+      "body": "let x:E=Data(42)\nvar n=0\nlet v=match select(&mut n,&x) {Data(p)=>*p,Empty=>0}\nreturn v+n-1",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-direct-clear",
+      "pre": "type E=Some(&int)|None\n",
+      "body": "let n=1\nvar x:E=Some(&n)\nlet p=&mut x\n*p=None\nreturn match p {Some(r)=>**r,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-call-clear",
+      "pre": "type E=Some(&int)|None\nfn clear(x:&mut E)->unit ensures true {*x=None}\n",
+      "body": "let n=1\nvar x:E=Some(&n)\nclear(&mut x)\nreturn match &x {Some(r)=>**r,None=>42}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-parameter-clear",
+      "pre": "type E=Some(&int)|None\nfn clear(x:&mut E)->int ensures true {*x=None\nreturn match x {Some(r)=>**r,None=>42}}\n",
+      "body": "let n=1\nvar x:E=Some(&n)\nreturn clear(&mut x)",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-retarget-pointer",
+      "pre": "type E=Some(&int)|None\nfn switch(p:&mut &E,q:&E)->unit ensures true {*p=q}\n",
+      "body": "let n=42\nlet a:E=None\nlet b:E=Some(&n)\nvar p:&E=&a\nswitch(&mut p,&b)\nreturn match p {Some(r)=>**r,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-shared-nested-mut-ref",
+      "pre": "type Inner=Data(int)|Empty\ntype Outer=Some(&mut Inner)|None\n",
+      "body": "var inner:Inner=Data(7)\nlet outer:Outer=Some(&mut inner)\nreturn match &outer {Some(p)=>match *p {Data(q)=>*q,Empty=>0},None=>0}",
+      "value": 7,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-checked-shared-nested-mut-ref",
+      "pre": "type Inner=Data(int)|Empty\ntype Outer=Some(&mut Inner)|None\n",
+      "body": "var inner:Inner=Data(7)\nlet outer:Outer=Some(&mut inner)\nreturn match &outer {Some(p)=>match checked(*p) {Data(q)=>*q,Empty=>0},None=>0}",
+      "value": 7,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-temporary-reference-field",
+      "pre": "type Inner=Data(int)|Empty\ntype Holder={view:&Inner,other:owned buffer}\nfn make(x:&Inner)->Holder ensures true {return Holder(x,buffer(1))}\n",
+      "body": "let inner:Inner=Data(7)\nreturn match make(&inner).view {Data(p)=>*p,Empty=>0}",
+      "value": 7,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "temporary-reference-read",
+      "pre": "type H={view:&int,other:owned buffer}\nfn make(x:&int)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "let n=42\nreturn *make(&n).view",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "temporary-reference-write",
+      "pre": "type H={view:&mut int,other:owned buffer}\nfn make(x:&mut int)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "var n=0\n*make(&mut n).view=42\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "temporary-reference-buffer-read",
+      "pre": "type H={view:&owned buffer,other:owned buffer}\nfn make(x:&owned buffer)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "let b=buffer(42)\nreturn bufferSize(make(&b).view)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 2,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "temporary-reference-buffer-write",
+      "pre": "type H={view:&mut owned buffer,other:owned buffer}\nfn make(x:&mut owned buffer)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "var b=buffer(1)\nbufferWrite(make(&mut b).view,0,42)\nreturn bufferPeek(&b,0)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 2,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "temporary-reference-nested-field",
+      "pre": "type Leaf={view:&int,b:owned buffer}\ntype H={leaf:Leaf,b:owned buffer}\nfn make(x:&int)->H ensures true {return H(Leaf(x,buffer(2)),buffer(3))}\n",
+      "body": "let n=42\nreturn *make(&n).leaf.view",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 2,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "temporary-reference-checked-bool",
+      "pre": "type H={view:&bool,b:owned buffer}\nfn make(x:&bool)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "let b=true\nreturn *checked(make(&b).view)",
+      "value": true,
+      "error": null,
+      "type": "bool"
+    },
+    {
+      "name": "temporary-reference-forward-exclusive",
+      "pre": "type H={view:&mut int,b:owned buffer}\nfn make(x:&mut int)->H ensures true {return H(x,buffer(1))}\nfn relay(x:&mut int)->&mut int ensures true {return make(x).view}\n",
+      "body": "var n=0\n*relay(&mut n)=42\nreturn n",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "temporary-reference-evaluated-once",
+      "pre": "type H={view:&int,b:owned buffer}\nfn make(x:&int,c:&mut int)->H ensures true {*c+=1\nreturn H(x,buffer(1))}\n",
+      "body": "let n=40\nvar count=1\nlet r=*make(&n,&mut count).view\nreturn r+count",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-pattern-shared",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nreturn match &x {Data(@_)=>*@_,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-pattern-exclusive",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(0)\nreturn match &mut x {Data(@_)=>(*@_=42),Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "escaped-pattern-nested-binding",
+      "pre": "type I=Data(int)|Empty\ntype O=Some(I)|None\n",
+      "body": "let x:O=Some(Data(42))\nreturn match &x {Some(p)=>match p {Data(@_)=>*@_,Empty=>0},None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int"
+    },
+    {
+      "name": "borrow-result-owner",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nlet y=match &x {Data(p)=>buffer(*p),Empty=>buffer(0)}\nreturn bufferLength(y)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1
+    },
+    {
+      "name": "borrow-result-product",
+      "pre": "type E=Data(int)|Empty\ntype P={view:&int,owner:owned buffer}\n",
+      "body": "let x:E=Data(41)\nlet n=0\nlet y=match &x {Data(p)=>P(p,buffer(1)),Empty=>P(&n,buffer(1))}\nreturn *y.view+bufferLength(y.owner)",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1
+    },
+    {
+      "name": "borrow-result-payload-region",
+      "pre": "type E=Data(int)|Empty\ntype Out<T>=Some(T)|None\nfn select(x:&E,d:&int)->Out<&int> ensures true {return match x {Data(p)=>Some(p),Empty=>Some(d)}}\n",
+      "body": "let x:E=Data(42)\nlet n=0\nreturn match select(&x,&n) {Some(p)=>*p,None=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-result-exclusive",
+      "pre": "type E=Data(int)|Empty\nfn get(x:&mut E,d:&mut int)->&mut int ensures true {return match x {Data(p)=>p,Empty=>d}}\n",
+      "body": "var x:E=Data(0)\nvar n=0\n*get(&mut x,&mut n)=42\nreturn match x {Data(v)=>v,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-result-unit",
+      "pre": "type E=Data(unit)|Empty\nfn nothing()->unit ensures true {}\n",
+      "body": "let x:E=Data(nothing())\nmatch &x {Data(p)=>p,Empty=>nothing()}\nreturn 42",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-result-bool",
+      "pre": "type E=Data(bool)|Empty\n",
+      "body": "let x:E=Data(true)\nreturn match &x {Data(p)=>*p,Empty=>false}",
+      "value": true,
+      "error": null,
+      "type": "bool",
+      "owners": 0
+    },
+    {
+      "name": "borrow-result-nullary",
+      "pre": "type E=Data(int)|Empty\ntype F=A|B\n",
+      "body": "let x:E=Data(42)\nlet y=match &x {Data(p) when *p==42=>A,Data(_)=>B,Empty=>B}\nreturn match y {A=>42,B=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-loop-last-use",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(0)\nvar i=0\nwhile(i<3){let n=match &mut x {Data(p)=>(*p+=14),Empty=>0}\ni+=1}\nreturn match x {Data(v)=>v,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-if-condition",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(42)\nif(match &x {Data(p)=>*p==42,Empty=>false}){return 42}\nreturn 0",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-wildcard-guard-fallthrough",
+      "pre": "type E=Data(int)|Empty\nfn bump(n:&mut int)->bool ensures true {*n+=1\nreturn false}\n",
+      "body": "let x:E=Data(42)\nvar n=0\nlet v=match &x {_ when bump(&mut n)=>0,Data(p)=>*p,Empty=>0}\nreturn v+n-1",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-guard-ordered",
+      "pre": "type E=Data(int)|Empty\nfn step(n:&mut int)->int ensures true {*n+=1\nreturn *n}\n",
+      "body": "let x:E=Data(40)\nvar n=0\nlet v=match &x {Data(p) when step(&mut n)==2=>0,Data(p) when step(&mut n)==2=>*p,Data(_)=>0,Empty=>0}\nreturn v+n",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-guard-unrelated-parameter",
+      "pre": "type E=Data(int)|Empty\nfn step(n:&mut int)->bool ensures true {*n+=1\nreturn false}\nfn choose(x:&E,n:&mut int)->int ensures true {return match x {Data(p) when step(n)=>0,Data(p)=>*p,Empty=>0}}\n",
+      "body": "let x:E=Data(42)\nvar n=0\nlet v=choose(&x,&mut n)\nreturn v+n-1",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    },
+    {
+      "name": "borrow-loop-owner-control",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "var i=0\nvar total=0\nwhile(i<3){let x:E=Data(buffer(14))\ni+=1\nif(i==2){total+=match &x {Data(p)=>bufferSize(p),Empty=>0}\ncontinue}\ntotal+=match &x {Data(p)=>bufferSize(p),Empty=>0}\nif(i==3){break}}\nreturn total",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 3,
+      "order": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "borrow-owner-caller",
+      "pre": "type E=Data(owned buffer)|Empty\nfn size(x:&E)->int ensures true {return match x {Data(p)=>bufferSize(p),Empty=>0}}\n",
+      "body": "let x:E=Data(buffer(42))\nlet n=size(&x)\nreturn match x {Data(p)=>bufferLength(p)+n-42,Empty=>0}",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 1
+    },
+    {
+      "name": "borrow-owner-result-empty",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Empty\nlet y=match &x {Data(p)=>buffer(*p),Empty=>buffer(0)}\nreturn bufferLength(y)",
+      "value": 0,
+      "error": null,
+      "type": "int",
+      "owners": 1,
+      "allocationCount": 0
+    },
+    {
+      "name": "borrow-expression-contexts",
+      "pre": "type E=Data(int)|Empty\nfn select(n:&mut int,x:&E)->&E ensures true {*n+=1\nreturn x}\nfn identity(x:int)->int ensures true {return x}\n",
+      "body": "let x:E=Data(40)\nvar count=0\nlet skipped=false && (match select(&mut count,&x) {Data(p)=>*p==40,Empty=>false})\nlet taken=true && (match select(&mut count,&x) {Data(p)=>*p==40,Empty=>false})\nvar result=0\nresult=identity(match &x {Data(p)=>*p,Empty=>0})+count+1\nreturn result",
+      "value": 42,
+      "error": null,
+      "type": "int",
+      "owners": 0
+    }
+  ],
+  "negative": [
+    {
+      "name": "borrow-shared-write",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(0)\nreturn match &x {Data(p)=>(@@*p=42),Empty=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Data(p)",
+          "shift": 5,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p=42)",
+          "shift": 2,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-overwrite-live",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(42)\nlet other=0\nlet r=match &x {Data(p)=>p,Empty=>&other}\nx@@=Empty\nreturn *r",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x:E",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Data(p)=>p",
+          "shift": 5,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-exclusive-alias",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(42)\nvar other=0\nlet a=match &mut x {Data(p)=>p,Empty=>&mut other}\nlet b=match @@&mut x {Data(p)=>p,Empty=>&mut other}\nreturn *a+*b-42",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x:E",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Data(p)=>p",
+          "shift": 5,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-move-owner-live",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nlet other=buffer(0)\nlet r=match &x {Data(p)=>p,Empty=>&other}\nlet moved=@@x\nreturn bufferSize(r)",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x:E",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Data(p)=>p",
+          "shift": 5,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-local-escape",
+      "pre": "type E=Data(int)|Empty\nfn leak()->&int ensures true {let x:E=Data(42)\nlet other=0\n@@return match &x {Data(p)=>p,Empty=>&other}}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let x:E",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "Data(p)=>p",
+          "shift": 5,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-guard-write",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "var x:E=Data(42)\nreturn match &mut x {Data(p) when (*@@p=1)==1=>*p,Data(p)=>*p,Empty=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Data(p) when",
+          "shift": 5,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*p=1)",
+          "shift": 2,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-tag-change-escape",
+      "pre": "type E=Data(int)|Empty\nfn clear(x:&mut E)->unit ensures true {*x=Empty}\nfn bad(ok:&int)->&int ensures true {var x:E=Data(1)\nlet local=42\nclear(&mut x)\n@@return match &x {Data(_)=>ok,Empty=>&local}}\n",
+      "body": "let n=0\nreturn *bad(&n)",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let local=42",
+          "shift": 4,
+          "length": 5
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "&local",
+          "shift": 0,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-move-out",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match &x {Data(p)=>bufferLength(@@*p),Empty=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Data(p)",
+          "shift": 5,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "*p",
+          "shift": 1,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "borrow-shared-nested-mut-write",
+      "pre": "type Inner=Data(int)|Empty\ntype Outer=Some(&mut Inner)|None\n",
+      "body": "var inner:Inner=Data(7)\nlet outer:Outer=Some(&mut inner)\nreturn match &outer {Some(p)=>match *p {Data(q)=>(@@*q=9),Empty=>0},None=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Data(q)",
+          "shift": 5,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "*q=9",
+          "shift": 1,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "temporary-reference-local-escape",
+      "pre": "type H={view:&int,b:owned buffer}\nfn make(x:&int)->H ensures true {return H(x,buffer(1))}\nfn bad()->&int ensures true {let n=42\n@@return make(&n).view}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "let n=42",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "return make(&n)",
+          "shift": 7,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "temporary-reference-live-alias",
+      "pre": "type H={view:&mut int,b:owned buffer}\nfn make(x:&mut int)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "var n=0\nlet p=make(&mut n).view\nn@@=1\nreturn *p",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var n=0",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "let p=make",
+          "shift": 6,
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "temporary-reference-shared-write",
+      "pre": "type H={view:&int,b:owned buffer}\nfn make(x:&int)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "let n=0\n@@*make(&n).view=42\nreturn n",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "borrow-origin",
+          "needle": "make(&n).view",
+          "shift": 5,
+          "length": 1
+        },
+        {
+          "kind": "storage-declaration",
+          "needle": "let n=0",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "storage-use",
+          "needle": "make(&n).view",
+          "shift": 6,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "temporary-reference-shared-nested-write",
+      "pre": "type H={view:& &mut int,b:owned buffer}\nfn make(x:& &mut int)->H ensures true {return H(x,buffer(1))}\n",
+      "body": "var n=0\nlet p=&mut n\n*@@*make(&p).view=42\nreturn n",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "borrow-origin",
+          "needle": "make(&p).view",
+          "shift": 5,
+          "length": 1
+        },
+        {
+          "kind": "reference-declaration",
+          "needle": "let p=&mut n",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "reference-use",
+          "needle": "make(&p).view",
+          "shift": 6,
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "escaped-pattern-shared-write",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(0)\nreturn match &x {Data(@_)=>(@@*@_=42),Empty=>0}",
+      "code": "AI3115",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "reference-declaration",
+          "needle": "Data(@_)",
+          "shift": 5,
+          "length": 2
+        },
+        {
+          "kind": "reference-use",
+          "needle": "(*@_=42)",
+          "shift": 2,
+          "length": 2
+        }
+      ]
+    },
+    {
+      "name": "escaped-pattern-active-shadow",
+      "pre": "type I=Data(int)|Empty\ntype O=Some(I)|None\n",
+      "body": "let x:O=Some(Data(42))\nreturn match &x {Some(@_)=>match @_ {Data(@@@_)=>*@_,Empty=>0},None=>0}",
+      "code": "AI3106",
+      "length": 2,
+      "crlf": true,
+      "expectedRelated": []
+    },
+    {
+      "name": "borrow-guard-outer-alias",
+      "pre": "type E=Data(int)|Empty\nfn edit(x:&mut E)->bool ensures true {*x=Empty\nreturn false}\n",
+      "body": "var x:E=Data(42)\nreturn match &mut x {_ when edit(@@&mut x)=>0,Data(p)=>*p,Empty=>0}",
+      "code": "AI3114",
+      "length": 1,
+      "crlf": true,
+      "expectedRelated": [
+        {
+          "kind": "storage-declaration",
+          "needle": "var x:E",
+          "shift": 4,
+          "length": 1
+        },
+        {
+          "kind": "loan-origin",
+          "needle": "match &mut x",
+          "shift": 0,
+          "length": 5
+        }
+      ]
+    }
+  ],
+  "memoryCases": [
+    {
+      "name": "zero-owner",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(0))\nreturn match x {Data(b)=>bufferLength(b)+42,Empty=>0}",
+      "allocationCount": 0,
+      "owners": 1,
+      "order": [
+        1
+      ]
+    },
+    {
+      "name": "second-field-first",
+      "pre": "type E=Data(owned buffer,owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(3),buffer(42))\nreturn match x {Data(_,b)=>bufferLength(b),Empty=>0}",
+      "allocationCount": 2,
+      "owners": 2,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "replace-active-empty-active",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "var x:E=Data(buffer(3))\nx=Empty\nx=Data(buffer(42))\nreturn match x {Data(b)=>bufferLength(b),Empty=>0}",
+      "allocationCount": 2,
+      "owners": 2,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "empty-after-owner",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "var x:E=Data(buffer(3))\nx=Empty\nreturn match x {Data(_)=>0,Empty=>42}",
+      "allocationCount": 1,
+      "owners": 1,
+      "order": [
+        1
+      ]
+    },
+    {
+      "name": "return-owner",
+      "pre": "type E=Data(owned buffer)|Empty\nfn relay(x:E)->E ensures true {return x}\n",
+      "body": "let x:E=relay(Data(buffer(42)))\nreturn match x {Data(b)=>bufferLength(b),Empty=>0}",
+      "allocationCount": 1,
+      "owners": 1,
+      "order": [
+        1
+      ]
+    },
+    {
+      "name": "partial-constructor-terminal-fault",
+      "pre": "type E=Data(owned buffer,owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(3),buffer(4))\nreturn 42",
+      "failAt": 2,
+      "error": "System.OutOfMemoryException",
+      "memory": {
+        "attempts": 2,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 1,
+        "liveBytes": 3,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "guard-terminal-fault",
+      "pre": "type E=Data(owned buffer)|Empty\nfn zero()->int ensures true {return 0}\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match x {Data(b) when 1/zero()==0=>0,Data(b)=>bufferLength(b),Empty=>0}",
+      "error": "System.DivideByZeroException",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 0,
+        "liveBytes": 42,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "borrow-minimum",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(-2147483648)\nreturn match &x {Data(p)=>*p,Empty=>17}",
+      "value": -2147483648
+    },
+    {
+      "name": "borrow-maximum",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(2147483647)\nreturn match &x {Data(p)=>*p,Empty=>-17}",
+      "value": 2147483647
+    },
+    {
+      "name": "borrow-negative-guard",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(-1)\nreturn match &x {Data(p) when *p<0=>*p,Data(p)=>*p+1,Empty=>99}",
+      "value": -1
+    },
+    {
+      "name": "borrow-zero-guard",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Data(0)\nreturn match &x {Data(p) when *p<0=>-5,Data(p)=>*p,Empty=>99}",
+      "value": 0
+    },
+    {
+      "name": "borrow-empty-distinction",
+      "pre": "type E=Data(int)|Empty\n",
+      "body": "let x:E=Empty\nreturn match &x {Data(p)=>*p,Empty=>19}",
+      "value": 19
+    },
+    {
+      "name": "borrow-exclusive-boundary-values",
+      "pre": "type E=Data(int,int)|Empty\n",
+      "body": "var x:E=Data(3,7)\nlet n=match &mut x {Data(a,b)=>(*a=9)+(*b=11),Empty=>0}\nreturn match &x {Data(a,b)=>*a*100+*b+n,Empty=>0}",
+      "value": 931
+    },
+    {
+      "name": "borrow-owner-boundary-value",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(3))\nlet n=match &x {Data(p)=>bufferSize(p),Empty=>77}\nreturn match x {Data(p)=>bufferLength(p)*10+n,Empty=>88}",
+      "value": 33,
+      "allocationCount": 1,
+      "owners": 1,
+      "order": [
+        1
+      ]
+    },
+    {
+      "name": "borrow-boolean-true",
+      "pre": "type E=Data(bool)|Empty\nfn choose(b:bool)->int ensures true {if(b){return 7}\nreturn -7}\n",
+      "body": "let x:E=Data(true)\nreturn match &x {Data(p)=>choose(*p),Empty=>0}",
+      "value": 7
+    },
+    {
+      "name": "borrow-boolean-false",
+      "pre": "type E=Data(bool)|Empty\nfn choose(b:bool)->int ensures true {if(b){return 7}\nreturn -7}\n",
+      "body": "let x:E=Data(false)\nreturn match &x {Data(p)=>choose(*p),Empty=>0}",
+      "value": -7
+    },
+    {
+      "name": "borrow-empty-product",
+      "pre": "type Cell={}\ntype E=Data(Cell)|Empty\nfn read(x:&Cell)->int ensures true {return 23}\n",
+      "body": "let x:E=Data(Cell())\nreturn match &x {Data(p)=>read(p),Empty=>0}",
+      "value": 23
+    },
+    {
+      "name": "borrow-product-owner",
+      "pre": "type P={b:owned buffer,n:int}\ntype E=Data(P)|Empty\nfn read(p:&P)->int ensures true {return bufferSize(&(*p).b)+(*p).n}\n",
+      "body": "let x:E=Data(P(buffer(2),5))\nreturn match &x {Data(p)=>read(p),Empty=>0}",
+      "value": 7,
+      "allocationCount": 1,
+      "owners": 1,
+      "order": [
+        1
+      ]
+    },
+    {
+      "name": "borrow-nested-exclusive",
+      "pre": "type Inner=Data(int)|Empty\ntype Outer=Some(Inner)|None\n",
+      "body": "var x:Outer=Some(Data(5))\nreturn match &mut x {Some(p)=>match p {Data(q)=>(*q+=2),Empty=>11},None=>13}",
+      "value": 7
+    },
+    {
+      "name": "borrow-erased-unit",
+      "pre": "type E=Data(unit)|Empty\nfn nothing()->unit ensures true {}\n",
+      "body": "let x:E=Data(nothing())\nmatch &x {Data(u)=>u,Empty=>nothing()}\nreturn 31",
+      "value": 31
+    },
+    {
+      "name": "borrow-mutable-ref-payload-read",
+      "pre": "type E=Data(&mut int)|Empty\n",
+      "body": "var n=7\nlet x:E=Data(&mut n)\nreturn match &x {Data(p)=>**p,Empty=>0}",
+      "value": 7
+    },
+    {
+      "name": "borrow-mutable-ref-payload-write",
+      "pre": "type E=Data(&mut int)|Empty\n",
+      "body": "var n=0\nvar x:E=Data(&mut n)\nmatch &mut x {Data(p)=>(**p=9),Empty=>0}\nreturn match x {Data(p)=>*p,Empty=>0}",
+      "value": 9
+    },
+    {
+      "name": "borrow-boolean-result-true",
+      "pre": "type E=Data(bool)|Empty\n",
+      "body": "let x:E=Data(true)\nreturn match &x {Data(p)=>*p,Empty=>false}",
+      "value": true,
+      "type": "bool"
+    },
+    {
+      "name": "borrow-boolean-result-false",
+      "pre": "type E=Data(bool)|Empty\n",
+      "body": "let x:E=Data(false)\nreturn match &x {Data(p)=>*p,Empty=>true}",
+      "value": false,
+      "type": "bool"
+    },
+    {
+      "name": "borrowed-guard-terminal-fault",
+      "pre": "type E=Data(owned buffer)|Empty\nfn zero()->int ensures true {return 0}\n",
+      "body": "let x:E=Data(buffer(42))\nreturn match &x {Data(b) when bufferSize(b)/zero()>0=>0,Data(b)=>bufferSize(b),Empty=>0}",
+      "error": "System.DivideByZeroException",
+      "memory": {
+        "attempts": 1,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 0,
+        "liveBytes": 42,
+        "dropOrder": []
+      }
+    },
+    {
+      "name": "borrowed-body-allocation-fault",
+      "pre": "type E=Data(owned buffer)|Empty\n",
+      "body": "let x:E=Data(buffer(3))\nreturn match &x {Data(p)=>bufferLength(buffer(bufferSize(p))),Empty=>0}",
+      "failAt": 2,
+      "error": "System.OutOfMemoryException",
+      "memory": {
+        "attempts": 2,
+        "allocations": 1,
+        "releases": 0,
+        "ownersCreated": 1,
+        "drops": 0,
+        "allocationFailures": 1,
+        "liveBytes": 3,
+        "dropOrder": []
+      }
+    }
+  ]
+}

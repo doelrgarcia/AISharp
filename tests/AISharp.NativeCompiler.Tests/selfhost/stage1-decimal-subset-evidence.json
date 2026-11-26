@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "aisharp.selfhost-stage1/39",
+  "milestone": "decimal-keyword-subset",
+  "codegenSourceSha256": "bff35baf14d13342e5c97682eec1de184c169a43be416cc76bebf7c1a12dd71b",
+  "covered": [
+    "literal-value",
+    "literal-scale-equality",
+    "constant-folded-add",
+    "constant-folded-mul",
+    "constant-folded-div",
+    "runtime-add",
+    "runtime-sub",
+    "runtime-mul",
+    "runtime-div",
+    "division-exact",
+    "min-max",
+    "max-mantissa",
+    "min-mantissa",
+    "sizeof",
+    "unary-neg",
+    "comparison-relational",
+    "convert-int",
+    "convert-truncate",
+    "convert-long",
+    "convert-from-long",
+    "convert-double",
+    "convert-float",
+    "to-double",
+    "to-float",
+    "product-field",
+    "function-parameter",
+    "function-return",
+    "zero-literal-scale"
+  ],
+  "checks": [
+    {
+      "host": "32",
+      "fixtureCases": 28,
+      "ok": true
+    },
+    {
+      "host": "64",
+      "fixtureCases": 28,
+      "ok": true
+    },
+    {
+      "host": "32d",
+      "fixtureCases": 28,
+      "ok": true
+    },
+    {
+      "host": "64d",
+      "fixtureCases": 28,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {"name":"minimum","body":"return -2_147_483_648","value":-2147483648},
+    {"name":"maximum","body":"return 0x_7fff__ffff","value":2147483647},
+    {"name":"decimal-separators","body":"return 4__2","value":42},
+    {"name":"hexadecimal-separators","body":"return 0X__2_a","value":42},
+    {"name":"binary-separators","body":"return 0B__10_1010","value":42},
+    {"name":"typed-sum","body":"var n:i32=0\nfor(var i:int=1;i<=5;i++){n+=i}\nreturn n","value":15},
+    {"name":"checked-fault","body":"var n:i32=2147483647\nreturn checked(n+1)","error":"System.OverflowException"},
+    {"name":"unchecked-wrap","body":"var n:int=0x7fff_ffff\nreturn unchecked(n+1)","value":-2147483648},
+    {"name":"negative-division","body":"return (-15/4)*10+(-15%4)","value":-33},
+    {"name":"alias-product","pre":"type Box<T>={value:T}\nfn read(b:Box<i32>)->int ensures true {return b.value}\n","body":"let b:Box<int>=Box<i32>(42)\nreturn read(b)","value":42}
+  ],
+  "negative": [
+    {"name":"decimal-trailing-separator","body":"return @@42_","code":"AI3107","length":3,"crlf":true},
+    {"name":"hex-trailing-separator","body":"return @@0x2a_","code":"AI3107","length":5},
+    {"name":"binary-trailing-separator","body":"return @@0b101010_","code":"AI3107","length":9},
+    {"name":"split-hex-prefix","body":"return @@0_x2a","code":"AI3107","length":5},
+    {"name":"split-binary-prefix","body":"return @@0_b101010","code":"AI3107","length":9},
+    {"name":"hex-no-digit","body":"return @@0x__","code":"AI3107","length":4},
+    {"name":"binary-no-digit","body":"return @@0b__","code":"AI3107","length":4},
+    {"name":"binary-invalid-digit","body":"return @@0b102","code":"AI3107","length":5},
+    {"name":"decimal-over-bound","body":"return @@2_147_483_648","code":"AI3107","length":13},
+    {"name":"decimal-under-bound","body":"return -@@2_147_483_649","code":"AI3107","length":13},
+    {"name":"unrelated-bool","body":"let value:int=@@true\nreturn value","code":"AI3107","length":4},
+    {"name":"unrelated-string","body":"let value:int=@@\"42\"\nreturn value","code":"AI3100","length":4}
+  ]
+}

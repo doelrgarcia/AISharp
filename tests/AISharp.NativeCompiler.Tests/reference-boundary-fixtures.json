@@ -1,0 +1,61 @@
+{
+  "cases": [
+    {
+      "name": "reference-prerequisite-copy",
+      "body": "var x=20\nlet y=x\nx=22\nreturn x+y",
+      "value": 42
+    },
+    {
+      "name": "reference-prerequisite-owned",
+      "pre": "fn identity(b: owned buffer) -> owned buffer\nensures true\n{return b}\n",
+      "body": "return bufferLength(identity(buffer(19)))",
+      "value": 19
+    }
+  ],
+  "negative": [
+    {
+      "name": "reference-needs-reference-value",
+      "body": "let x=1\nlet r:borrowed int=@@x\nreturn 0",
+      "code": "AI3107",
+      "length": 1
+    },
+    {
+      "name": "reference-mode-mismatch",
+      "body": "var x=1\nlet r:borrowed mut int=@@&x\nreturn 0",
+      "code": "AI3107",
+      "length": 1
+    },
+    {
+      "name": "reference-nesting-mismatch",
+      "body": "let x=1\nlet r:borrowed borrowed int=@@&x\nreturn 0",
+      "code": "AI3107",
+      "length": 1
+    },
+    {
+      "name": "reference-needs-place",
+      "body": "let r=&(1@@+2)\nreturn 0",
+      "code": "AI3115",
+      "length": 1
+    },
+    {
+      "name": "reference-needs-pointer",
+      "body": "let x=1\nreturn *@@x",
+      "code": "AI3115",
+      "length": 1
+    },
+    {
+      "name": "reference-parameter-slot-escape",
+      "pre": "fn read(x:borrowed int)->borrowed borrowed int\nensures true\n{@@return &x}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6
+    },
+    {
+      "name": "reference-value-parameter-escape",
+      "pre": "fn read(x:int)->borrowed int\nensures true\n{@@return &x}\n",
+      "body": "return 0",
+      "code": "AI3117",
+      "length": 6
+    }
+  ]
+}

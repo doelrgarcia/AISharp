@@ -1,0 +1,114 @@
+{
+ "cases": [
+  {
+   "name": "init-construction-read",
+   "body": "let p=P(3,4)\nreturn p.a",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\n",
+   "cs": "var p=new P(3,4); return p.a;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-copy",
+   "body": "var p=P(1,2)\nlet q=p\nreturn q.a+q.b",
+   "value": 3,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=p; return q.a+q.b;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-with-update",
+   "body": "let p=P(1,2)\nlet q=p with {a=5}\nreturn q.a*10+q.b",
+   "value": 52,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=p with {a=5}; return q.a*10+q.b;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-with-both",
+   "body": "let p=P(1,2)\nlet q=p with {a=5, b=6}\nreturn q.a*10+q.b",
+   "value": 56,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\n",
+   "cs": "var p=new P(1,2); var q=p with {a=5,b=6}; return q.a*10+q.b;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-function",
+   "body": "let p=P(7,8)\nreturn sum(p)",
+   "value": 15,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\nfn sum(p:P)->int\nensures true\n{return p.a+p.b}\n",
+   "cs": "var p=new P(7,8); return p.a+p.b;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-return",
+   "body": "return make().a",
+   "value": 9,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\nfn make()->P\nensures true\n{return P(9,9)}\n",
+   "cs": "P Make()=>new P(9,9); var p=Make(); return p.a;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-nested",
+   "body": "let q=Q(P(4,5))\nreturn q.p.a",
+   "value": 4,
+   "type": "int",
+   "pre": "type P={init a:int, b:int}\ntype Q={p:P}\n",
+   "cs": "var q=new Q(new P(4,5)); return q.p.a;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  },
+  {
+   "name": "init-partial",
+   "body": "let p=P(2,3)\nreturn p.a*10+p.b",
+   "value": 23,
+   "type": "int",
+   "pre": "partial type P={init a:int}\npartial type P={b:int}\n",
+   "cs": "var p=new P(2,3); return p.a*10+p.b;",
+   "extra": "public struct P{public int a{get;init;} public int b{get;init;} public P(int a,int b){this.a=a;this.b=b;}} public struct Q{public P p; public Q(P p){this.p=p;}}"
+  }
+ ],
+ "negative": [
+  {
+   "name": "init-assign",
+   "body": "var p=P(1,2)\np.@@a=5\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={init a:int, b:int}\n"
+  },
+  {
+   "name": "init-increment",
+   "body": "var p=P(1,2)\np.@@a+=1\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={init a:int, b:int}\n"
+  },
+  {
+   "name": "init-mut-borrow",
+   "body": "var p=P(1,2)\nlet r=&mut p.@@a\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={init a:int, b:int}\n"
+  },
+  {
+   "name": "init-readonly-conflict",
+   "body": "let p=P(1,2)\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={readonly init @@a:int, b:int}\n"
+  },
+  {
+   "name": "init-volatile-conflict",
+   "body": "let p=P(1,2)\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={init volatile @@a:int, b:int}\n"
+  },
+  {
+   "name": "init-duplicate",
+   "body": "let p=P(1,2)\nreturn p.a",
+   "code": "AI3107",
+   "pre": "type P={init init @@a:int, b:int}\n"
+  }
+ ]
+}

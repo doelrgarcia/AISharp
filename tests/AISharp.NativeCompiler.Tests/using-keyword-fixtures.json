@@ -1,0 +1,147 @@
+{
+ "cases": [
+  {
+   "name": "using-normal",
+   "body": "using (let b=buffer(3))\n{\n}\nreturn 7",
+   "type": "int",
+   "pre": "",
+   "value": 7,
+   "memory": {
+    "allocations": 1,
+    "releases": 1,
+    "drops": 1,
+    "liveBytes": 0
+   },
+   "cs": "using (var r=new Res(3)) { } return 7;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-early-return",
+   "body": "using (let b=buffer(3))\n{\nreturn 5\n}\nreturn 0",
+   "type": "int",
+   "pre": "",
+   "value": 5,
+   "memory": {
+    "allocations": 1,
+    "releases": 1,
+    "drops": 1,
+    "liveBytes": 0
+   },
+   "cs": "using (var r=new Res(3)) { return 5; } return 0;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-break",
+   "body": "var n=0\nwhile(true)\n{\nusing (let b=buffer(1))\n{\nn+=1\nif(n==2){break}\n}\n}\nreturn n",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "memory": {
+    "allocations": 2,
+    "releases": 2,
+    "drops": 2,
+    "liveBytes": 0
+   },
+   "cs": "int n=0; while(true){ using(var r=new Res(1)){ n+=1; if(n==2){break;} } } return n;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-expression-temporary",
+   "body": "using (buffer(2))\n{\n}\nreturn 9",
+   "type": "int",
+   "pre": "",
+   "value": 9,
+   "memory": {
+    "allocations": 1,
+    "releases": 1,
+    "drops": 1,
+    "liveBytes": 0
+   },
+   "cs": "using (new Res(2)) { } return 9;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-existing-resource",
+   "body": "let b=buffer(2)\nusing b\n{\n}\nreturn 3",
+   "type": "int",
+   "pre": "",
+   "value": 3,
+   "memory": {
+    "allocations": 1,
+    "releases": 1,
+    "drops": 1,
+    "liveBytes": 0
+   },
+   "cs": "var r=new Res(2); using(r) { } return 3;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-two-resources",
+   "body": "using (let a=buffer(1), let b=buffer(2))\n{\n}\nreturn 4",
+   "type": "int",
+   "pre": "",
+   "value": 4,
+   "memory": {
+    "allocations": 2,
+    "releases": 2,
+    "drops": 2,
+    "liveBytes": 0
+   },
+   "cs": "using(var a=new Res(1)) using(var b=new Res(2)) { } return 4;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-nested",
+   "body": "using (let a=buffer(1))\n{\nusing (let b=buffer(2))\n{\n}\n}\nreturn 6",
+   "type": "int",
+   "pre": "",
+   "value": 6,
+   "memory": {
+    "allocations": 2,
+    "releases": 2,
+    "drops": 2,
+    "liveBytes": 0
+   },
+   "cs": "using(var a=new Res(1)) using(var b=new Res(2)) { } return 6;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  },
+  {
+   "name": "using-normal-exit",
+   "body": "var x=1\nusing (let b=buffer(4))\n{\nx=2\n}\nreturn x",
+   "type": "int",
+   "pre": "",
+   "value": 2,
+   "memory": {
+    "allocations": 1,
+    "releases": 1,
+    "drops": 1,
+    "liveBytes": 0
+   },
+   "cs": "int x=1; using(var r=new Res(4)) { x=2; } return x;",
+   "extra": "public class Res : IDisposable { public int n; public Res(int n){this.n=n;} public void Dispose(){} }"
+  }
+ ],
+ "negative": [
+  {
+   "name": "using-nondisposable-int",
+   "body": "using (let @@x=1)\n{\n}\nreturn 0",
+   "code": "AI3107"
+  },
+  {
+   "name": "using-nondisposable-product",
+   "body": "using (let @@p=P(1))\n{\n}\nreturn 0",
+   "code": "AI3107",
+   "pre": "type P={a:int}\n"
+  },
+  {
+   "name": "using-mutate-binding",
+   "body": "using (let b=buffer(1))\n{\n@@b=buffer(2)\n}\nreturn 0",
+   "code": "AI3105"
+  },
+  {
+   "name": "using-use-after-move",
+   "body": "let b=buffer(1)\nusing b\n{\n}\nreturn bufferLength(@@b)",
+   "code": "AI3102"
+  }
+ ]
+}
