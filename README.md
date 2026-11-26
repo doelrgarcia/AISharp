@@ -11,6 +11,18 @@ managed build and sample validation pass; the main core suite has **331 passed,
 runtime outcomes and 16 exact diagnostics** across x86/x64 Release/Debug hosts
 and normal/optimized generated output. Full language qualification is incomplete.
 
+## Official token identity
+
+Network: Solana mainnet.
+
+Mint address:
+
+```text
+6VFDLF2gRAqv27PuPyg3oYZzbDJhFdJLS7znrecKpump
+```
+
+[Official AISharp token page](https://aisharp.io/token.html)
+
 ## Managed build and tests
 
 Run from this repository root with .NET SDK 9.0.317 installed:
