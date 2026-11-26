@@ -1,11 +1,20 @@
 # AISharp (AI#) source preview
 
-Experimental language source under Apache-2.0. The selected committed baseline
+AISharp is an experimental programming language and compiler designed for AI agents to write, understand, and maintain software, with people able to inspect and guide the work.
+
+We're building AISharp to make AI-generated code easier to verify. Its design brings intent, contracts, resource ownership, and effects into the source code, so compilers and development tools have explicit rules to check.
+
+Our goal is a practical language and toolchain that helps AI agents produce dependable software with clear diagnostics and testable behavior. The compiler and core tools are open source, and the AISharp token is intended to help fund ongoing development.
+
+AISharp is still under active development, and this preview documents what works today, the current limitations, and what's still to do.
+
+## Preview status
+
+The selected committed baseline
 is `952b718a5161ebfab73601f1a6fdba1cba0ef6e3`. It includes the Windows C++ native
 bootstrap compiler, AI# compiler sources used by self-host experiments, core
 language files, managed compiler/runtime/CLI, samples and selected tests.
-This is a development preview, not a production release. The active working
-tree is not included. See [VERIFICATION.md](VERIFICATION.md) for current results:
+The active working tree is not included. See [VERIFICATION.md](VERIFICATION.md) for current results:
 managed build and sample validation pass; the main core suite has **331 passed,
 9 failed and 6 explicitly skipped CLI gates**. Focused native checks pass **96
 runtime outcomes and 16 exact diagnostics** across x86/x64 Release/Debug hosts
